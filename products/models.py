@@ -18,7 +18,17 @@ class CustomUser(AbstractUser):
         return f"{self.username} ({self.get_role_display()})"
 
 class Category(models.Model):
-    pass
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, 
+                              null=True, blank=True, related_name='children')
+    
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+
+    def __str__(self):
+        return self.name
 
 class Manufacturer(models.Model):
     pass
