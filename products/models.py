@@ -31,7 +31,17 @@ class Category(models.Model):
         return self.name
 
 class Manufacturer(models.Model):
-    pass
+    name = models.CharField(max_length=200)
+    country = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    logo = models.ImageField(upload_to='manufacturers/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Производитель"
+        verbose_name_plural = "Производители"
+
+    def __str__(self):
+        return f"{self.name} ({self.country})"
 
 class Product(models.Model):
     pass
