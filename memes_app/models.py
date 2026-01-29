@@ -1,13 +1,20 @@
 from django.db import models
 
-class Category(models.Model):
-    pass
-
 class Meme(models.Model):
-    pass
+    title =
+    image =
+    description =
+    author =
+    created_at = 
+    views_count =
+    likes_count =
+    is_published =
+    tags =
+
 
 class Tag(models.Model):
-    pass
+    name =
+    slug =
 
 class Favorite(models.Model):
     pass
