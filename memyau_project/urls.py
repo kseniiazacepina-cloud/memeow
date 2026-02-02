@@ -15,8 +15,35 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import RedirectView
+from drf_spectacular.views import SpectacularSwaggerView
 
 urlpatterns = [
+    # Админ-панель
     path('admin/', admin.site.urls),
+    
+    # API
+    path('api/', include('memes.api.urls')),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    
+    # Веб-интерфейс
+    path('', include('memes.urls')),  # Основные страницы мемов
+    path('users/', include('users.urls')),  # Профили пользователей
+    path('accounts/', include('django.contrib.auth.urls')),  # Стандартная аутентификация
+    
+    # Перенаправление корня на главную
+    path('', RedirectView.as_view(pattern_name='home', permanent=False)),
 ]
+
+# Для обслуживания медиафайлов в режиме разработки
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Настройка заголовков админ-панели
+admin.site.site_header = "Memyau Администрация"
+admin.site.site_title = "Memyau Admin"
+admin.site.index_title = "Добро пожаловать в админ-панель Memyau"
