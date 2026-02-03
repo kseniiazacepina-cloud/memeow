@@ -5,10 +5,11 @@ from django.contrib import messages
 from django.views.generic import DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.db.models import Count
+from django.db.models import Count, Sum
 from memes.models import Meme, Favorite
 
-from .forms import UserUpdateForm, ProfileUpdateForm
+
+from .forms import UserUpdateForm, ProfileUpdateForm, UserRegisterForm
 
 @login_required
 def profile(request, username=None):
@@ -44,19 +45,102 @@ def profile(request, username=None):
 @login_required
 def favorites(request):
     """Страница избранного пользователя"""
-    pass
+    favorites = Favorite.objects.filter(user=request.user).select_related('meme')
+    memes = [fav.meme for fav in favorites]
+    
+    context = {
+        'favorite_memes': memes,
+        'favorites_count': favorites.count(),
+    }
+    
+    return render(request, 'users/favorites.html', context)
 
 @login_required
 def settings_view(request):
     """Настройки профиля пользователя"""
-    pass
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(
+            request.POST, 
+            request.FILES, 
+            instance=request.user.profile
+        )
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Ваш профиль успешно обновлен!')
+            return redirect('profile')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+    
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    }
+    
+    return render(request, 'users/settings.html', context)
 
 @login_required
 def dashboard(request):
     """Панель управления пользователя"""
-    pass
+    # Последние действия
+    recent_memes = Meme.objects.filter(author=request.user).order_by('-created_at')[:5]
+    recent_favorites = Favorite.objects.filter(
+        user=request.user
+    ).select_related('meme').order_by('-created_at')[:5]
+    
+    # Статистика
+    total_memes = Meme.objects.filter(author=request.user).count()
+    total_likes_received = Meme.objects.filter(
+        author=request.user
+    ).aggregate(total_likes=Sum('likes_count'))['total_likes'] or 0
+    
+    context = {
+        'recent_memes': recent_memes,
+        'recent_favorites': recent_favorites,
+        'total_memes': total_memes,
+        'total_likes_received': total_likes_received,
+    }
+    
+    return render(request, 'users/dashboard.html', context)
 
 class ProfileDetailView(DetailView):
     """Детальное представление профиля (для API-like view)"""
-    pass
+    model = User
+    template_name = 'users/profile_detail.html'
+    context_object_name = 'profile_user'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.get_object()
+        
+        # Получаем мемы пользователя
+        context['memes'] = Meme.objects.filter(
+            author=user, 
+            is_published=True
+        ).order_by('-created_at')[:12]
+        
+        # Статистика
+        context['stats'] = {
+            'memes_count': Meme.objects.filter(author=user).count(),
+            'total_likes': sum(m.likes_count for m in context['memes']),
+            'joined_date': user.date_joined.strftime('%d.%m.%Y'),
+        }
+        
+        return context
 
+def register(request):
+    """Регистрация нового пользователя"""
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Аккаунт создан для {username}! Теперь вы можете войти.')
+            return redirect('login')
+    else:
+        form = UserRegisterForm()
+    
+    return render(request, 'registration/register.html', {'form': form})

@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 import random
 from django.core.cache import cache
+from django.contrib.auth.models import User
 
 from ..models import Meme, Tag, Like, Favorite
 from ..serializers import MemeSerializer, TagSerializer, LikeSerializer, FavoriteSerializer
