@@ -1,1 +1,235 @@
 <!--профиль-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Профиль {{ profile_user.username }} - Memeow{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!--заголовок-->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <!--аватарка и информация -->
+                <div class="col-md-3 text-center">
+                    {% if profile_user.profile.avatar %}
+                    <img src="{{ profile_user.profile.avatar.url }}" 
+                         alt="{{ profile_user.username }}" 
+                         class="rounded-circle img-thumbnail mb-3"
+                         width="150" height="150">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" 
+                         style="width: 150px; height: 150px;">
+                        <i class="bi bi-person fs-1 text-white"></i>
+                    </div>
+                    {% endif %}
+                    
+                    {% if user == profile_user %}
+                    <a href="{% url 'settings' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-pencil"></i> Редактировать профиль
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <!--информация о пользователе-->
+                <div class="col-md-9">
+                    <h1 class="display-5">{{ profile_user.username }}</h1>
+                    
+                    {% if profile_user.profile.bio %}
+                    <p class="lead">{{ profile_user.profile.bio }}</p>
+                    {% else %}
+                    <p class="text-muted">Пользователь еще не добавил информацию о себе.</p>
+                    {% endif %}
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="card-title">{{ memes_count }}</h3>
+                                    <p class="card-text text-muted">Мемов</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="card-title">{{ likes_received }}</h3>
+                                    <p class="card-text text-muted">Лайков получено</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="card-title">{{ profile_user.date_joined|date:"d.m.Y" }}</h3>
+                                    <p class="card-text text-muted">На сайте с</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--вкладки-->
+    <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="memes-tab" data-bs-toggle="tab" 
+                    data-bs-target="#memes" type="button" role="tab">
+                <i class="bi bi-images"></i> Мемы ({{ memes_count }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="favorites-tab" data-bs-toggle="tab" 
+                    data-bs-target="#favorites" type="button" role="tab">
+                <i class="bi bi-star"></i> Избранное
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tags-tab" data-bs-toggle="tab" 
+                    data-bs-target="#tags" type="button" role="tab">
+                <i class="bi bi-tags"></i> Теги
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="activity-tab" data-bs-toggle="tab" 
+                    data-bs-target="#activity" type="button" role="tab">
+                <i class="bi bi-activity"></i> Активность
+            </button>
+        </li>
+    </ul>
+
+    <!--содержимое вкладок-->
+    <div class="tab-content" id="profileTabsContent">
+        <!--мемы пользователя-->
+        <div class="tab-pane fade show active" id="memes" role="tabpanel">
+            {% if user_memes %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for meme in user_memes %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <a href="{% url 'meme_detail' meme.id %}">
+                            <img src="{{ meme.image.url }}" 
+                                 class="card-img-top" 
+                                 alt="{{ meme.title }}"
+                                 style="height: 200px; object-fit: cover;">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'meme_detail' meme.id %}" class="text-decoration-none">
+                                    {{ meme.title|truncatechars:30 }}
+                                </a>
+                            </h5>
+                            <p class="card-text small text-muted">
+                                {{ meme.created_at|date:"d.m.Y H:i" }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-heart"></i> {{ meme.likes_count }}
+                                </span>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-eye"></i> {{ meme.views_count }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if memes_count > 6 %}
+            <div class="text-center mt-4">
+                <a href="{% url 'user_memes' profile_user.username %}" class="btn btn-outline-primary">
+                    Показать все мемы
+                </a>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-images fs-1 text-muted mb-3"></i>
+                <h4>Пока нет мемов</h4>
+                {% if user == profile_user %}
+                <p class="text-muted">Добавьте свой первый мем!</p>
+                <a href="{% url 'add_meme' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Добавить мем
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!--избранное-->
+        <div class="tab-pane fade" id="favorites" role="tabpanel">
+            {% if user == profile_user %}
+                <!--для владельца профиля-->
+                {% if user_favorites %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for meme in user_favorites %}
+                    <div class="col">
+                        <!--карточка мема-->
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-star fs-1 text-muted mb-3"></i>
+                    <h4>Нет избранных мемов</h4>
+                    <p class="text-muted">Добавляйте понравившиеся мемы в избранное!</p>
+                </div>
+                {% endif %}
+            {% else %}
+                <!--для других пользователей-->
+                <div class="alert alert-info">
+                    Избранное пользователя скрыто для приватности.
+                </div>
+            {% endif %}
+        </div>
+
+        <!--теги пользователя-->
+        <div class="tab-pane fade" id="tags" role="tabpanel">
+            {% if user_tags %}
+            <div class="d-flex flex-wrap gap-3">
+                {% for tag in user_tags %}
+                <a href="{% url 'tag_memes' tag.slug %}" class="btn btn-outline-primary position-relative">
+                    {{ tag.name }}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ tag.meme_count }}
+                    </span>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-tags fs-1 text-muted mb-3"></i>
+                <h4>Нет тегов</h4>
+                <p class="text-muted">Пользователь еще не добавлял мемы с тегами.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!--активность-->
+        <div class="tab-pane fade" id="activity" role="tabpanel">
+            <div class="list-group">
+                {% for action in recent_activity %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">{{ action.title }}</h6>
+                        <small class="text-muted">{{ action.time }}</small>
+                    </div>
+                    <p class="mb-1">{{ action.description }}</p>
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="bi bi-activity fs-1 text-muted mb-3"></i>
+                    <h4>Нет активности</h4>
+                    <p class="text-muted">Активность пользователя будет отображаться здесь.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
