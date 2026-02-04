@@ -1,1 +1,141 @@
 <!--избранное-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Избранное - Memyau{% endblock %}
+Memeow
+{% block content %}
+<div class="container mt-4">
+    <!--заголовок-->
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6">
+                        <i class="bi bi-star-fill text-warning"></i> Избранное
+                    </h1>
+                    <p class="text-muted mb-0">
+                        Сохранено мемов: <strong>{{ favorites_count }}</strong>
+                    </p>
+                </div>
+                <div>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person"></i> Мой профиль
+                    </a>
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--избранное-->
+    {% if favorite_memes %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for meme in favorite_memes %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <a href="{% url 'meme_detail' meme.id %}">
+                    <img src="{{ meme.image.url }}" 
+                         class="card-img-top meme-thumbnail" 
+                         alt="{{ meme.title }}"
+                         style="height: 200px; object-fit: cover;">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'meme_detail' meme.id %}" class="text-decoration-none">
+                            {{ meme.title|truncatechars:30 }}
+                        </a>
+                    </h5>
+                    <p class="card-text small text-muted">
+                        <i class="bi bi-person"></i> 
+                        <a href="{% url 'user_profile' meme.author.username %}" class="text-muted">
+                            {{ meme.author.username }}
+                        </a>
+                        <br>
+                        <i class="bi bi-calendar"></i> {{ meme.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-danger">
+                            <i class="bi bi-heart"></i> {{ meme.likes_count }}
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-eye"></i> {{ meme.views_count }}
+                        </span>
+                        <button class="btn btn-sm btn-outline-warning favorite-btn" data-meme-id="{{ meme.id }}">
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for tag in meme.tags.all|slice:":3" %}
+                        <a href="{% url 'tag_memes' tag.slug %}" class="badge bg-info text-decoration-none">
+                            {{ tag.name }}
+                        </a>
+                        {% endfor %}
+                        {% if meme.tags.count > 3 %}
+                        <span class="badge bg-light text-dark">+{{ meme.tags.count|add:"-3" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!--сообщение если нет избранного-->
+    {% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-star display-1 text-muted"></i>
+        </div>
+        <h3>У вас пока нет избранных мемов</h3>
+        <p class="text-muted mb-4">
+            Добавляйте понравившиеся мемы в избранное, нажимая на 
+            <i class="bi bi-star text-warning"></i> на странице мема.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'home' %}" class="btn btn-primary">
+                <i class="bi bi-house"></i> На главную
+            </a>
+            <a href="{% url 'popular_memes' %}" class="btn btn-outline-warning">
+                <i class="bi bi-fire"></i> Популярные мемы
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!--кнопка очистки-->
+    {% if favorite_memes %}
+    <div class="text-center mt-5">
+        <button class="btn btn-outline-danger" id="clear-favorites-btn" data-bs-toggle="modal" data-bs-target="#clearModal">
+            <i class="bi bi-trash"></i> Очистить все избранное
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!--окно подтверждения очистки-->
+<div class="modal fade" id="clearModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle text-danger"></i> Подтверждение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите удалить все мемы из избранного? Это действие нельзя отменить.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" id="confirm-clear-favorites">Удалить все</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/favorites.js' %}"></script>
+{% endblock %}
