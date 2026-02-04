@@ -1,0 +1,268 @@
+<!--панель управления-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Панель управления - Memeow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!--заголовок-->
+    <div class="card bg-primary text-white mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6">
+                        <i class="bi bi-speedometer2"></i> Панель управления
+                    </h1>
+                    <p class="mb-0">Добро пожаловать, {{ user.username }}! Здесь вы можете управлять своей активностью.</p>
+                </div>
+                <div class="text-end">
+                    <p class="mb-0">На сайте с {{ user.date_joined|date:"d.m.Y" }}</p>
+                    <small>Последний вход: {{ user.last_login|date:"d.m.Y H:i"|default:"-" }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--статистика-->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <h1 class="display-4">{{ total_memes }}</h1>
+                    <p class="card-text">Мои мемы</p>
+                </div>
+                <div class="card-footer bg-transparent text-center">
+                    <a href="{% url 'user_profile' user.username %}" class="text-white">Просмотреть все →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body text-center">
+                    <h1 class="display-4">{{ total_likes_received }}</h1>
+                    <p class="card-text">Получено лайков</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body text-center">
+                    <h1 class="display-4">{{ user_favorites_count|default:"0" }}</h1>
+                    <p class="card-text">Избранное</p>
+                </div>
+                <div class="card-footer bg-transparent text-center">
+                    <a href="{% url 'favorites' %}" class="text-white">Просмотреть →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white h-100">
+                <div class="card-body text-center">
+                    <h1 class="display-4">{{ user_likes_given|default:"0" }}</h1>
+                    <p class="card-text">Поставлено лайков</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!--левая колонка-->
+        <!--последние действия-->
+        <div class="col-md-8">
+            <!--последние мемы-->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Последние мемы</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_memes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Мем</th>
+                                    <th>Название</th>
+                                    <th>Дата</th>
+                                    <th>Лайки</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for meme in recent_memes %}
+                                <tr>
+                                    <td>
+                                        <img src="{{ meme.image.url }}" 
+                                             alt="{{ meme.title }}"
+                                             class="rounded" 
+                                             width="50" height="50"
+                                             style="object-fit: cover;">
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'meme_detail' meme.id %}" class="text-decoration-none">
+                                            {{ meme.title|truncatechars:30 }}
+                                        </a>
+                                    </td>
+                                    <td>{{ meme.created_at|date:"d.m.Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-danger">{{ meme.likes_count }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'edit_meme' meme.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-images text-muted display-6"></i>
+                        <p class="text-muted mt-3">У вас пока нет мемов</p>
+                        <a href="{% url 'add_meme' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Добавить первый мем
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!--недавнее избранное-->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-star"></i> Недавно добавлено в избранное</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_favorites %}
+                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                        {% for favorite in recent_favorites %}
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="row g-0">
+                                    <div class="col-4">
+                                        <img src="{{ favorite.meme.image.url }}" 
+                                             class="img-fluid rounded-start h-100"
+                                             style="object-fit: cover; height: 100px;">
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <a href="{% url 'meme_detail' favorite.meme.id %}" class="text-decoration-none">
+                                                    {{ favorite.meme.title|truncatechars:20 }}
+                                                </a>
+                                            </h6>
+                                            <p class="card-text small text-muted">
+                                                <i class="bi bi-person"></i> {{ favorite.meme.author.username }}
+                                            </p>
+                                            <p class="card-text small">
+                                                <i class="bi bi-calendar"></i> {{ favorite.created_at|date:"d.m.Y" }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-star text-muted display-6"></i>
+                        <p class="text-muted mt-3">В избранном пока ничего нет</p>
+                        <p class="small text-muted">Добавляйте понравившиеся мемы в избранное</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!--правая колонка-->
+        <div class="col-md-4">
+            <!--быстрые действия -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Быстрые действия</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'add_meme' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Добавить мем
+                        </a>
+                        <a href="{% url 'random_meme' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-shuffle"></i> Случайный мем
+                        </a>
+                        <a href="{% url 'favorites' %}" class="btn btn-outline-warning">
+                            <i class="bi bi-star"></i> Избранное
+                        </a>
+                        <a href="{% url 'settings' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-gear"></i> Настройки
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!--статистика-->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Активность за неделю</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-3">
+                        <canvas id="activityChart" width="100%" height="150"></canvas>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Добавлено мемов:</span>
+                            <strong>3</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Поставлено лайков:</span>
+                            <strong>12</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Просмотров ваших мемов:</span>
+                            <strong>156</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--полезные ссылки-->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-link"></i> Полезные ссылки</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="/api/docs/" class="text-decoration-none">
+                                <i class="bi bi-code-slash"></i> API Документация
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{% url 'popular_memes' %}" class="text-decoration-none">
+                                <i class="bi bi-fire"></i> Популярные мемы
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{% url 'tag_memes' 'it' %}" class="text-decoration-none">
+                                <i class="bi bi-tag"></i> IT мемы
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:admin@Memeow.ru" class="text-decoration-none">
+                                <i class="bi bi-envelope"></i> Связаться с поддержкой
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
