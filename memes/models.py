@@ -3,6 +3,25 @@ from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from django.utils.text import slugify
 
+class Tag(models.Model):
+    """Модель тега для классификации мемов"""
+    name = models.CharField(max_length=50, unique=True, verbose_name='Название тега')
+    slug = models.SlugField(max_length=60, unique=True, blank=True, verbose_name='URL-идентификатор')
+
+    def save(self, *args, **kwargs):
+        """Автоматическое создание slug при сохранении"""
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+        ordering = ['name']
+
 class Meme(models.Model):
     """Основная модель мема"""
     title = models.CharField(max_length=200, verbose_name='Название мема')
@@ -31,26 +50,6 @@ class Meme(models.Model):
             models.Index(fields=['-created_at']),
             models.Index(fields=['-likes_count']),
         ]
-
-
-class Tag(models.Model):
-    """Модель тега для классификации мемов"""
-    name = models.CharField(max_length=50, unique=True, verbose_name='Название тега')
-    slug = models.SlugField(max_length=60, unique=True, blank=True, verbose_name='URL-идентификатор')
-
-    def save(self, *args, **kwargs):
-        """Автоматическое создание slug при сохранении"""
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Тег'
-        verbose_name_plural = 'Теги'
-        ordering = ['name']
 
 class Like(models.Model):
     """Модель лайка (связь пользователь-мем)"""
