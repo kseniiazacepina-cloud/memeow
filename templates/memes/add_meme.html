@@ -1,1 +1,73 @@
 <!--добавить мем-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Добавить мем - Memeow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Добавить новый мем</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="meme-form">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Название мема *</label>
+                            <input type="text" class="form-control" id="title" name="title" required maxlength="200">
+                            <div class="form-text">Придумайте интересное название</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Изображение *</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*,.gif" required>
+                            <div class="form-text">Поддерживаются JPG, PNG, GIF. Макс. размер: 5MB</div>
+                            <div class="mt-2" id="image-preview"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Описание</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" maxlength="1000"></textarea>
+                            <div class="form-text">Расскажите о меме или добавьте контекст</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Теги</label>
+                            <div class="d-flex flex-wrap gap-2 mb-2" id="selected-tags"></div>
+                            <input type="text" class="form-control" id="tag-input" placeholder="Введите тег и нажмите Enter">
+                            <div class="form-text">Добавляйте теги для классификации. Существующие теги: 
+                                {% for tag in all_tags %}
+                                    <span class="badge bg-secondary cursor-pointer tag-suggestion">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="tags" id="tags-input">
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            После добавления мем пройдет модерацию перед публикацией.
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                <span id="submit-text">Опубликовать мем</span>
+                                <div class="spinner-border spinner-border-sm d-none" role="status" id="submit-spinner">
+                                    <span class="visually-hidden">Загрузка...</span>
+                                </div>
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/add_meme.js' %}"></script>
+{% endblock %}
