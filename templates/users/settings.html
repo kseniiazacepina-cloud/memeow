@@ -1,0 +1,328 @@
+<!--настройки профиля-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Настройки профиля - Memeow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'profile' %}">Профиль</a></li>
+            <li class="breadcrumb-item active">Настройки</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!--боковое меню-->
+        <div class="col-md-3 mb-4">
+            <div class="list-group">
+                <a href="#profile-settings" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                    <i class="bi bi-person"></i> Основные настройки
+                </a>
+                <a href="#account-settings" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-shield-lock"></i> Безопасность
+                </a>
+                <a href="#notification-settings" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-bell"></i> Уведомления
+                </a>
+                <a href="#privacy-settings" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="bi bi-eye"></i> Приватность
+                </a>
+            </div>
+        </div>
+
+        <!--содержимое вкладок-->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!--основные настройки-->
+                <div class="tab-pane fade show active" id="profile-settings">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-person"></i> Основные настройки профиля</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                <div class="row">
+                                    <!--ава-->
+                                    <div class="col-md-4 text-center mb-4">
+                                        {% if user.profile.avatar %}
+                                        <img src="{{ user.profile.avatar.url }}" 
+                                             alt="{{ user.username }}" 
+                                             class="rounded-circle img-thumbnail mb-3"
+                                             width="150" height="150"
+                                             id="avatar-preview">
+                                        {% else %}
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                             style="width: 150px; height: 150px;"
+                                             id="avatar-preview">
+                                            <i class="bi bi-person fs-1 text-white"></i>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <div class="mb-3">
+                                            <label for="id_avatar" class="form-label small">Изменить аватар</label>
+                                            <input type="file" name="avatar" class="form-control form-control-sm" 
+                                                   id="id_avatar" accept="image/*">
+                                        </div>
+                                        <div class="form-text small">
+                                            Рекомендуемый размер: 150×150 px
+                                        </div>
+                                    </div>
+                                    
+                                    <!--основная информация-->
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="id_username" class="form-label">Имя пользователя *</label>
+                                                <input type="text" name="username" class="form-control" 
+                                                       id="id_username" value="{{ user_form.username.value }}" required>
+                                                {% if user_form.username.errors %}
+                                                <div class="text-danger small">{{ user_form.username.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="col-md-6 mb-3">
+                                                <label for="id_email" class="form-label">Email *</label>
+                                                <input type="email" name="email" class="form-control" 
+                                                       id="id_email" value="{{ user_form.email.value }}" required>
+                                                {% if user_form.email.errors %}
+                                                <div class="text-danger small">{{ user_form.email.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="id_first_name" class="form-label">Имя</label>
+                                                <input type="text" name="first_name" class="form-control" 
+                                                       id="id_first_name" value="{{ user_form.first_name.value|default:'' }}">
+                                            </div>
+                                            
+                                            <div class="col-md-6 mb-3">
+                                                <label for="id_last_name" class="form-label">Фамилия</label>
+                                                <input type="text" name="last_name" class="form-control" 
+                                                       id="id_last_name" value="{{ user_form.last_name.value|default:'' }}">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="id_bio" class="form-label">О себе</label>
+                                            <textarea name="bio" class="form-control" id="id_bio" 
+                                                      rows="4" maxlength="500">{{ profile_form.bio.value|default:'' }}</textarea>
+                                            <div class="form-text">Расскажите немного о себе (максимум 500 символов)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-end">
+                                    <button type="submit" name="profile_submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle"></i> Сохранить изменения
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--настройки безопасности-->
+                <div class="tab-pane fade" id="account-settings">
+                    <div class="card shadow">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0"><i class="bi bi-shield-lock"></i> Настройки безопасности</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h6><i class="bi bi-key"></i> Изменить пароль</h6>
+                                <form method="post" action="{% url 'password_change' %}">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Старый пароль</label>
+                                            <input type="password" name="old_password" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Новый пароль</label>
+                                            <input type="password" name="new_password1" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Подтверждение</label>
+                                            <input type="password" name="new_password2" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-key"></i> Изменить пароль
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="mb-4">
+                                <h6><i class="bi bi-person-x"></i> Удаление аккаунта</h6>
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <strong>Внимание!</strong> Удаление аккаунта — необратимое действие. 
+                                    Все ваши данные, включая мемы, лайки и избранное, будут удалены.
+                                </div>
+                                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                    <i class="bi bi-trash"></i> Удалить аккаунт
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--настройки уведомлений-->
+                <div class="tab-pane fade" id="notification-settings">
+                    <div class="card shadow">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="bi bi-bell"></i> Настройки уведомлений</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" name="email_subscription" 
+                                               class="form-check-input" id="id_email_subscription"
+                                               {% if profile_form.email_subscription.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="id_email_subscription">
+                                            Email-рассылка
+                                        </label>
+                                    </div>
+                                    <div class="form-text">
+                                        Получать еженедельные дайджесты с лучшими мемами
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" id="notify_likes" checked>
+                                        <label class="form-check-label" for="notify_likes">
+                                            Уведомления о новых лайках
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" id="notify_comments" checked>
+                                        <label class="form-check-label" for="notify_comments">
+                                            Уведомления о новых комментариях
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" id="notify_followers" checked>
+                                        <label class="form-check-label" for="notify_followers">
+                                            Уведомления о новых подписчиках
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" name="notifications_submit" class="btn btn-info text-white">
+                                    <i class="bi bi-check-circle"></i> Сохранить настройки
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--настройки приватности-->
+                <div class="tab-pane fade" id="privacy-settings">
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="bi bi-eye"></i> Настройки приватности</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Кто может видеть ваш профиль</label>
+                                    <select class="form-select" id="profile_visibility">
+                                        <option value="public" selected>Все пользователи</option>
+                                        <option value="registered">Только зарегистрированные</option>
+                                        <option value="private">Только я</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Кто может видеть избранное</label>
+                                    <select class="form-select" id="favorites_visibility">
+                                        <option value="public" selected>Все пользователи</option>
+                                        <option value="registered">Только зарегистрированные</option>
+                                        <option value="private">Только я</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="show_online_status" checked>
+                                        <label class="form-check-label" for="show_online_status">
+                                            Показывать статус "В сети"
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="show_last_seen" checked>
+                                        <label class="form-check-label" for="show_last_seen">
+                                            Показывать время последнего посещения
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" name="privacy_submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Сохранить настройки
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--окно удаления аккаунта-->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle text-danger"></i> Удаление аккаунта</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <strong>ВНИМАНИЕ!</strong> Это действие невозможно отменить.
+                </div>
+                <p>Все ваши данные будут удалены:</p>
+                <ul>
+                    <li>Ваши мемы ({{ user_memes_count|default:"0" }})</li>
+                    <li>Лайки и избранное</li>
+                    <li>Комментарии</li>
+                    <li>Настройки профиля</li>
+                </ul>
+                <p>Для подтверждения введите ваше имя пользователя:</p>
+                <input type="text" class="form-control" id="confirmUsername" placeholder="{{ user.username }}">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteAccount" disabled>
+                    Удалить аккаунт
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/settings.js' %}"></script>
+{% endblock %}

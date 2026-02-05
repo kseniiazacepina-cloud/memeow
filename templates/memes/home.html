@@ -1,0 +1,177 @@
+<!--главная-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Memeow - Главная{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!--приветствие и кнопка добавления мема-->
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">Добро пожаловать на Memeow!</h1>
+        <p class="lead">Лучшая коллекция мемов!</p>
+        <hr class="my-4">
+        {% if user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{% url 'add_meme' %}" role="button">Добавить мем</a>
+        {% else %}
+            <p>Чтобы добавлять мемы, необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a>.</p>
+        {% endif %}
+    </div>
+
+    <!--мем дня-->
+    <div class="card mb-4">
+        <div class="card-header bg-warning">
+            <h3 class="mb-0">🎉 Мем дня</h3>
+        </div>
+        <div class="card-body text-center">
+            {% if meme_of_the_day %}
+                <div class="meme-card">
+                    <img src="{{ meme_of_the_day.image.url }}" 
+                         class="img-fluid rounded" 
+                         alt="{{ meme_of_the_day.title }}"
+                         style="max-height: 500px;">
+                    <h4 class="mt-3">{{ meme_of_the_day.title }}</h4>
+                    <p>{{ meme_of_the_day.description|truncatechars:150 }}</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-info">👁 {{ meme_of_the_day.views_count }}</span>
+                        <span class="badge bg-success">👍 {{ meme_of_the_day.likes_count }}</span>
+                        <a href="{% url 'meme_detail' meme_of_the_day.id %}" class="btn btn-sm btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-muted">Мем дня пока не выбран</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!--лента мемов с фильтрацией-->
+    <div class="row">
+        <div class="col-md-3">
+            <!--боковая панель с тегами-->
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header">
+                    <h5>Популярные теги</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2" id="tag-cloud">
+                        {% for tag in popular_tags %}
+                            <a href="{% url 'tag_memes' tag.slug %}" class="badge bg-secondary text-decoration-none">
+                                {{ tag.name }} <span class="badge bg-light text-dark">{{ tag.meme_count }}</span>
+                            </a>
+                        {% empty %}
+                            <p class="text-muted">Теги пока не добавлены</p>
+                        {% endfor %}
+                    </div>
+                    <hr>
+                    <a href="{% url 'meme_list' %}" class="btn btn-outline-primary w-100">Все мемы</a>
+                    <a href="{% url 'popular_memes' %}" class="btn btn-outline-success w-100 mt-2">Популярные</a>
+                    <a href="{% url 'random_meme' %}" class="btn btn-outline-warning w-100 mt-2">Случайный мем</a>
+                </div>
+            </div>
+            
+            <!--популярные мемы-->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6>Популярные</h6>
+                </div>
+                <div class="card-body">
+                    {% for meme in popular_memes %}
+                        <div class="mb-2">
+                            <a href="{% url 'meme_detail' meme.id %}" class="text-decoration-none">
+                                <img src="{{ meme.image.url }}" 
+                                     class="img-thumbnail" 
+                                     alt="{{ meme.title }}"
+                                     style="width: 100%; height: 80px; object-fit: cover;">
+                                <small class="d-block">{{ meme.title|truncatechars:30 }}</small>
+                            </a>
+                            <small class="text-muted">
+                                👍 {{ meme.likes_count }} | 👁 {{ meme.views_count }}
+                            </small>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">Нет популярных мемов</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <!--свежие мемы-->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Свежие мемы</h3>
+                <div>
+                    <a href="{% url 'add_meme' %}" class="btn btn-sm btn-success">+ Добавить мем</a>
+                </div>
+            </div>
+            
+            {% if recent_memes %}
+                <div class="row" id="memes-container">
+                    {% for meme in recent_memes %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <a href="{% url 'meme_detail' meme.id %}">
+                                <img src="{{ meme.image.url }}" 
+                                     class="card-img-top" 
+                                     alt="{{ meme.title }}"
+                                     style="height: 200px; object-fit: cover;">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{% url 'meme_detail' meme.id %}" class="text-decoration-none text-dark">
+                                        {{ meme.title|truncatechars:40 }}
+                                    </a>
+                                </h5>
+                                <p class="card-text">{{ meme.description|truncatechars:100 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <a href="{% url 'meme_detail' meme.id %}#comments" class="text-decoration-none">
+                                            {{ meme.author.username }}
+                                        </a>
+                                    </small>
+                                    <small class="text-muted">
+                                        {{ meme.created_at|timesince }} назад
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <span class="badge bg-info">👁 {{ meme.views_count }}</span>
+                                        <span class="badge bg-success ms-1">👍 {{ meme.likes_count }}</span>
+                                    </div>
+                                    <div>
+                                        {% for tag in meme.tags.all|slice:":2" %}
+                                            <a href="{% url 'tag_memes' tag.slug %}" class="badge bg-secondary text-decoration-none">
+                                                {{ tag.name }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>Пока нет мемов. Будьте первым, кто добавит мем!</p>
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary">Зарегистрироваться</a>
+                    {% else %}
+                        <a href="{% url 'add_meme' %}" class="btn btn-success">Добавить первый мем</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <!--кнопка "показать еще"-->
+            {% if recent_memes|length == 12 %}
+                <div class="text-center mt-4">
+                    <a href="{% url 'meme_list' %}" class="btn btn-outline-primary">Все мемы</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

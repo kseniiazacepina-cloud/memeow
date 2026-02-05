@@ -1,0 +1,57 @@
+<!--результаты поиска-->
+
+{% extends 'base.html' %}
+{% block title %}Результаты поиска{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Результаты поиска: "{{ query }}"</h2>
+    
+    <div class="row">
+        <div class="col-md-8">
+            {% if memes %}
+                <div class="row">
+                    {% for meme in memes %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            {% if meme.image %}
+                            <img src="{{ meme.image.url }}" class="card-img-top" alt="{{ meme.title }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ meme.title }}</h5>
+                                <p class="card-text">{{ meme.description|truncatewords:20 }}</p>
+                                <p class="text-muted">
+                                    <small>
+                                        Автор: {{ meme.author.username }}<br>
+                                        Дата: {{ meme.created_at|date:"d.m.Y" }}
+                                    </small>
+                                </p>
+                                <a href="{% url 'meme_detail' meme.id %}" class="btn btn-primary">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>По запросу "{{ query }}" ничего не найдено.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Новый поиск</h5>
+                    <form method="get" action="{% url 'search' %}">
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" placeholder="Поиск мемов..." value="{{ query }}">
+                            <button class="btn btn-primary" type="submit">Искать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

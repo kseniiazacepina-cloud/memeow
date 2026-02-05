@@ -1,0 +1,147 @@
+<!--базовый шаблон-->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Memeow{% endblock %}</title>
+    
+    <!--Bootstrap 5 CSS-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--Bootstrap Icons-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!--Custom CSS-->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+        <!--навигация-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <i class="bi bi-emoji-laughing"></i> Memeow
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">
+                                <i class="bi bi-house"></i> Главная
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'random_meme' %}">
+                                <i class="bi bi-shuffle"></i> Случайный мем
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'popular_memes' %}">
+                                <i class="bi bi-fire"></i> Популярные
+                            </a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'add_meme' %}">
+                                <i class="bi bi-plus-circle"></i> Добавить мем
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+
+                    <!--поиск-->
+                <form class="d-flex me-3" action="{% url 'search' %}" method="get">
+                    <input class="form-control form-control-sm" type="search" 
+                           placeholder="Поиск мемов..." name="q" aria-label="Search">
+                    <button class="btn btn-outline-light btn-sm ms-2" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                
+                <!--кнопки-->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
+                           role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                <i class="bi bi-person"></i> Мой профиль
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'favorites' %}">
+                                <i class="bi bi-star"></i> Избранное
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'dashboard' %}">
+                                <i class="bi bi-speedometer2"></i> Панель управления
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'settings' %}">
+                                <i class="bi bi-gear"></i> Настройки
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-right"></i> Выйти
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm me-2" href="{% url 'login' %}">
+                            <i class="bi bi-box-arrow-in-right"></i> Войти
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-light btn-sm" href="{% url 'register' %}">
+                            <i class="bi bi-person-plus"></i> Регистрация
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!--основное содержимое-->
+    <main class="container py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!--футер-->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="bi bi-emoji-laughing"></i> Memyau</h5>
+                    <p>Лучшая платформа для мемов!</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Статистика</h5>
+                    <p class="mb-1">Мемов: {{ total_memes|default:"106" }}</p>
+                    <p class="mb-1">Пользователей: {{ total_users|default:"10 000" }}</p>
+                    <p class="mb-1">Тегов: {{ total_tags|default:"140" }}</p>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p class="mb-0">Memeow. Самый лучший сайт с мемами.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!--Bootstrap JS Bundle with Popper-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!--jQuery-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!--Custom JS-->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
