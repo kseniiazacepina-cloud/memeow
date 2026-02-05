@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
+    'crispy_forms',
+    'crispy_bootstrap5',
     # Наши приложения
     'users',
     'memes',
@@ -69,14 +71,11 @@ ROOT_URLCONF = 'memyau_project.urls'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'memyau_db',           # Название базы данных
-        'USER': 'postgres',            # Имя пользователя
-        'PASSWORD': 'password',        # Пароль (без спецсимволов)
-        'HOST': 'localhost',           # Хост
-        'PORT': '5432',                # Порт
-        'OPTIONS': {
-            'client_encoding': 'UTF8',  # Явно указываем кодировку
-        }
+        'NAME': 'memyau_db',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -94,16 +93,18 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates',
+            BASE_DIR / 'templates',  # базовые шаблоны (base.html)
+            BASE_DIR / 'memes' / 'templates',  # шаблоны приложения memes
+            BASE_DIR / 'users' / 'templates',  # шаблоны приложения users
         ],
-        'APP_DIRS': True,
+        'APP_DIRS': True,  # для поиска в templates/ внутри каждого приложения
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',  # Для доступа к MEDIA_URL в шаблонах
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -142,3 +143,6 @@ SPECTACULAR_SETTINGS = {
 
 # Email settings (for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

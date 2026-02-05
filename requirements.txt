@@ -8,3 +8,5 @@ djangorestframework-simplejwt==5.2.2  # Для JWT аутентификации 
 celery==5.2.7  # Для фоновых задач (рассылка) - опционально
 redis==4.5.4  # Брокер для Celery/кэш - опционально
 python-dotenv==1.0.0  # Для загрузки переменных окружения
+django-crispy-forms==2.1
+crispy-bootstrap5==2024.2

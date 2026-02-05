@@ -286,3 +286,19 @@ def download_meme(request, pk):
     response = HttpResponse(meme.image.read(), content_type='image/jpeg')
     response['Content-Disposition'] = f'attachment; filename="{meme.title}.jpg"'
     return response
+
+def meme_list(request):
+    """Список всех мемов"""
+    memes = Meme.objects.filter(is_published=True).order_by('-created_at')
+    
+    # Пагинация
+    paginator = Paginator(memes, 24)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'memes': page_obj,
+        'title': 'Все мемы',
+    }
+    
+    return render(request, 'memes/meme_list.html', context)

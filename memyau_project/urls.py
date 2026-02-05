@@ -20,6 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularSwaggerView
+from django.contrib.auth import views as auth_views
+from users import views as user_views
 
 urlpatterns = [
     # Админ-панель
@@ -33,6 +35,7 @@ urlpatterns = [
     path('', include('memes.urls')),  # Основные страницы мемов
     path('users/', include('users.urls')),  # Профили пользователей
     path('accounts/', include('django.contrib.auth.urls')),  # Стандартная аутентификация
+    path('accounts/profile/', user_views.profile, name='profile'),
     
     # Перенаправление корня на главную
     path('', RedirectView.as_view(pattern_name='home', permanent=False)),

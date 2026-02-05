@@ -1,7 +1,8 @@
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 from .views import profile, favorites, settings_view, dashboard
+from users import views as user_views
 
 urlpatterns = [
     # Профиль пользователя
@@ -27,6 +28,7 @@ urlpatterns = [
         template_name='registration/logout.html'
     ), name='logout'),
     
+    path('accounts/profile/', user_views.profile, name='profile'),
     path('register/', views.register, name='register'),
     
     # Восстановление пароля
