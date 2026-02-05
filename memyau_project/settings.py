@@ -69,11 +69,14 @@ ROOT_URLCONF = 'memyau_project.urls'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'memyau_db'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'password'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'NAME': 'memyau_db',           # Название базы данных
+        'USER': 'postgres',            # Имя пользователя
+        'PASSWORD': 'password',        # Пароль (без спецсимволов)
+        'HOST': 'localhost',           # Хост
+        'PORT': '5432',                # Порт
+        'OPTIONS': {
+            'client_encoding': 'UTF8',  # Явно указываем кодировку
+        }
     }
 }
 
