@@ -1,18 +1,34 @@
 import os
-import django
 import sys
 import random
+
+for module in list(sys.modules.keys()):
+    if 'django' in module or 'users' in module or 'memes' in module:
+        del sys.modules[module]
+
+project_path = os.path.normpath('C:/Users/User/Documents/GitHub/memeow')
+sys.path.insert(0, project_path)
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'memeow_project.settings')
+
+print(f"Путь: {project_path}")
+
+try:
+    import django
+    django.setup()
+    print("✓ Django настроен успешно!")
+except Exception as e:
+    print(f"✗ Ошибка: {e}")
+    sys.exit(1)
+
+
 from pathlib import Path
 from django.core.files import File
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'memeow_project.settings')
-django.setup()
-
 from django.contrib.auth.models import User
 from memes.models import Meme, Tag  
 from django.utils.text import slugify
 from django.utils import timezone
+print("✓ Модели импортированы")
 
 MEMES_DATA = [
     {
@@ -86,7 +102,7 @@ def upload_memes_with_tags():
             'is_active': True
         }
     )
-    
+
     if user_created:
         user.set_password('memaster123')
         user.save()

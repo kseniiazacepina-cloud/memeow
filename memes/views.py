@@ -17,25 +17,50 @@ from users.models import Profile
 
 def home(request):
     """Главная страница"""
-    # Популярные теги
-    popular_tags = Tag.objects.annotate(
-        meme_count=Count('memes')
-    ).order_by('-meme_count')[:20]
     
-    # Последние мемы
-    latest_memes = Meme.objects.filter(
-        is_published=True
-    ).select_related('author').prefetch_related('tags').order_by('-created_at')[:12]
+    try:
+        # 1. Мем дня (стабильный на весь день)
+        today = datetime.now().date()
+        seed = today.year * 10000 + today.month * 100 + today.day
+        random.seed(seed)
+        
+        all_memes = Meme.objects.filter(is_published=True)
+        meme_of_the_day = random.choice(list(all_memes)) if all_memes else None
+    except Exception as e:
+        meme_of_the_day = None
+        print(f"Ошибка при выборе мема дня: {e}")
     
-    # Мем дня (упрощенная версия)
-    meme_of_the_day = get_meme_of_the_day()
+    try:
+        # 2. Свежие мемы (последние 12)
+        recent_memes = Meme.objects.filter(
+            is_published=True
+        ).select_related('author').prefetch_related('tags').order_by('-created_at')[:12]
+    except Exception as e:
+        recent_memes = []
+        print(f"Ошибка при загрузке свежих мемов: {e}")
+    
+    try:
+        # 3. Популярные мемы (по лайкам)
+        popular_memes = Meme.objects.filter(is_published=True).order_by('-likes_count', '-created_at')[:6]
+    except Exception as e:
+        popular_memes = []
+    
+    try:
+        # 4. Популярные теги
+        popular_tags = Tag.objects.annotate(
+            meme_count=Count('memes')
+        ).order_by('-meme_count')[:10]
+    except Exception as e:
+        popular_tags = []
+
+     # Сбрасываем seed для других случайных операций
+    random.seed()   
     
     context = {
-        'latest_memes': latest_memes,
-        'popular_tags': popular_tags,
         'meme_of_the_day': meme_of_the_day,
-        'total_memes': Meme.objects.filter(is_published=True).count(),
-        'total_users': Profile.objects.count(),
+        'recent_memes': recent_memes,
+        'popular_memes': popular_memes,
+        'popular_tags': popular_tags,
     }
     
     return render(request, 'memes/home.html', context)

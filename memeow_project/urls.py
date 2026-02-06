@@ -1,5 +1,5 @@
 """
-URL configuration for memyau_project project.
+URL configuration for M project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -47,6 +47,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Настройка заголовков админ-панели
-admin.site.site_header = "Memyau Администрация"
-admin.site.site_title = "Memyau Admin"
-admin.site.index_title = "Добро пожаловать в админ-панель Memyau"
+admin.site.site_header = "Memeow Администрация"
+admin.site.site_title = "Memeow Admin"
+admin.site.index_title = "Добро пожаловать в админ-панель Memeow"

@@ -3,28 +3,30 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Profile
+from .models import User, Profile
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    """Создание профиля при создании пользователя"""
+    """Создает профиль только для нового пользователя"""
     if created:
-        Profile.objects.create(user=instance)
-        # Отправляем приветственное письмо
-        send_welcome_email(instance)
+        Profile.objects.get_or_create(user=instance)
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    """Сохранение профиля при сохранении пользователя"""
-    instance.profile.save()
+def save_user_profile(sender, instance, **kwargs): 
+    """Сохраняет профиль при сохранении пользователя"""
+    try:
+        instance.profile.save()
+    except Profile.DoesNotExist:
+        # Если профиля нет, создаем его
+        Profile.objects.create(user=instance)
 
 def send_welcome_email(user):
     """Отправка приветственного письма новому пользователю"""
-    subject = 'Добро пожаловать на Memyau!'
+    subject = 'Добро пожаловать на Memeow!'
     message = f'''
     Привет, {user.username}!
     
-    Добро пожаловать на Memyau - лучшую платформу для мемов и анекдотов!
+    Добро пожаловать на Memeow - лучшую платформу для мемов и анекдотов!
     
     Вы можете:
     - Добавлять свои мемы
@@ -35,7 +37,7 @@ def send_welcome_email(user):
     Начните использовать все возможности прямо сейчас!
     
     С уважением,
-    Команда Memyau
+    Команда Memeow
     '''
     
     send_mail(
