@@ -1,1 +1,159 @@
 <!--теги-->
+
+{% extends 'base.html' %}
+
+{% block title %}Мемы с тегом "{{ tag.name }}" - Memeow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!--заголовок с тегом-->
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6">
+                        <i class="bi bi-tag"></i> Тег: <span class="badge bg-primary fs-4">{{ tag.name }}</span>
+                    </h1>
+                    <p class="text-muted mb-0">
+                        Найдено мемов: <strong>{{ memes_count }}</strong>
+                    </p>
+                </div>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> На главную
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!--список мемов-->
+    {% if memes %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for meme in memes %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <a href="{% url 'meme_detail' meme.id %}">
+                    <img src="{{ meme.image.url }}" 
+                         class="card-img-top meme-thumbnail" 
+                         alt="{{ meme.title }}"
+                         style="height: 200px; object-fit: cover;">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'meme_detail' meme.id %}" class="text-decoration-none">
+                            {{ meme.title|truncatechars:30 }}
+                        </a>
+                    </h5>
+                    <p class="card-text small text-muted">
+                        <i class="bi bi-person"></i> 
+                        <a href="{% url 'user_profile' meme.author.username %}" class="text-muted">
+                            {{ meme.author.username }}
+                        </a>
+                        <br>
+                        <i class="bi bi-calendar"></i> {{ meme.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-danger">
+                            <i class="bi bi-heart"></i> {{ meme.likes_count }}
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-eye"></i> {{ meme.views_count }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for tag in meme.tags.all|slice:":3" %}
+                        <a href="{% url 'tag_memes' tag.slug %}" class="badge bg-info text-decoration-none">
+                            {{ tag.name }}
+                        </a>
+                        {% endfor %}
+                        {% if meme.tags.count > 3 %}
+                        <span class="badge bg-light text-dark">+{{ meme.tags.count|add:"-3" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!--пагинация-->
+    {% if memes.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if memes.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ memes.previous_page_number }}">&laquo; Назад</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo; Назад</span>
+            </li>
+            {% endif %}
+            
+            {% for i in memes.paginator.page_range %}
+                {% if memes.number == i %}
+                <li class="page-item active">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% elif i > memes.number|add:"-3" and i < memes.number|add:"3" %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if memes.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ memes.next_page_number }}">Вперед &raquo;</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Вперед &raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-emoji-frown display-1 text-muted"></i>
+        </div>
+        <h3>Пока нет мемов с этим тегом</h3>
+        <p class="text-muted mb-4">Будьте первым, кто добавит мем с тегом "{{ tag.name }}"!</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'add_meme' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> Добавить мем
+        </a>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Чтобы добавлять мемы, необходимо 
+            <a href="{% url 'login' %}" class="alert-link">войти</a> или 
+            <a href="{% url 'register' %}" class="alert-link">зарегистрироваться</a>.
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!--популярные теги-->
+    <div class="card mt-5">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0"><i class="bi bi-tags"></i> Другие популярные теги</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                {% for popular_tag in popular_tags %}
+                <a href="{% url 'tag_memes' popular_tag.slug %}" 
+                   class="badge {% if popular_tag.id == tag.id %}bg-primary{% else %}bg-light text-dark{% endif %} p-2 text-decoration-none">
+                    {{ popular_tag.name }}
+                    <span class="badge bg-secondary rounded-pill ms-1">{{ popular_tag.meme_count }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

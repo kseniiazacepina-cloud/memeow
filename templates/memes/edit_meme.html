@@ -1,0 +1,245 @@
+<!--редачить мем-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Редактировать мем - Memeow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'meme_detail' meme.id %}">{{ meme.title|truncatechars:20 }}</a></li>
+            <li class="breadcrumb-item active">Редактировать</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0"><i class="bi bi-pencil"></i> Редактировать мем</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="edit-meme-form">
+                        {% csrf_token %}
+                        
+                        <!--название-->
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label">Название мема *</label>
+                            <input type="text" name="title" class="form-control" id="id_title" 
+                                   value="{{ form.title.value|default:'' }}" required maxlength="200">
+                            {% if form.title.errors %}
+                            <div class="text-danger small">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!--текущее изображение-->
+                        <div class="mb-3">
+                            <label class="form-label">Текущее изображение</label>
+                            <div class="border rounded p-3 text-center bg-light">
+                                <img src="{{ meme.image.url }}" 
+                                     alt="{{ meme.title }}" 
+                                     class="img-fluid mb-2"
+                                     style="max-height: 300px;">
+                                <p class="text-muted small">{{ meme.image.name|basename }}</p>
+                            </div>
+                        </div>
+                        
+                        <!--новое изображение-->
+                        <div class="mb-3">
+                            <label for="id_image" class="form-label">Новое изображение (оставьте пустым, чтобы не менять)</label>
+                            <input type="file" name="image" class="form-control" id="id_image" accept="image/*">
+                            <div class="form-text">Поддерживаются JPG, PNG, GIF. Макс. размер: 5MB</div>
+                            {% if form.image.errors %}
+                            <div class="text-danger small">{{ form.image.errors }}</div>
+                            {% endif %}
+                            <div class="mt-2" id="image-preview"></div>
+                        </div>
+                        
+                        <!--описание-->
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">Описание</label>
+                            <textarea name="description" class="form-control" id="id_description" 
+                                      rows="4" maxlength="1000">{{ form.description.value|default:'' }}</textarea>
+                            <div class="form-text">Расскажите о меме или добавьте контекст</div>
+                            {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!--теги-->
+                        <div class="mb-3">
+                            <label class="form-label">Теги</label>
+                            <div class="d-flex flex-wrap gap-2 mb-2" id="selected-tags">
+                                {% for tag in meme.tags.all %}
+                                <span class="badge bg-primary">
+                                    {{ tag.name }}
+                                    <button type="button" class="btn-close btn-close-white ms-1" 
+                                            style="font-size: 0.6rem;" 
+                                            onclick="removeTag('{{ tag.name }}')"></button>
+                                </span>
+                                {% endfor %}
+                            </div>
+                            <input type="text" class="form-control" id="tag-input" placeholder="Введите тег и нажмите Enter">
+                            <div class="form-text">Добавляйте теги для классификации. Существующие теги: 
+                                {% for tag in all_tags %}
+                                    <span class="badge bg-secondary cursor-pointer tag-suggestion">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="tags" id="tags-input" value="{{ meme.tags.all|join:',' }}">
+                        </div>
+                        
+                        <!--статус публикации-->
+                        {% if user.is_staff %}
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_published" class="form-check-input" id="id_is_published"
+                                       {% if meme.is_published %}checked{% endif %}>
+                                <label class="form-check-label" for="id_is_published">
+                                    Опубликован
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!--кнопки-->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Сохранить изменения
+                            </button>
+                            <a href="{% url 'meme_detail' meme.id %}" class="btn btn-outline-secondary">Отмена</a>
+                            <a href="{% url 'delete_meme' meme.id %}" class="btn btn-outline-danger ms-2">
+                                <i class="bi bi-trash"></i> Удалить
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/edit_meme.js' %}"></script>
+
+<script>
+//функция для удаления тега
+function removeTag(tagName) {
+    const tagsInput = document.getElementById('tags-input');
+    let tags = tagsInput.value.split(',').filter(t => t.trim() !== tagName && t.trim() !== '');
+    tagsInput.value = tags.join(',');
+    
+    //удалить из отображения
+    const badges = document.querySelectorAll('#selected-tags .badge');
+    badges.forEach(badge => {
+        if (badge.textContent.includes(tagName)) {
+            badge.remove();
+        }
+    });
+}
+
+//инициализация тегов
+document.addEventListener('DOMContentLoaded', function() {
+    const tagInput = document.getElementById('tag-input');
+    const selectedTagsContainer = document.getElementById('selected-tags');
+    const hiddenTagsInput = document.getElementById('tags-input');
+    
+    //предложения тегов
+    document.querySelectorAll('.tag-suggestion').forEach(tag => {
+        tag.addEventListener('click', function() {
+            const tagName = this.textContent.trim();
+            const currentTags = hiddenTagsInput.value.split(',').filter(t => t.trim() !== '');
+            
+            if (!currentTags.includes(tagName)) {
+                currentTags.push(tagName);
+                hiddenTagsInput.value = currentTags.join(',');
+                
+                //добавление в отображение
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-primary me-1 mb-1';
+                badge.innerHTML = `
+                    ${tagName}
+                    <button type="button" class="btn-close btn-close-white ms-1" 
+                            style="font-size: 0.6rem;" 
+                            onclick="removeTag('${tagName}')"></button>
+                `;
+                selectedTagsContainer.appendChild(badge);
+            }
+        });
+    });
+    
+    //добавление нового тега
+    tagInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const tagName = this.value.trim();
+            
+            if (tagName) {
+                const currentTags = hiddenTagsInput.value.split(',').filter(t => t.trim() !== '');
+                
+                if (!currentTags.includes(tagName)) {
+                    currentTags.push(tagName);
+                    hiddenTagsInput.value = currentTags.join(',');
+                    
+                    //добавление в отображение
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-primary me-1 mb-1';
+                    badge.innerHTML = `
+                        ${tagName}
+                        <button type="button" class="btn-close btn-close-white ms-1" 
+                                style="font-size: 0.6rem;" 
+                                onclick="removeTag('${tagName}')"></button>
+                    `;
+                    selectedTagsContainer.appendChild(badge);
+                }
+                
+                this.value = '';
+            }
+        }
+    });
+    
+    //предпросмотр изображения
+    const imageInput = document.getElementById('id_image');
+    const previewContainer = document.getElementById('image-preview');
+    
+    imageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        
+        //проверка типа файла
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Пожалуйста, выберите изображение в формате JPG, PNG или GIF');
+            this.value = '';
+            previewContainer.innerHTML = '';
+            return;
+        }
+        
+        //проверка размера
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Изображение слишком большое. Максимальный размер: 5MB');
+            this.value = '';
+            previewContainer.innerHTML = '';
+            return;
+        }
+        
+        //создаем превью
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewContainer.innerHTML = `
+                <div class="mt-2">
+                    <img src="${e.target.result}" 
+                         class="img-thumbnail" 
+                         style="max-height: 200px; max-width: 200px;">
+                    <p class="text-muted small mt-1">
+                        ${file.name} (${(file.size / 1024).toFixed(1)} KB)
+                    </p>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    });
+});
+</script>
+{% endblock %}
