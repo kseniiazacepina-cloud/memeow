@@ -1,16 +1,20 @@
 from django import forms
 from .models import Meme, Tag
 
+from django import forms
+from .models import Meme, Tag
+
 class MemeForm(forms.ModelForm):
     """Форма для добавления/редактирования мема"""
+    # Поле для ввода тегов через запятую
     tags_input = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Введите теги через запятую',
-            'id': 'tags-input'
+            'placeholder': 'котики, юмор, программирование'
         }),
-        label='Теги'
+        label='Теги',
+        help_text='Введите теги через запятую. Существующие теги добавятся автоматически, новые будут созданы.'
     )
     
     class Meta:
@@ -31,64 +35,45 @@ class MemeForm(forms.ModelForm):
                 'accept': 'image/*'
             }),
         }
-        labels = {
-            'image': 'Изображение (JPG, PNG, GIF)',
-        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            # Для редактирования - показываем текущие теги
-            self.fields['tags_input'].initial = ', '.join(
-                tag.name for tag in self.instance.tags.all()
-            )
-    
-    def clean_image(self):
-        """Валидация изображения"""
-        image = self.cleaned_data.get('image')
         
-        if image:
-            # Проверка размера (5MB)
-            if image.size > 5 * 1024 * 1024:
-                raise forms.ValidationError('Изображение слишком большое. Максимальный размер: 5MB')
-            
-            # Проверка расширения
-            allowed_extensions = ['jpg', 'jpeg', 'png', 'gif']
-            extension = image.name.split('.')[-1].lower()
-            if extension not in allowed_extensions:
-                raise forms.ValidationError(
-                    f'Недопустимый формат файла. Допустимые форматы: {", ".join(allowed_extensions)}'
-                )
-        
-        return image
+        # Если редактируем существующий мем, показываем текущие теги
+        if self.instance and self.instance.pk:
+            current_tags = self.instance.tags.all()
+            self.fields['tags_input'].initial = ', '.join(tag.name for tag in current_tags)
     
     def save(self, commit=True):
-        """Сохранение мема с обработкой тегов"""
-        meme = super().save(commit=False)
+        """Переопределяем сохранение для обработки тегов"""
+        # Сначала сохраняем мем
+        meme = super().save(commit=commit)
         
         if commit:
-            meme.save()
-        
-        # Обработка тегов
-        tags_input = self.cleaned_data.get('tags_input', '')
-        if tags_input:
-            tag_names = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+            # Обрабатываем теги из текстового поля
+            tags_text = self.cleaned_data.get('tags_input', '')
             
-            # Очищаем текущие теги
-            meme.tags.clear()
-            
-            # Добавляем новые теги
-            for tag_name in tag_names:
-                tag, created = Tag.objects.get_or_create(name=tag_name)
-                meme.tags.add(tag)
-        
-        if commit:
-            self.save_m2m()
+            if tags_text:
+                # Разделяем теги по запятой
+                tag_names = [name.strip() for name in tags_text.split(',') if name.strip()]
+                
+                # Очищаем старые теги
+                meme.tags.clear()
+                
+                # Добавляем новые теги
+                for tag_name in tag_names:
+                    # Ищем существующий тег или создаем новый
+                    tag, created = Tag.objects.get_or_create(
+                        name=tag_name,
+                        defaults={'slug': tag_name.lower().replace(' ', '-')}
+                    )
+                    meme.tags.add(tag)
         
         return meme
 
+
 class TagForm(forms.ModelForm):
-    """Форма для добавления тега"""
+    """Форма для добавления/редактирования тега"""
     class Meta:
         model = Tag
         fields = ['name']

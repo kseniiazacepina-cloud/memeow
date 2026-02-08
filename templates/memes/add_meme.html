@@ -1,66 +1,67 @@
 <!--добавить мем-->
 
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Добавить мем - Memeow{% endblock %}
+{% block title %}Добавить мем - Memyau{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Добавить новый мем</h4>
                 </div>
                 <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" id="meme-form">
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         
+                        <!-- Название -->
                         <div class="mb-3">
                             <label for="title" class="form-label">Название мема *</label>
-                            <input type="text" class="form-control" id="title" name="title" required maxlength="200">
-                            <div class="form-text">Придумайте интересное название</div>
+                            <input type="text" name="title" class="form-control" required>
                         </div>
                         
+                        <!-- Изображение -->
                         <div class="mb-3">
                             <label for="image" class="form-label">Изображение *</label>
-                            <input type="file" class="form-control" id="image" name="image" accept="image/*,.gif" required>
-                            <div class="form-text">Поддерживаются JPG, PNG, GIF. Макс. размер: 5MB</div>
-                            <div class="mt-2" id="image-preview"></div>
+                            <input type="file" name="image" class="form-control" accept="image/*" required>
                         </div>
                         
+                        <!-- Описание -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Описание</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" maxlength="1000"></textarea>
-                            <div class="form-text">Расскажите о меме или добавьте контекст</div>
+                            <textarea name="description" class="form-control" rows="3"></textarea>
                         </div>
                         
+                        <!-- Теги - ТЕКСТОВОЕ ПОЛЕ -->
                         <div class="mb-3">
-                            <label class="form-label">Теги</label>
-                            <div class="d-flex flex-wrap gap-2 mb-2" id="selected-tags"></div>
-                            <input type="text" class="form-control" id="tag-input" placeholder="Введите тег и нажмите Enter">
-                            <div class="form-text">Добавляйте теги для классификации. Существующие теги: 
-                                {% for tag in all_tags %}
-                                    <span class="badge bg-secondary cursor-pointer tag-suggestion">{{ tag.name }}</span>
-                                {% endfor %}
+                            <label for="tags_input" class="form-label">Теги</label>
+                            <input type="text" 
+                                   name="tags_input" 
+                                   class="form-control"
+                                   placeholder="котики, юмор, программирование">
+                            <div class="form-text">
+                                Введите теги через запятую. Пример: <em>котики, юмор, программирование</em>
                             </div>
-                            <input type="hidden" name="tags" id="tags-input">
-                        </div>
-                        
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i>
-                            После добавления мем пройдет модерацию перед публикацией.
+                            
+                            <!-- Быстрые теги -->
+                            <div class="mt-3">
+                                <small class="text-muted">Популярные теги:</small>
+                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                    {% for tag in all_tags|slice:":15" %}
+                                    <span class="badge bg-secondary cursor-pointer quick-tag"
+                                          data-tag="{{ tag.name }}">
+                                        {{ tag.name }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary" id="submit-btn">
-                                <span id="submit-text">Опубликовать мем</span>
-                                <div class="spinner-border spinner-border-sm d-none" role="status" id="submit-spinner">
-                                    <span class="visually-hidden">Загрузка...</span>
-                                </div>
-                            </button>
-                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Отмена</a>
+                            <button type="submit" class="btn btn-primary">Добавить мем</button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary">Отмена</a>
                         </div>
                     </form>
                 </div>
@@ -69,5 +70,32 @@
     </div>
 </div>
 
-<script src="{% static 'js/add_meme.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tagsInput = document.querySelector('input[name="tags_input"]');
+    
+    // Обработка кликов по быстрым тегам
+    document.querySelectorAll('.quick-tag').forEach(tag => {
+        tag.addEventListener('click', function() {
+            const tagName = this.getAttribute('data-tag');
+            const currentValue = tagsInput.value.trim();
+            
+            if (currentValue === '') {
+                tagsInput.value = tagName;
+            } else {
+                // Разбиваем текущие теги
+                const tags = currentValue.split(',').map(t => t.trim());
+                
+                // Проверяем, нет ли уже такого тега
+                if (!tags.includes(tagName)) {
+                    tagsInput.value = currentValue + ', ' + tagName;
+                }
+            }
+            
+            // Фокус на поле ввода
+            tagsInput.focus();
+        });
+    });
+});
+</script>
 {% endblock %}

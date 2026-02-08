@@ -1,247 +1,180 @@
 import os
+import django
 import sys
+
+# Добавляем корневую директорию проекта в sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'memyau_project.settings')
+django.setup()
+
+from django.contrib.auth.models import User
+from memes.models import Meme, Tag
+from django.core.files import File
+from datetime import datetime, timedelta
 import random
 
-for module in list(sys.modules.keys()):
-    if 'django' in module or 'users' in module or 'memes' in module:
-        del sys.modules[module]
-
-project_path = os.path.normpath('C:/Users/User/Documents/GitHub/memeow')
-sys.path.insert(0, project_path)
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'memeow_project.settings')
-
-print(f"Путь: {project_path}")
-
-try:
-    import django
-    django.setup()
-    print("✓ Django настроен успешно!")
-except Exception as e:
-    print(f"✗ Ошибка: {e}")
-    sys.exit(1)
-
-
-from pathlib import Path
-from django.core.files import File
-from django.contrib.auth.models import User
-from memes.models import Meme, Tag  
-from django.utils.text import slugify
-from django.utils import timezone
-print("✓ Модели импортированы")
-
-MEMES_DATA = [
-    {
-        'filename': 'understand_nothing.jpg',
-        'title': 'котик ничего не понял',
-        'description': 'хорошо, что вы мне всё объяснили. плохо, что я ничего не понял',
-        'tag': ['Коты', 'Смешные', 'Животные']
-    },
-    {
-        'filename': 'late.jpg', 
-        'title': 'я опоздаю',
-        'description': 'в связи с предвиденными обстоятельствами, которые я прекрасно могу контролировать, я опоздаю',
-        'tag': ['Смешные', 'Животные', 'Капибара', 'Опоздание']
-    },
-    {
-        'filename': 'important_matter.jpg',
-        'title': 'важные дела',
-        'description': 'я и важные дела, на которые я забил',
-        'tag': ['Мемы', 'Смешные', 'Работа', 'Лень']
-    },
-    {
-        'filename': 'pupupu.jpg',
-        'title': 'пу-пу-пу...',
-        'description': 'нет слов, пу-пу-пу...',
-        'tag': ['Смешные', 'Животные', 'Крыса']
-    },
-    {
-        'filename': 'comfort_zone.jpg',
-        'title': 'зона комфорта',
-        'description': 'выйди из зоны комфорта, хватит деградировать',
-        'tag': ['Коты', 'Смешные', 'Животные' 'Деградация', 'Комфорт', 'Лень']
-    },
-    {
-        'filename': 'sarcasm.jpg',
-        'title': 'сарказм',
-        'description': 'животное, полное сарказма',
-        'tag': ['Другое', 'Сарказм', 'Смешные']
-    },
-]
-
-#категории, которые должны быть созданы всегда
-REQUIRED_TAGS = [
-    'Смешные', 'Мемы', 'Юмор', 'Коты',
-    'IT', 'Работа', 'Животные', 'Интернет'
-]
-
-def get_or_create_tag(name):
-    """Создает или получает тег по имени"""
-    slug = slugify(name)
-    tag, created = Tag.objects.get_or_create(
-        name=name,
-        defaults={'slug': slug}
-    )
-    return tag
-
-def upload_memes_with_tags():
-    """
-    Загружает мемы на сайт из папки static/images/memes/
-    Использует теги (Tags) вместо категорий
-    """
+def upload_test_memes():
+    """Загрузка тестовых мемов с тегами"""
+    print("=" * 50)
+    print("НАЧАЛО ЗАГРУЗКИ ТЕСТОВЫХ МЕМОВ")
+    print("=" * 50)
     
-    print("ЗАГРУЗКА МЕМОВ С ТЕГАМИ")
-    
-    #получаем пользователя
-    user, user_created = User.objects.get_or_create(
-        username='хтонь',
+    # 1. Получаем или создаем тестового пользователя
+    user, created = User.objects.get_or_create(
+        username='testuser',
         defaults={
-            'email': 'chtonic@memeow.com',
-            'first_name': 'хтонь',
-            'last_name': 'мастер мемов',
+            'email': 'test@example.com',
             'is_active': True
         }
     )
-
-    if user_created:
-        user.set_password('memaster123')
+    if created:
+        user.set_password('testpass123')
         user.save()
-        print(f"Создан пользователь: {user.username}")
+        print(f"✓ Создан пользователь: {user.username}")
     else:
-        print(f"Используем существующего пользователя: {user.username}")
+        print(f"✓ Используем существующего пользователя: {user.username}")
     
-    #путь к изображениям
-    base_dir = Path(__file__).parent
-    images_dir = base_dir / 'static' / 'images' / 'memes'
+    # 2. Создаем базовые теги если их нет
+    base_tags = [
+        'котики', 'собаки', 'животные', 'юмор', 'мемы',
+        'программирование', 'IT', 'работа', 'офис', 'учеба',
+        'игры', 'кино', 'фильмы', 'музыка', 'спорт'
+    ]
     
-    print(f"Ищем изображения в: {images_dir}\n")
-    
-    if not images_dir.exists():
-        print(f"Папка не найдена!")
-        print(f"Создаю папку...")
-        images_dir.mkdir(parents=True, exist_ok=True)
-        print(f"Папка создана: {images_dir}")
-        print(f"\nПоместите в нее изображения:")
-        for meme in MEMES_DATA:
-            print(f"   - {meme['filename']}")
-        return
-    
-    #проверяем существование файлов
-    existing_files = []
-    missing_files = []
-    
-    for meme in MEMES_DATA:
-        file_path = images_dir / meme['filename']
-        if file_path.exists():
-            existing_files.append(meme['filename'])
+    tags_dict = {}
+    for tag_name in base_tags:
+        from django.utils.text import slugify
+        slug = slugify(tag_name, allow_unicode=True)
+        
+        tag, created = Tag.objects.get_or_create(
+            slug=slug,
+            defaults={'name': tag_name}
+        )
+        
+        if created:
+            print(f"✓ Создан тег: {tag_name}")
         else:
-            missing_files.append(meme['filename'])
-    
-    print(f"Найдено файлов: {len(existing_files)}")
-    if missing_files:
-        print(f"Отсутствуют файлы: {len(missing_files)}")
-        for filename in missing_files:
-            print(f"   - {filename}")
-    
-    if not existing_files:
-        print("\nНет файлов для загрузки!")
-        return
-    
-    #загружаем мемы
-    successful = 0
-    skipped = 0
-    errors = 0
-    
-    print("Процесс загрузки:")
-    
-    for i, meme_info in enumerate(MEMES_DATA, 1):
-        filename = meme_info['filename']
-        title = meme_info['title']
-        description = meme_info.get('description', '')
-        tag_names = meme_info.get('tags', [])
+            # Обновляем имя если нужно
+            if tag.name != tag_name:
+                tag.name = tag_name
+                tag.save()
+                print(f"✓ Обновлен тег: {tag_name}")
         
-        print(f"\n{i}.Загружаем: '{title}'")
-        print(f"Файл: {filename}")
-        
-        #проверяем существование файла
-        file_path = images_dir / filename
-        if not file_path.exists():
-            print(f"Файл не найден, пропускаем")
-            errors += 1
+        tags_dict[tag_name] = tag
+    
+    print(f"✓ Всего тегов: {len(tags_dict)}")
+    
+    # 3. Тестовые мемы (без реальных изображений)
+    test_memes = [
+        {
+            'title': 'Когда код работает с первого раза',
+            'description': 'Редкое, но очень приятное чувство',
+            'tags': ['программирование', 'IT', 'юмор']
+        },
+        {
+            'title': 'Понедельник у программиста',
+            'description': 'Хочу обратно в выходные',
+            'tags': ['работа', 'офис', 'юмор']
+        },
+        {
+            'title': 'Мой код vs Код коллеги',
+            'description': 'Всегда кажется, что чужой код лучше',
+            'tags': ['программирование', 'работа', 'юмор']
+        },
+        {
+            'title': 'Когда находишь баг в продакшене',
+            'description': 'Паника и поиск костылей',
+            'tags': ['программирование', 'IT', 'работа']
+        },
+        {
+            'title': 'Милый котик программист',
+            'description': 'Котик тоже умеет писать код',
+            'tags': ['котики', 'программирование', 'юмор']
+        },
+        {
+            'title': 'Собака-тестировщик',
+            'description': 'Нашел все баги в проекте',
+            'tags': ['собаки', 'программирование', 'юмор']
+        },
+        {
+            'title': 'Работа из дома',
+            'description': 'Пижама и кофе - лучшая форма одежды',
+            'tags': ['работа', 'офис', 'юмор']
+        },
+        {
+            'title': 'Дедлайн через час',
+            'description': 'Адреналин и паника одновременно',
+            'tags': ['работа', 'учеба', 'юмор']
+        },
+        {
+            'title': 'Оптимизация производительности',
+            'description': 'Из 2 секунд сделали 1.9 секунд',
+            'tags': ['программирование', 'IT', 'работа']
+        },
+        {
+            'title': 'Новый фреймворк вышел',
+            'description': 'Опять учиться заново',
+            'tags': ['программирование', 'IT', 'учеба']
+        }
+    ]
+    
+    # 4. Создаем мемы
+    created_count = 0
+    for i, meme_data in enumerate(test_memes):
+        # Проверяем, нет ли уже такого мема
+        if Meme.objects.filter(title=meme_data['title']).exists():
+            print(f"↻ Мем уже существует: {meme_data['title']}")
             continue
         
-        #проверяем, не существует ли уже мем с таким названием
-        if Meme.objects.filter(title=title).exists():
-            print(f"Мем уже существует, пропускаем")
-            skipped += 1
-            continue
-        
+        # Создаем мем
         try:
-            #создаем мем
             meme = Meme.objects.create(
-                title=title,
-                description=description,
+                title=meme_data['title'],
+                description=meme_data['description'],
                 author=user,
-                likes_count=random.randint(15, 250),
-                views_count=random.randint(50, 1500),
                 is_published=True,
-                created_at=timezone.now(),
+                views_count=random.randint(10, 1000),
+                likes_count=random.randint(5, 500)
             )
             
-            #загружаем изображение
-            with open(file_path, 'rb') as f:
-                meme.image.save(filename, File(f), save=True)
+            # Устанавливаем случайную дату (в пределах последних 30 дней)
+            days_ago = random.randint(0, 30)
+            meme.created_at = datetime.now() - timedelta(days=days_ago)
+            meme.save()
             
-            #создаем и добавляем теги
-            tag_objects = []
+            # Добавляем теги
+            tag_names = meme_data['tags']
             for tag_name in tag_names:
-                tag = get_or_create_tag(tag_name)
-                tag_objects.append(tag)
+                if tag_name in tags_dict:
+                    meme.tags.add(tags_dict[tag_name])
             
-            if tag_objects:
-                meme.tags.set(tag_objects)
-            
-            successful += 1
-            print(f"Успешно загружен!")
-            print(f"{description[:80]}..." if len(description) > 80 else f"{description}")
-            print(f"Теги: {', '.join(tag_names)}")
-            print(f"Лайки: {meme.likes_count}")
-            print(f"Просмотры: {meme.views_count}")
+            created_count += 1
+            print(f"✓ Создан мем: {meme_data['title']}")
+            print(f"  Теги: {', '.join(tag_names)}")
             
         except Exception as e:
-            print(f"Ошибка: {str(e)}")
-            errors += 1
+            print(f"✗ Ошибка при создании мема '{meme_data['title']}': {e}")
     
-    #результаты
-    print("Результаты загрузки:")
-    print(f"Успешно загружено: {successful}")
-    print(f"Пропущено (уже есть): {skipped}")
-    print(f"Ошибок/не найдено: {errors}")
-    print(f"Всего в списке: {len(MEMES_DATA)}")
+    print("\n" + "=" * 50)
+    print("ИТОГИ ЗАГРУЗКИ")
+    print("=" * 50)
+    print(f"Создано мемов: {created_count}")
+    print(f"Всего мемов в базе: {Meme.objects.count()}")
+    print(f"Всего тегов в базе: {Tag.objects.count()}")
     
-    #статистика по тегам
-    if successful > 0:
-        print(f"\nСОЗДАННЫЕ ТЕГИ:")
-        all_tags = set()
-        for meme in MEMES_DATA:
-            all_tags.update(meme.get('tags', []))
-        
-        for tag_name in sorted(all_tags):
-            tag_count = Tag.objects.filter(name=tag_name).count()
-            print(f"   - {tag_name}")
-        
-        print(f"\nГотово! Все мемы успешно загружены на сайт!")
-
-def main():
-    """Главная функция"""
-    try:
-        upload_memes_with_tags()
-    except KeyboardInterrupt:
-        print("\n\nЗагрузка прервана пользователем")
-    except Exception as e:
-        print(f"\nКритическая ошибка: {e}")
-        import traceback
-        traceback.print_exc()
+    # 5. Проверяем связи
+    print("\n" + "=" * 50)
+    print("ПРОВЕРКА СВЯЗЕЙ")
+    print("=" * 50)
+    
+    for meme in Meme.objects.all().prefetch_related('tags'):
+        tags = list(meme.tags.all())
+        if tags:
+            tag_names = [t.name for t in tags]
+            print(f"Мем: '{meme.title}' - Теги: {', '.join(tag_names)}")
+        else:
+            print(f"Мем: '{meme.title}' - БЕЗ ТЕГОВ ⚠️")
 
 if __name__ == '__main__':
-    main()
+    upload_test_memes()

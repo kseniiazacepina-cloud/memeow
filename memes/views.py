@@ -102,6 +102,8 @@ def meme_detail(request, pk):
 @login_required
 def add_meme(request):
     """Добавление нового мема"""
+    all_tags = Tag.objects.all()  # Получаем все теги
+    
     if request.method == 'POST':
         form = MemeForm(request.POST, request.FILES)
         if form.is_valid():
@@ -110,17 +112,14 @@ def add_meme(request):
             meme.save()
             form.save_m2m()  # Сохраняем ManyToMany поле (теги)
             
-            messages.success(request, 'Мем успешно добавлен! Он появится после модерации.')
+            messages.success(request, 'Мем успешно добавлен!')
             return redirect('meme_detail', pk=meme.pk)
     else:
         form = MemeForm()
     
-    # Все теги для автодополнения
-    all_tags = Tag.objects.all()
-    
     context = {
         'form': form,
-        'all_tags': all_tags,
+        'all_tags': all_tags,  # Передаем теги в шаблон
     }
     
     return render(request, 'memes/add_meme.html', context)
@@ -129,6 +128,7 @@ def add_meme(request):
 def edit_meme(request, pk):
     """Редактирование мема"""
     meme = get_object_or_404(Meme, pk=pk)
+    all_tags = Tag.objects.all()  # Получаем все теги
     
     # Проверяем, что пользователь - автор мема
     if meme.author != request.user and not request.user.is_staff:
@@ -138,7 +138,7 @@ def edit_meme(request, pk):
     if request.method == 'POST':
         form = MemeForm(request.POST, request.FILES, instance=meme)
         if form.is_valid():
-            form.save()
+            meme = form.save()
             messages.success(request, 'Мем успешно обновлен!')
             return redirect('meme_detail', pk=meme.pk)
     else:
@@ -147,6 +147,7 @@ def edit_meme(request, pk):
     context = {
         'form': form,
         'meme': meme,
+        'all_tags': all_tags,  # Передаем теги в шаблон
     }
     
     return render(request, 'memes/edit_meme.html', context)
@@ -169,6 +170,7 @@ def delete_meme(request, pk):
 
 def tag_memes(request, slug):
     """Мемы по тегу"""
+    # Находим тег по slug
     tag = get_object_or_404(Tag, slug=slug)
     
     memes = Meme.objects.filter(
@@ -177,6 +179,7 @@ def tag_memes(request, slug):
     ).select_related('author').prefetch_related('tags').order_by('-created_at')
     
     # Пагинация
+    from django.core.paginator import Paginator
     paginator = Paginator(memes, 24)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

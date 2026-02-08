@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -32,4 +32,8 @@ urlpatterns = [
     
     # Скачивание
     path('meme/<int:pk>/download/', views.download_meme, name='download_meme'),
+
+    # Используем re_path для поддержки кириллицы в slug
+    re_path(r'^tag/(?P<slug>[\w-]+)/$', views.tag_memes, name='tag_memes'),
+    
 ]

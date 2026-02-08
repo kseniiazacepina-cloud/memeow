@@ -10,10 +10,20 @@ function initMemeForm() {
     const form = document.getElementById('meme-form');
     if (!form) return;
     
+    // Добавляем обработчик для скрытого поля тегов
+    const hiddenTagsInput = document.getElementById('tags-hidden-input');
+    if (hiddenTagsInput) {
+        // Восстанавливаем теги при загрузке страницы
+        restoreTagsFromHiddenInput();
+    }
+    
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        //показываем индикатор загрузки
+        // Обновляем скрытое поле перед отправкой
+        updateHiddenTagsInput();
+        
+        // Показываем индикатор загрузки
         const submitBtn = document.getElementById('submit-btn');
         const submitText = document.getElementById('submit-text');
         const submitSpinner = document.getElementById('submit-spinner');
@@ -22,16 +32,10 @@ function initMemeForm() {
         submitText.classList.add('d-none');
         submitSpinner.classList.remove('d-none');
         
-        //собираем данные формы
+        // Собираем данные формы
         const formData = new FormData(form);
         
-        //добавляем теги из hidden поля
-        const tagsInput = document.getElementById('tags-input');
-        if (tagsInput) {
-            formData.append('tags', tagsInput.value);
-        }
-        
-        //отправляем форму
+        // Отправляем форму
         fetch(form.action, {
             method: 'POST',
             body: formData,
@@ -58,7 +62,7 @@ function initMemeForm() {
             alert('Произошла ошибка при добавлении мема. Попробуйте еще раз.');
         })
         .finally(() => {
-            //восстанавливаем кнопку
+            // Восстанавливаем кнопку
             submitBtn.disabled = false;
             submitText.classList.remove('d-none');
             submitSpinner.classList.add('d-none');
@@ -69,44 +73,25 @@ function initMemeForm() {
 function initTagSystem() {
     const tagInput = document.getElementById('tag-input');
     const selectedTagsContainer = document.getElementById('selected-tags');
-    const hiddenTagsInput = document.getElementById('tags-input');
+    const hiddenTagsInput = document.getElementById('tags-hidden-input');
     
     if (!tagInput || !selectedTagsContainer) return;
     
     let selectedTags = [];
     
-    //загружаем существующие теги при редактировании
-    if (hiddenTagsInput && hiddenTagsInput.value) {
-        selectedTags = hiddenTagsInput.value.split(',');
-        updateSelectedTags();
-    }
-    
-    //обработка ввода тегов
-    tagInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ',') {
-            e.preventDefault();
-            addTag(this.value.trim());
-            this.value = '';
-        }
-    });
-    
-    //клик по предложенным тегам
-    document.querySelectorAll('.tag-suggestion').forEach(tag => {
-        tag.addEventListener('click', function() {
-            addTag(this.textContent.trim());
-        });
-    });
-    
     function addTag(tagName) {
         if (!tagName) return;
         
-        //проверяем, нет ли уже такого тега
+        // Очищаем тег от лишних пробелов
+        tagName = tagName.trim();
+        
+        // Проверяем, нет ли уже такого тега
         if (!selectedTags.includes(tagName)) {
             selectedTags.push(tagName);
             updateSelectedTags();
         }
         
-        //очищаем поле ввода
+        // Очищаем поле ввода
         tagInput.value = '';
     }
     
@@ -116,7 +101,7 @@ function initTagSystem() {
     }
     
     function updateSelectedTags() {
-        //обновляем отображение выбранных тегов
+        // Обновляем отображение выбранных тегов
         selectedTagsContainer.innerHTML = '';
         
         selectedTags.forEach(tag => {
@@ -126,23 +111,73 @@ function initTagSystem() {
                 ${tag}
                 <button type="button" class="btn-close btn-close-white ms-1" 
                         style="font-size: 0.6rem;" 
-                        onclick="removeTag('${tag}')"></button>
+                        onclick="removeSelectedTag('${tag}')"></button>
             `;
             selectedTagsContainer.appendChild(tagElement);
         });
         
-        //обновляем hidden поле
+        // Обновляем hidden поле
+        updateHiddenTagsInput();
+    }
+    
+    function updateHiddenTagsInput() {
         if (hiddenTagsInput) {
-            hiddenTagsInput.value = selectedTags.join(',');
+            hiddenTagsInput.value = selectedTags.join(', ');
         }
     }
     
-    //экспортируем функции для использования в inline обработчиках
-    window.removeTag = removeTag;
+    function restoreTagsFromHiddenInput() {
+        if (hiddenTagsInput && hiddenTagsInput.value) {
+            selectedTags = hiddenTagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            updateSelectedTags();
+        }
+    }
+    
+    // Обработка ввода тегов
+    tagInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            addTag(this.value);
+            this.value = '';
+        }
+    });
+    
+    // Клик по предложенным тегам
+    document.querySelectorAll('.tag-suggestion').forEach(tag => {
+        tag.addEventListener('click', function() {
+            const tagName = this.getAttribute('data-tag-name') || this.textContent.trim();
+            addTag(tagName);
+        });
+    });
+    
+    // Автодополнение тегов
+    tagInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        if (query.length > 1) {
+            // Здесь можно добавить AJAX запрос для поиска тегов
+            highlightTagSuggestions(query);
+        }
+    });
+    
+    // Экспортируем функции для использования в inline обработчиках
+    window.removeSelectedTag = removeTag;
+    window.addSelectedTag = addTag;
+}
+
+function highlightTagSuggestions(query) {
+    const suggestions = document.querySelectorAll('.tag-suggestion');
+    suggestions.forEach(tag => {
+        const tagName = tag.getAttribute('data-tag-name') || tag.textContent.toLowerCase();
+        if (tagName.includes(query.toLowerCase())) {
+            tag.classList.add('bg-info');
+        } else {
+            tag.classList.remove('bg-info');
+        }
+    });
 }
 
 function initImagePreview() {
-    const imageInput = document.getElementById('image');
+    const imageInput = document.getElementById('id_image');
     const previewContainer = document.getElementById('image-preview');
     
     if (!imageInput || !previewContainer) return;
@@ -151,7 +186,7 @@ function initImagePreview() {
         const file = this.files[0];
         if (!file) return;
         
-        //проверка типа файла
+        // Проверка типа файла
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!allowedTypes.includes(file.type)) {
             alert('Пожалуйста, выберите изображение в формате JPG, PNG или GIF');
@@ -160,7 +195,7 @@ function initImagePreview() {
             return;
         }
         
-        //проверка размера
+        // Проверка размера (5MB)
         if (file.size > 5 * 1024 * 1024) {
             alert('Изображение слишком большое. Максимальный размер: 5MB');
             this.value = '';
@@ -168,7 +203,7 @@ function initImagePreview() {
             return;
         }
         
-        //создаем превью
+        // Создаем превью
         const reader = new FileReader();
         reader.onload = function(e) {
             previewContainer.innerHTML = `
