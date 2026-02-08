@@ -1,75 +1,200 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import FileExtensionValidator
 from django.utils.text import slugify
+from django.urls import reverse
+from django.utils import timezone
 
 class Tag(models.Model):
-    """Модель тега для классификации мемов"""
-    name = models.CharField(max_length=50, unique=True, verbose_name='Название тега')
-    slug = models.SlugField(max_length=60, unique=True, blank=True, verbose_name='URL-идентификатор')
-
-    def save(self, *args, **kwargs):
-        """Автоматическое создание slug при сохранении"""
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
+    name = models.CharField(max_length=100, unique=True, verbose_name='Название')
+    slug = models.SlugField(max_length=100, unique=True, verbose_name='URL')
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name='Дата создания',
+        null=True,  # ← Добавьте null=True для существующих записей
+        blank=True  # ← Добавьте blank=True
+    )
+    
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
         ordering = ['name']
+    
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        
+        # Устанавливаем created_at для новых записей
+        if not self.pk and not self.created_at:
+            from django.utils import timezone
+            self.created_at = timezone.now()
+        
+        super().save(*args, **kwargs)
 
 class Meme(models.Model):
-    """Основная модель мема"""
-    title = models.CharField(max_length=200, verbose_name='Название мема')
-    image = models.ImageField(
-        upload_to='memes/%Y/%m/%d/',
-        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])],
-        verbose_name='Изображение'
-    )
+    MODERATION_STATUS_CHOICES = [
+        ('pending', 'На рассмотрении'),
+        ('approved', 'Одобрено'),
+        ('rejected', 'Отклонено'),
+    ]
+    
+    # Основные поля
+    title = models.CharField(max_length=200, verbose_name='Название')
     description = models.TextField(blank=True, verbose_name='Описание')
+    image = models.ImageField(upload_to='memes/%Y/%m/%d/', verbose_name='Изображение')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='memes', verbose_name='Автор')
     tags = models.ManyToManyField(Tag, related_name='memes', blank=True, verbose_name='Теги')
+    views_count = models.IntegerField(default=0, verbose_name='Просмотры')
+    likes_count = models.IntegerField(default=0, verbose_name='Лайки')
+    
+    # Модерация
+    moderation_status = models.CharField(
+        max_length=20,
+        choices=MODERATION_STATUS_CHOICES,
+        default='pending',
+        verbose_name='Статус модерации'
+    )
+    moderation_comment = models.TextField(blank=True, verbose_name='Комментарий модератора')
+    moderated_at = models.DateTimeField(null=True, blank=True, verbose_name='Время модерации')
+    moderated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='moderated_memes',
+        verbose_name='Модератор'
+    )
+    
+    is_published = models.BooleanField(default=False, verbose_name='Опубликовано')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
-    views_count = models.PositiveIntegerField(default=0, verbose_name='Количество просмотров')
-    likes_count = models.PositiveIntegerField(default=0, verbose_name='Количество лайков')
-    is_published = models.BooleanField(default=True, verbose_name='Опубликован')
-
-    def __str__(self):
-        return self.title
-
+    
     class Meta:
         verbose_name = 'Мем'
         verbose_name_plural = 'Мемы'
         ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['-created_at']),
-            models.Index(fields=['-likes_count']),
-        ]
+    
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        return reverse('meme_detail', kwargs={'pk': self.pk})
+    
+    def get_status_color(self):
+        """Цвет для отображения статуса"""
+        colors = {
+            'pending': 'warning',
+            'approved': 'success',
+            'rejected': 'danger'
+        }
+        return colors.get(self.moderation_status, 'secondary')
+    
+    def get_status_icon(self):
+        """Иконка для статуса"""
+        icons = {
+            'pending': '⏳',
+            'approved': '✅',
+            'rejected': '❌'
+        }
+        return icons.get(self.moderation_status, '❓')
 
 class Like(models.Model):
-    """Модель лайка (связь пользователь-мем)"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
-    meme = models.ForeignKey(Meme, on_delete=models.CASCADE, related_name='like_records')
+    meme = models.ForeignKey(Meme, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
-        unique_together = ('user', 'meme')  # Один лайк от пользователя на мем
+        unique_together = ['user', 'meme']
         verbose_name = 'Лайк'
         verbose_name_plural = 'Лайки'
+    
+    def __str__(self):
+        return f"{self.user.username} лайкнул {self.meme.title}"
 
 class Favorite(models.Model):
-    """Модель избранного (связь пользователь-мем)"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
-    meme = models.ForeignKey(Meme, on_delete=models.CASCADE, related_name='favorite_records')
+    meme = models.ForeignKey(Meme, on_delete=models.CASCADE, related_name='favorites')
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
-        unique_together = ('user', 'meme')  # Один раз в избранном
+        unique_together = ['user', 'meme']
         verbose_name = 'Избранное'
-        verbose_name_plural = 'Избранные'
-        
+        verbose_name_plural = 'Избранное'
+    
+    def __str__(self):
+        return f"{self.user.username} добавил в избранное {self.meme.title}"
+
+class Report(models.Model):
+    """Жалобы на мемы"""
+    REASON_CHOICES = [
+        ('spam', 'Спам'),
+        ('offensive', 'Оскорбительный контент'),
+        ('copyright', 'Нарушение авторских прав'),
+        ('violence', 'Насилие'),
+        ('other', 'Другое'),
+    ]
+    
+    meme = models.ForeignKey(Meme, on_delete=models.CASCADE, related_name='reports')
+    reporter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='reports_made')
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES)
+    description = models.TextField(blank=True, verbose_name='Описание проблемы')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_resolved = models.BooleanField(default=False, verbose_name='Рассмотрено')
+    resolved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='resolved_reports',
+        verbose_name='Рассмотрел'
+    )
+    resolved_at = models.DateTimeField(null=True, blank=True, verbose_name='Время рассмотрения')
+    resolution_notes = models.TextField(blank=True, verbose_name='Примечания модератора')
+    
+    class Meta:
+        verbose_name = 'Жалоба'
+        verbose_name_plural = 'Жалобы'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Жалоба на {self.meme.title}"
+    
+    def resolve(self, moderator, notes=''):
+        """Пометить жалобу как рассмотренную"""
+        self.is_resolved = True
+        self.resolved_by = moderator
+        self.resolved_at = timezone.now()
+        self.resolution_notes = notes
+        self.save()
+
+class Notification(models.Model):
+    """Уведомления для пользователей"""
+    NOTIFICATION_TYPES = [
+        ('meme_approved', 'Мем одобрен'),
+        ('meme_rejected', 'Мем отклонен'),
+        ('meme_reported', 'На ваш мем пожаловались'),
+        ('report_resolved', 'Жалоба рассмотрена'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    related_meme = models.ForeignKey(Meme, on_delete=models.CASCADE, null=True, blank=True)
+    related_report = models.ForeignKey(Report, on_delete=models.SET_NULL, null=True, blank=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Уведомление'
+        verbose_name_plural = 'Уведомления'
+    
+    def __str__(self):
+        return f"Уведомление для {self.user.username}: {self.title}"
+    
+    def mark_as_read(self):
+        self.is_read = True
+        self.save()

@@ -79,6 +79,12 @@
                             </button>
                         </div>
                         
+                        {% if user.is_authenticated and user != meme.author %}
+                        <a href="{% url 'report_meme' meme.id %}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-flag"></i> Пожаловаться
+                        </a>
+                        {% endif %}
+
                         <div>
                             <a href="{% url 'download_meme' meme.id %}" class="btn btn-outline-success">
                                 <i class="bi bi-download"></i> Скачать

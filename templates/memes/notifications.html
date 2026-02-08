@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Уведомления - Memeow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-bell"></i> Уведомления</h2>
+        <div class="d-flex align-items-center gap-2">
+            {% if notifications %}
+            <button class="btn btn-sm btn-outline-danger" id="mark-all-read-btn">
+                <i class="bi bi-check-all"></i> Прочитать все
+            </button>
+            <button class="btn btn-sm btn-outline-danger" id="delete-all-btn">
+                <i class="bi bi-trash"></i> Удалить все
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if notifications %}
+    <div class="list-group" id="notifications-list">
+        {% for notification in notifications %}
+        <div class="list-group-item list-group-item-action 
+                    {% if not notification.is_read %}list-group-item-light border-start border-3 border-primary{% endif %}
+                    notification-item" 
+             data-notification-id="{{ notification.id }}">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">
+                    {% if notification.notification_type == 'moderation' %}
+                    <i class="bi bi-shield-check text-primary"></i>
+                    {% elif notification.notification_type == 'like' %}
+                    <i class="bi bi-heart-fill text-danger"></i>
+                    {% elif notification.notification_type == 'comment' %}
+                    <i class="bi bi-chat-text-fill text-info"></i>
+                    {% elif notification.notification_type == 'report' %}
+                    <i class="bi bi-flag-fill text-warning"></i>
+                    {% elif notification.notification_type == 'meme_approved' %}
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    {% elif notification.notification_type == 'meme_rejected' %}
+                    <i class="bi bi-x-circle-fill text-danger"></i>
+                    {% else %}
+                    <i class="bi bi-bell-fill text-secondary"></i>
+                    {% endif %}
+                    {{ notification.title }}
+                    {% if not notification.is_read %}
+                    <span class="badge bg-primary rounded-pill">Новое</span>
+                    {% endif %}
+                </h5>
+                <div class="d-flex gap-2">
+                    <small class="text-muted">{{ notification.created_at|timesince }} назад</small>
+                    <button class="btn btn-sm btn-outline-danger delete-notification-btn" 
+                            title="Удалить уведомление">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="mb-1 mt-2">{{ notification.message }}</p>
+            
+            {% if notification.link %}
+            <div class="mt-3">
+                <a href="{{ notification.link }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-right"></i> Подробнее
+                </a>
+            </div>
+            {% elif notification.related_meme %}
+            <div class="mt-3">
+                <a href="{% url 'meme_detail' notification.related_meme.id %}" 
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-right"></i> Перейти к мему
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Пагинация -->
+    {% if notifications.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if notifications.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ notifications.previous_page_number }}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in notifications.paginator.page_range %}
+                {% if notifications.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if notifications.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ notifications.next_page_number }}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="bi bi-bell-slash fs-1"></i>
+        <h4 class="mt-3">Нет уведомлений</h4>
+        <p class="mb-0">У вас пока нет уведомлений. Они появятся здесь, когда кто-то оценит ваш мем или вам придет важное сообщение.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Удаление одного уведомления
+    document.querySelectorAll('.delete-notification-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationItem = this.closest('.notification-item');
+            const notificationId = notificationItem.dataset.notificationId;
+            
+            // AJAX запрос для удаления
+            fetch(`/notifications/${notificationId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    notificationItem.remove();
+                    updateNotificationBadge();
+                    
+                    // Если уведомлений не осталось, показываем сообщение
+                    if (document.querySelectorAll('.notification-item').length === 0) {
+                        location.reload(); // Перезагружаем страницу для показа сообщения
+                    }
+                }
+            });
+        });
+    });
+    
+    // Пометить все как прочитанные
+    const markAllReadBtn = document.getElementById('mark-all-read-btn');
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', function() {
+            fetch('/notifications/mark-all-read/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Убираем подсветку непрочитанных
+                    document.querySelectorAll('.notification-item').forEach(item => {
+                        item.classList.remove('list-group-item-light', 'border-start', 'border-3', 'border-primary');
+                        // Убираем бейдж "Новое"
+                        const badge = item.querySelector('.badge');
+                        if (badge) {
+                            badge.remove();
+                        }
+                    });
+                    updateNotificationBadge();
+                }
+            });
+        });
+    }
+    
+    // Удалить все уведомления
+    const deleteAllBtn = document.getElementById('delete-all-btn');
+    if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', function() {
+            if (confirm('Вы уверены, что хотите удалить все уведомления? Это действие нельзя отменить.')) {
+                fetch('/notifications/delete-all/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload(); // Перезагружаем страницу
+                    }
+                });
+            }
+        });
+    }
+    
+    // Функция для обновления бейджа уведомлений в навигации
+    function updateNotificationBadge() {
+        // Убираем все бейджи уведомлений
+        document.querySelectorAll('.notification-badge').forEach(badge => {
+            badge.style.display = 'none';
+        });
+    }
+    
+    // Изначально обновляем бейдж при загрузке страницы
+    updateNotificationBadge();
+    
+    // Функция для получения CSRF токена
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}

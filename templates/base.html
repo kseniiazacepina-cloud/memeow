@@ -68,25 +68,44 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
-                           role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i> {{ user.username }}
+                            {% with user.notifications.filter|length as notification_count %}
+                            {% if user.notifications.filter|length > 0 %}
+                            <span class="badge bg-danger notification-badge">{{ notification_count }}</span>
+                            {% endif %}
+                            {% endwith %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">
                                 <i class="bi bi-person"></i> Мой профиль
                             </a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_memes' %}">
+                                <i class="bi bi-images"></i> Мои мемы
+                            </a></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'notifications' %}">
+                                    <i class="bi bi-bell"></i> Уведомления
+                                    {% with user.notifications.filter|length as notification_count %}
+                                    {% if notification_count > 0 %}
+                                    <span class="badge bg-danger float-end notification-badge">{{ notification_count }}</span>
+                                    {% endif %}
+                                    {% endwith %}
+                                </a>
+                            </li>
                             <li><a class="dropdown-item" href="{% url 'favorites' %}">
                                 <i class="bi bi-star"></i> Избранное
                             </a></li>
-                            <li><a class="dropdown-item" href="{% url 'dashboard' %}">
-                                <i class="bi bi-speedometer2"></i> Панель управления
+                            {% if user.is_staff %}
+                            <li><a class="dropdown-item" href="{% url 'moderation_queue' %}">
+                                <i class="bi bi-shield-check"></i> Модерация
                             </a></li>
+                            {% endif %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'settings' %}">
                                 <i class="bi bi-gear"></i> Настройки
                             </a></li>
-                            <li><a class="dropdown-item" href="{% url 'login' %}">
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">
                                 <i class="bi bi-box-arrow-right"></i> Выйти
                             </a></li>
                         </ul>
@@ -107,6 +126,7 @@
             </div>
         </div>
     </nav>
+
 
     <!--основное содержимое-->
     <main class="container py-4">

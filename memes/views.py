@@ -1,22 +1,24 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.db.models import Count, Q
 from django.core.paginator import Paginator
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 import json
 from datetime import datetime, timedelta
 import random
-
-from .models import Meme, Tag, Like, Favorite
+from .models import Meme, Tag, Like, Favorite, Report, Notification
 from .forms import MemeForm, TagForm
-from users.models import Profile
+from django.views.decorators.http import require_POST
 
 def home(request):
     """Главная страница"""
+    # Только одобренные мемы
+    published_memes = Meme.objects.filter(
+        moderation_status='approved',
+        is_published=True
+    )
     
     try:
         # 1. Мем дня (стабильный на весь день)
@@ -70,6 +72,7 @@ def meme_detail(request, pk):
     meme = get_object_or_404(
         Meme.objects.select_related('author').prefetch_related('tags'),
         pk=pk,
+        moderation_status='approved',  # ← Добавьте это
         is_published=True
     )
     
@@ -102,27 +105,53 @@ def meme_detail(request, pk):
 @login_required
 def add_meme(request):
     """Добавление нового мема"""
-    all_tags = Tag.objects.all()  # Получаем все теги
+    all_tags = Tag.objects.all()
     
     if request.method == 'POST':
         form = MemeForm(request.POST, request.FILES)
         if form.is_valid():
             meme = form.save(commit=False)
             meme.author = request.user
+            meme.moderation_status = 'pending'  # На рассмотрении
+            meme.is_published = False  # Не публикуем до одобрения
             meme.save()
-            form.save_m2m()  # Сохраняем ManyToMany поле (теги)
+            form.save_m2m()
             
-            messages.success(request, 'Мем успешно добавлен!')
-            return redirect('meme_detail', pk=meme.pk)
+            messages.success(request, 'Мем успешно добавлен и отправлен на модерацию!')
+            return redirect('my_memes')
     else:
         form = MemeForm()
     
     context = {
         'form': form,
-        'all_tags': all_tags,  # Передаем теги в шаблон
+        'all_tags': all_tags,
     }
     
     return render(request, 'memes/add_meme.html', context)
+
+@login_required
+def my_memes(request):
+    """Страница с мемами пользователя"""
+    memes = Meme.objects.filter(author=request.user).order_by('-created_at')
+    
+    # Разделяем по статусам
+    pending_memes = memes.filter(moderation_status='pending')
+    approved_memes = memes.filter(moderation_status='approved')
+    rejected_memes = memes.filter(moderation_status='rejected')
+    
+    context = {
+        'memes': memes,
+        'pending_memes': pending_memes,
+        'approved_memes': approved_memes,
+        'rejected_memes': rejected_memes,
+        'total_memes': memes.count(),
+        'pending_count': pending_memes.count(),
+        'approved_count': approved_memes.count(),
+        'rejected_count': rejected_memes.count(),
+        'title': 'Мои мемы',
+    }
+    
+    return render(request, 'memes/my_memes.html', context)
 
 @login_required
 def edit_meme(request, pk):
@@ -330,3 +359,157 @@ def meme_list(request):
     }
     
     return render(request, 'memes/meme_list.html', context)
+
+@login_required
+def report_meme(request, pk):
+    """Пожаловаться на мем"""
+    meme = get_object_or_404(Meme, pk=pk, is_published=True)
+    
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        description = request.POST.get('description', '')
+        
+        if not reason:
+            messages.error(request, 'Выберите причину жалобы.')
+            return redirect('meme_detail', pk=pk)
+        
+        # Создаем жалобу
+        report = Report.objects.create(
+            meme=meme,
+            reporter=request.user,
+            reason=reason,
+            description=description
+        )
+        
+        # Отправляем уведомление автору
+        from .utils import send_report_notification
+        send_report_notification(meme, request.user)
+        
+        messages.success(request, 'Жалоба отправлена. Спасибо за бдительность!')
+        return redirect('meme_detail', pk=pk)
+    
+    return render(request, 'memes/report_meme.html', {'meme': meme})
+
+@login_required
+def report_meme(request, pk):
+    """Пожаловаться на мем"""
+    meme = get_object_or_404(Meme, pk=pk, is_published=True)
+    
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        description = request.POST.get('description', '')
+        
+        if not reason:
+            messages.error(request, 'Выберите причину жалобы.')
+            return redirect('meme_detail', pk=pk)
+        
+        # Создаем жалобу
+        report = Report.objects.create(
+            meme=meme,
+            reporter=request.user,
+            reason=reason,
+            description=description
+        )
+        
+        # Отправляем уведомление автору
+        from .utils import send_report_notification
+        send_report_notification(meme, request.user)
+        
+        messages.success(request, 'Жалоба отправлена. Спасибо за бдительность!')
+        return redirect('meme_detail', pk=pk)
+    
+    return render(request, 'memes/report_meme.html', {'meme': meme})
+
+@login_required
+def notifications(request):
+    """Уведомления пользователя"""
+    # Помечаем все как прочитанные при заходе на страницу
+    if request.user.is_authenticated:
+        # Получаем непрочитанные уведомления
+        unread_notifications = Notification.objects.filter(
+            user=request.user, 
+            is_read=False
+        )
+        
+        # Помечаем их как прочитанные
+        if unread_notifications.exists():
+            unread_notifications.update(is_read=True)
+        
+        # Обновляем кеш, если он есть
+        if hasattr(request, '_unread_notifications_count'):
+            request._unread_notifications_count = 0
+    
+    # Получаем все уведомления для отображения
+    notifications_list = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+    
+    # Пагинация
+    paginator = Paginator(notifications_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'notifications': page_obj,
+        'title': 'Уведомления',
+    }
+    
+    return render(request, 'memes/notifications.html', context)
+
+@login_required
+@require_POST
+def mark_all_notifications_read(request):
+    """Пометить все уведомления как прочитанные"""
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return JsonResponse({'success': True})
+
+@login_required
+@require_POST
+def delete_notification(request, pk):
+    """Удалить одно уведомление"""
+    try:
+        notification = Notification.objects.get(id=pk, user=request.user)
+        notification.delete()
+        return JsonResponse({'success': True})
+    except Notification.DoesNotExist:
+        return JsonResponse({'success': False}, status=404)
+
+@login_required
+@require_POST
+def delete_all_notifications(request):
+    """Удалить все уведомления пользователя"""
+    Notification.objects.filter(user=request.user).delete()
+    return JsonResponse({'success': True})
+
+@staff_member_required
+@permission_required('memes.can_moderate', raise_exception=True)
+def moderation_queue(request):
+    """
+    Представление для отображения очереди модерации мемов
+    """
+    # Получаем мемы, ожидающие модерации
+    pending_memes = Meme.objects.filter(
+        moderation_status='pending',
+        is_published=False
+    ).order_by('created_at')
+    
+    # Получаем недавно одобренные/отклоненные мемы
+    recent_moderated = Meme.objects.filter(
+        moderation_status__in=['approved', 'rejected']
+    ).order_by('-moderated_at')[:10]
+    
+    # Статистика для шаблона
+    total_memes = Meme.objects.count()
+    published_memes = Meme.objects.filter(is_published=True).count()
+    rejected_memes = Meme.objects.filter(moderation_status='rejected').count()
+    
+    context = {
+        'pending_memes': pending_memes,
+        'recent_moderated': recent_moderated,
+        'total_memes': total_memes,
+        'published_memes': published_memes,
+        'rejected_memes': rejected_memes,
+        'title': 'Очередь модерации',
+    }
+    
+    return render(request, 'memes/moderation_queue.html', context)

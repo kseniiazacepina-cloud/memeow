@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ title }}</h1>
+    
+    <div class="row">
+        <!-- Мемы, ожидающие модерации -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Ожидают модерации ({{ pending_memes.count }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_memes %}
+                        <div class="list-group">
+                            {% for meme in pending_memes %}
+                                <div class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <img src="{{ meme.image.url }}" alt="{{ meme.title }}" 
+                                                 class="img-fluid rounded" style="max-height: 150px;">
+                                        </div>
+                                        <div class="col-md-9">
+                                            <h5>{{ meme.title }}</h5>
+                                            <p class="text-muted">
+                                                Автор: {{ meme.author.username }} | 
+                                                Дата: {{ meme.created_at|date:"d.m.Y H:i" }}
+                                            </p>
+                                            <p>{{ meme.description|truncatechars:150 }}</p>
+                                            <div class="btn-group">
+                                                <a href="{% url 'admin:memes_meme_change' meme.id %}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    Модерировать
+                                                </a>
+                                                <a href="{% url 'meme_detail' meme.id %}" 
+                                                   target="_blank"
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                    Просмотреть
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Нет мемов, ожидающих модерации.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Недавно промодерированные -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Недавно промодерированные</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_moderated %}
+                        <div class="list-group">
+                            {% for meme in recent_moderated %}
+                                <a href="{% url 'admin:memes_meme_change' meme.id %}" 
+                                   class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between">
+                                        <span>{{ meme.title|truncatechars:30 }}</span>
+                                        <span class="badge {% if meme.moderation_status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ meme.get_moderation_status_display }}
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ meme.moderated_by.username }} • 
+                                        {{ meme.moderated_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Нет недавно промодерированных мемов.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Статистика -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Статистика</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li>Всего мемов: {{ total_memes }}</li>
+                        <li>Опубликовано: {{ published_memes }}</li>
+                        <li>На модерации: {{ pending_memes.count }}</li>
+                        <li>Отклонено: {{ rejected_memes }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

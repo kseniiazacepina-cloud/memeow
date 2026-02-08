@@ -1,5 +1,6 @@
 from django.urls import path, re_path
 from . import views
+from .views import moderation_queue
 
 urlpatterns = [
     # Главная страница
@@ -8,6 +9,15 @@ urlpatterns = [
     # Детали мема
     path('meme/<int:pk>/', views.meme_detail, name='meme_detail'),
     path('memes/', views.meme_list, name='meme_list'),
+
+    # Модерация
+    path('my-memes/', views.my_memes, name='my_memes'),
+    path('meme/<int:pk>/report/', views.report_meme, name='report_meme'),
+    path('moderation/queue/', views.moderation_queue, name='moderation_queue'),
+    path('notifications/', views.notifications, name='notifications'),
+    path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    path('notifications/<int:pk>/delete/', views.delete_notification, name='delete_notification'),
+    path('notifications/delete-all/', views.delete_all_notifications, name='delete_all_notifications'),
     
     # Добавление/редактирование мемов
     path('meme/add/', views.add_meme, name='add_meme'),
