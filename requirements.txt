@@ -1,7 +1,7 @@
 Django==4.2.0  # Фреймворк
 djangorestframework==3.14.0  # Для создания REST API
-psycopg2-binary==2.9.6  # Адаптер для PostgreSQL
-Pillow==9.5.0  # Для работы с изображениями (загрузка мемов)
+psycopg2-binary==2.9.11  # Адаптер для PostgreSQL
+Pillow==12.1.0  # Для работы с изображениями (загрузка мемов)
 django-cors-headers==4.0.0  # Для обработки CORS
 drf-spectacular==0.26.2  # Для автоматической документации API (Swagger)
 djangorestframework-simplejwt==5.2.2  # Для JWT аутентификации в API
