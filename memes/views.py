@@ -249,47 +249,83 @@ def search(request):
     return render(request, 'memes/search_results.html', context)
 
 @login_required
+@require_POST
 def toggle_like(request, pk):
     """Поставить/убрать лайк (AJAX)"""
-    if request.method == 'POST' and request.is_ajax():
-        meme = get_object_or_404(Meme, pk=pk)
-        like, created = Like.objects.get_or_create(user=request.user, meme=meme)
-        
-        if not created:
-            like.delete()
-            meme.likes_count -= 1
-            liked = False
-        else:
-            meme.likes_count += 1
-            liked = True
-        
-        meme.save(update_fields=['likes_count'])
-        
-        return JsonResponse({
-            'liked': liked,
-            'likes_count': meme.likes_count
-        })
+    meme = get_object_or_404(Meme, pk=pk)
+    like, created = Like.objects.get_or_create(user=request.user, meme=meme)
     
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+    if not created:
+        # Удаляем лайк
+        like.delete()
+        meme.likes_count -= 1
+        liked = False
+        
+        # Удаляем уведомление о лайке, если есть
+        Notification.objects.filter(
+            user=meme.author,
+            notification_type='like',
+            related_meme=meme,
+            title__icontains=request.user.username
+        ).delete()
+    else:
+        # Добавляем лайк
+        meme.likes_count += 1
+        liked = True
+        
+        # Отправляем уведомление автору мема (если это не сам автор)
+        if meme.author != request.user:
+            Notification.objects.create(
+                user=meme.author,
+                notification_type='like',
+                title=f'Новый лайк от {request.user.username}',
+                message=f'Пользователь {request.user.username} поставил лайк вашему мему "{meme.title}"',
+                related_meme=meme
+            )
+    
+    meme.save(update_fields=['likes_count'])
+    
+    return JsonResponse({
+        'liked': liked,
+        'likes_count': meme.likes_count
+    })
 
 @login_required
+@require_POST
 def toggle_favorite(request, pk):
     """Добавить/удалить из избранного (AJAX)"""
-    if request.method == 'POST' and request.is_ajax():
-        meme = get_object_or_404(Meme, pk=pk)
-        favorite, created = Favorite.objects.get_or_create(user=request.user, meme=meme)
-        
-        if not created:
-            favorite.delete()
-            favorited = False
-        else:
-            favorited = True
-        
-        return JsonResponse({
-            'favorited': favorited
-        })
+    meme = get_object_or_404(Meme, pk=pk)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, meme=meme)
     
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+    if not created:
+        # Удаляем из избранного
+        favorite.delete()
+        favorited = False
+        
+        # Удаляем уведомление о добавлении в избранное
+        Notification.objects.filter(
+            user=meme.author,
+            notification_type='favorite',
+            related_meme=meme,
+            title__icontains=request.user.username
+        ).delete()
+    else:
+        # Добавляем в избранное
+        favorited = True
+        
+        # Отправляем уведомление автору мема (если это не сам автор)
+        if meme.author != request.user:
+            Notification.objects.create(
+                user=meme.author,
+                notification_type='favorite',
+                title=f'Мем добавлен в избранное',
+                message=f'Пользователь {request.user.username} добавил ваш мем "{meme.title}" в избранное',
+                related_meme=meme
+            )
+    
+    return JsonResponse({
+        'favorited': favorited
+    })
 
 def get_meme_of_the_day():
     """Получить мем дня (упрощенная версия)"""

@@ -176,6 +176,8 @@ class Notification(models.Model):
         ('meme_rejected', 'Мем отклонен'),
         ('meme_reported', 'На ваш мем пожаловались'),
         ('report_resolved', 'Жалоба рассмотрена'),
+        ('like', 'Лайк'),
+        ('favorite', 'Добавление в избранное'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')

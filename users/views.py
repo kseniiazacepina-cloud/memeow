@@ -19,7 +19,12 @@ def profile(request, username=None):
     
     # Статистика пользователя
     user_memes = Meme.objects.filter(author=user, is_published=True)
-    user_favorites = Favorite.objects.filter(user=user).select_related('meme')
+    user_favorites = Favorite.objects.filter(
+        user=user
+    ).select_related('meme').order_by('-created_at')
+    
+    # Получаем мемы из избранного
+    favorite_memes = [fav.meme for fav in user_favorites if fav.meme.is_published]
     
     # Популярные теги пользователя
     from memes.models import Tag
@@ -31,8 +36,8 @@ def profile(request, username=None):
     
     context = {
         'profile_user': user,
-        'user_memes': user_memes[:6],  # Последние 6 мемов
-        'user_favorites': [fav.meme for fav in user_favorites[:6]],
+        'user_memes': user_memes[:6],
+        'user_favorites': favorite_memes[:6],  # Последние 6 избранных
         'memes_count': user_memes.count(),
         'likes_received': sum(meme.likes_count for meme in user_memes),
         'user_tags': user_tags,
@@ -43,12 +48,16 @@ def profile(request, username=None):
 @login_required
 def favorites(request):
     """Страница избранного пользователя"""
-    favorites = Favorite.objects.filter(user=request.user).select_related('meme')
-    memes = [fav.meme for fav in favorites]
+    favorites_list = Favorite.objects.filter(
+        user=request.user
+    ).select_related('meme').order_by('-created_at')
+    
+    # Фильтруем только опубликованные мемы
+    memes = [fav.meme for fav in favorites_list if fav.meme.is_published]
     
     context = {
         'favorite_memes': memes,
-        'favorites_count': favorites.count(),
+        'favorites_count': len(memes),
     }
     
     return render(request, 'users/favorites.html', context)
