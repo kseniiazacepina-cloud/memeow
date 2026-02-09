@@ -11,6 +11,7 @@ import random
 from .models import Meme, Tag, Like, Favorite, Report, Notification
 from .forms import MemeForm, TagForm
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 def home(request):
     """Главная страница"""
@@ -250,26 +251,25 @@ def search(request):
 
 @login_required
 @require_POST
+@csrf_exempt
 def toggle_like(request, pk):
     """Поставить/убрать лайк (AJAX)"""
-    meme = get_object_or_404(Meme, pk=pk)
-    like, created = Like.objects.get_or_create(user=request.user, meme=meme)
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Необходимо авторизоваться'}, status=403)
     
-    if not created:
+    meme = get_object_or_404(Meme, pk=pk)
+    
+    # Проверяем, не лайкал ли уже пользователь
+    like_exists = Like.objects.filter(user=request.user, meme=meme).exists()
+    
+    if like_exists:
         # Удаляем лайк
-        like.delete()
-        meme.likes_count -= 1
+        Like.objects.filter(user=request.user, meme=meme).delete()
+        meme.likes_count = max(0, meme.likes_count - 1)
         liked = False
-        
-        # Удаляем уведомление о лайке, если есть
-        Notification.objects.filter(
-            user=meme.author,
-            notification_type='like',
-            related_meme=meme,
-            title__icontains=request.user.username
-        ).delete()
     else:
         # Добавляем лайк
+        Like.objects.create(user=request.user, meme=meme)
         meme.likes_count += 1
         liked = True
         
@@ -277,7 +277,7 @@ def toggle_like(request, pk):
         if meme.author != request.user:
             Notification.objects.create(
                 user=meme.author,
-                notification_type='like',
+                notification_type='meme_approved',  # Используем существующий тип
                 title=f'Новый лайк от {request.user.username}',
                 message=f'Пользователь {request.user.username} поставил лайк вашему мему "{meme.title}"',
                 related_meme=meme
@@ -286,46 +286,117 @@ def toggle_like(request, pk):
     meme.save(update_fields=['likes_count'])
     
     return JsonResponse({
+        'success': True,
         'liked': liked,
         'likes_count': meme.likes_count
     })
 
 @login_required
 @require_POST
+@csrf_exempt
 def toggle_favorite(request, pk):
     """Добавить/удалить из избранного (AJAX)"""
-    meme = get_object_or_404(Meme, pk=pk)
-    favorite, created = Favorite.objects.get_or_create(user=request.user, meme=meme)
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Необходимо авторизоваться'}, status=403)
     
-    if not created:
+    meme = get_object_or_404(Meme, pk=pk)
+    
+    # Проверяем, не в избранном ли уже
+    favorite_exists = Favorite.objects.filter(user=request.user, meme=meme).exists()
+    
+    if favorite_exists:
         # Удаляем из избранного
-        favorite.delete()
+        Favorite.objects.filter(user=request.user, meme=meme).delete()
         favorited = False
-        
-        # Удаляем уведомление о добавлении в избранное
-        Notification.objects.filter(
-            user=meme.author,
-            notification_type='favorite',
-            related_meme=meme,
-            title__icontains=request.user.username
-        ).delete()
     else:
         # Добавляем в избранное
+        Favorite.objects.create(user=request.user, meme=meme)
         favorited = True
         
         # Отправляем уведомление автору мема (если это не сам автор)
         if meme.author != request.user:
             Notification.objects.create(
                 user=meme.author,
-                notification_type='favorite',
+                notification_type='meme_reported',  # Используем другой существующий тип
                 title=f'Мем добавлен в избранное',
                 message=f'Пользователь {request.user.username} добавил ваш мем "{meme.title}" в избранное',
                 related_meme=meme
             )
     
     return JsonResponse({
+        'success': True,
         'favorited': favorited
     })
+
+@login_required
+def notifications(request):
+    """Уведомления пользователя"""
+    # Получаем все уведомления
+    notifications_list = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+    
+    # Считаем только непрочитанные уведомления
+    unread_count = notifications_list.filter(is_read=False).count()
+    
+    # Пагинация
+    paginator = Paginator(notifications_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'notifications': page_obj,
+        'unread_count': unread_count,
+        'title': 'Уведомления',
+    }
+    
+    return render(request, 'memes/notifications.html', context)
+
+@login_required
+@require_POST
+def mark_notification_read(request, pk):
+    """Пометить одно уведомление как прочитанное"""
+    try:
+        notification = Notification.objects.get(id=pk, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    except Notification.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Уведомление не найдено'}, status=404)
+
+@login_required
+@require_POST
+def mark_all_notifications_read(request):
+    """Пометить все уведомления как прочитанные"""
+    try:
+        updated = Notification.objects.filter(
+            user=request.user, 
+            is_read=False
+        ).update(is_read=True)
+        return JsonResponse({'success': True, 'updated': updated})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@login_required
+@require_POST
+def delete_notification(request, pk):
+    """Удалить одно уведомление"""
+    try:
+        notification = Notification.objects.get(id=pk, user=request.user)
+        notification.delete()
+        return JsonResponse({'success': True})
+    except Notification.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Уведомление не найдено'}, status=404)
+
+@login_required
+@require_POST
+def delete_all_notifications(request):
+    """Удалить все уведомления пользователя"""
+    try:
+        deleted = Notification.objects.filter(user=request.user).delete()
+        return JsonResponse({'success': True, 'deleted': deleted[0]})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 def get_meme_of_the_day():
     """Получить мем дня (упрощенная версия)"""
@@ -456,66 +527,6 @@ def report_meme(request, pk):
     
     return render(request, 'memes/report_meme.html', {'meme': meme})
 
-@login_required
-def notifications(request):
-    """Уведомления пользователя"""
-    # Помечаем все как прочитанные при заходе на страницу
-    if request.user.is_authenticated:
-        # Получаем непрочитанные уведомления
-        unread_notifications = Notification.objects.filter(
-            user=request.user, 
-            is_read=False
-        )
-        
-        # Помечаем их как прочитанные
-        if unread_notifications.exists():
-            unread_notifications.update(is_read=True)
-        
-        # Обновляем кеш, если он есть
-        if hasattr(request, '_unread_notifications_count'):
-            request._unread_notifications_count = 0
-    
-    # Получаем все уведомления для отображения
-    notifications_list = Notification.objects.filter(
-        user=request.user
-    ).order_by('-created_at')
-    
-    # Пагинация
-    paginator = Paginator(notifications_list, 20)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'notifications': page_obj,
-        'title': 'Уведомления',
-    }
-    
-    return render(request, 'memes/notifications.html', context)
-
-@login_required
-@require_POST
-def mark_all_notifications_read(request):
-    """Пометить все уведомления как прочитанные"""
-    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
-    return JsonResponse({'success': True})
-
-@login_required
-@require_POST
-def delete_notification(request, pk):
-    """Удалить одно уведомление"""
-    try:
-        notification = Notification.objects.get(id=pk, user=request.user)
-        notification.delete()
-        return JsonResponse({'success': True})
-    except Notification.DoesNotExist:
-        return JsonResponse({'success': False}, status=404)
-
-@login_required
-@require_POST
-def delete_all_notifications(request):
-    """Удалить все уведомления пользователя"""
-    Notification.objects.filter(user=request.user).delete()
-    return JsonResponse({'success': True})
 
 @staff_member_required
 @permission_required('memes.can_moderate', raise_exception=True)

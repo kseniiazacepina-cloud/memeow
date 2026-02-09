@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Уведомления - Memeow{% endblock %}
 
@@ -7,10 +8,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-bell"></i> Уведомления</h2>
         <div class="d-flex align-items-center gap-2">
-            {% if notifications %}
-            <button class="btn btn-sm btn-outline-danger" id="mark-all-read-btn">
-                <i class="bi bi-check-all"></i> Прочитать все
+            {% if notifications and unread_count > 0 %}
+            <button class="btn btn-sm btn-primary" id="mark-all-read-btn">
+                <i class="bi bi-check-all"></i> Прочитать все ({{ unread_count }})
             </button>
+            {% endif %}
+            {% if notifications %}
             <button class="btn btn-sm btn-outline-danger" id="delete-all-btn">
                 <i class="bi bi-trash"></i> Удалить все
             </button>
@@ -26,51 +29,57 @@
                     notification-item" 
              data-notification-id="{{ notification.id }}">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">
-                    {% if notification.notification_type == 'moderation' %}
-                    <i class="bi bi-shield-check text-primary"></i>
-                    {% elif notification.notification_type == 'like' %}
-                    <i class="bi bi-heart-fill text-danger"></i>
-                    {% elif notification.notification_type == 'comment' %}
-                    <i class="bi bi-chat-text-fill text-info"></i>
-                    {% elif notification.notification_type == 'report' %}
-                    <i class="bi bi-flag-fill text-warning"></i>
-                    {% elif notification.notification_type == 'meme_approved' %}
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                    {% elif notification.notification_type == 'meme_rejected' %}
-                    <i class="bi bi-x-circle-fill text-danger"></i>
-                    {% else %}
-                    <i class="bi bi-bell-fill text-secondary"></i>
+                <div class="flex-grow-1">
+                    <h5 class="mb-1">
+                        {% if 'лайк' in notification.title|lower %}
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        {% elif 'избранное' in notification.title|lower %}
+                        <i class="bi bi-star-fill text-warning"></i>
+                        {% elif 'одобрен' in notification.title|lower %}
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        {% elif 'отклонен' in notification.title|lower %}
+                        <i class="bi bi-x-circle-fill text-danger"></i>
+                        {% elif 'пожаловались' in notification.title|lower or 'жалоб' in notification.title|lower %}
+                        <i class="bi bi-flag-fill text-warning"></i>
+                        {% elif 'жалоба рассмотрена' in notification.title|lower %}
+                        <i class="bi bi-shield-check text-success"></i>
+                        {% else %}
+                        <i class="bi bi-bell-fill text-secondary"></i>
+                        {% endif %}
+                        {{ notification.title }}
+                        {% if not notification.is_read %}
+                        <span class="badge bg-primary rounded-pill">Новое</span>
+                        {% endif %}
+                    </h5>
+                    <p class="mb-1 mt-2">{{ notification.message }}</p>
+                    
+                    {% if notification.related_meme %}
+                    <div class="mt-2">
+                        <a href="{% url 'meme_detail' notification.related_meme.id %}" 
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-arrow-right"></i> Перейти к мему
+                        </a>
+                    </div>
                     {% endif %}
-                    {{ notification.title }}
-                    {% if not notification.is_read %}
-                    <span class="badge bg-primary rounded-pill">Новое</span>
-                    {% endif %}
-                </h5>
-                <div class="d-flex gap-2">
+                </div>
+                <div class="d-flex flex-column align-items-end">
                     <small class="text-muted">{{ notification.created_at|timesince }} назад</small>
-                    <button class="btn btn-sm btn-outline-danger delete-notification-btn" 
-                            title="Удалить уведомление">
-                        <i class="bi bi-x"></i>
-                    </button>
+                    <div class="btn-group btn-group-sm mt-2">
+                        {% if not notification.is_read %}
+                        <button class="btn btn-sm btn-success mark-read-btn" 
+                                data-notification-id="{{ notification.id }}"
+                                title="Пометить как прочитанное">
+                            <i class="bi bi-check"></i>
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-danger delete-btn" 
+                                data-notification-id="{{ notification.id }}"
+                                title="Удалить">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <p class="mb-1 mt-2">{{ notification.message }}</p>
-            
-            {% if notification.link %}
-            <div class="mt-3">
-                <a href="{{ notification.link }}" class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-arrow-right"></i> Подробнее
-                </a>
-            </div>
-            {% elif notification.related_meme %}
-            <div class="mt-3">
-                <a href="{% url 'meme_detail' notification.related_meme.id %}" 
-                   class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-arrow-right"></i> Перейти к мему
-                </a>
-            </div>
-            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -123,32 +132,21 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Удаление одного уведомления
-    document.querySelectorAll('.delete-notification-btn').forEach(button => {
+    // Пометить одно уведомление как прочитанное
+    document.querySelectorAll('.mark-read-btn').forEach(button => {
         button.addEventListener('click', function() {
-            const notificationItem = this.closest('.notification-item');
-            const notificationId = notificationItem.dataset.notificationId;
+            const notificationId = this.getAttribute('data-notification-id');
+            const buttonElement = this;
             
-            // AJAX запрос для удаления
-            fetch(`/notifications/${notificationId}/delete/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    notificationItem.remove();
-                    updateNotificationBadge();
-                    
-                    // Если уведомлений не осталось, показываем сообщение
-                    if (document.querySelectorAll('.notification-item').length === 0) {
-                        location.reload(); // Перезагружаем страницу для показа сообщения
-                    }
-                }
-            });
+            markAsRead(notificationId, buttonElement);
+        });
+    });
+    
+    // Удаление одного уведомления
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationId = this.getAttribute('data-notification-id');
+            deleteNotification(notificationId, this);
         });
     });
     
@@ -156,28 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const markAllReadBtn = document.getElementById('mark-all-read-btn');
     if (markAllReadBtn) {
         markAllReadBtn.addEventListener('click', function() {
-            fetch('/notifications/mark-all-read/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Убираем подсветку непрочитанных
-                    document.querySelectorAll('.notification-item').forEach(item => {
-                        item.classList.remove('list-group-item-light', 'border-start', 'border-3', 'border-primary');
-                        // Убираем бейдж "Новое"
-                        const badge = item.querySelector('.badge');
-                        if (badge) {
-                            badge.remove();
-                        }
-                    });
-                    updateNotificationBadge();
-                }
-            });
+            markAllAsRead();
         });
     }
     
@@ -186,35 +163,227 @@ document.addEventListener('DOMContentLoaded', function() {
     if (deleteAllBtn) {
         deleteAllBtn.addEventListener('click', function() {
             if (confirm('Вы уверены, что хотите удалить все уведомления? Это действие нельзя отменить.')) {
-                fetch('/notifications/delete-all/', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken'),
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload(); // Перезагружаем страницу
-                    }
-                });
+                deleteAllNotifications();
             }
         });
     }
     
-    // Функция для обновления бейджа уведомлений в навигации
-    function updateNotificationBadge() {
-        // Убираем все бейджи уведомлений
-        document.querySelectorAll('.notification-badge').forEach(badge => {
-            badge.style.display = 'none';
+    // Функция для пометки одного уведомления как прочитанного
+    function markAsRead(notificationId, buttonElement) {
+        const url = `/notifications/${notificationId}/mark-read/`;
+        const csrfToken = getCookie('csrftoken');
+        
+        // Показываем индикатор загрузки
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        buttonElement.disabled = true;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Убираем подсветку
+                const notificationItem = buttonElement.closest('.notification-item');
+                notificationItem.classList.remove('list-group-item-light', 'border-start', 'border-3', 'border-primary');
+                
+                // Убираем бейдж "Новое"
+                const badge = notificationItem.querySelector('.badge.bg-primary');
+                if (badge) {
+                    badge.remove();
+                }
+                
+                // Удаляем кнопку "Прочитать"
+                buttonElement.remove();
+                
+                // Обновляем счетчик
+                updateNotificationCount(-1);
+                
+                showToast('Уведомление прочитано', 'success');
+            } else {
+                showToast('Ошибка при пометке как прочитанного', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            showToast('Произошла ошибка', 'danger');
+        })
+        .finally(() => {
+            buttonElement.innerHTML = originalHTML;
+            buttonElement.disabled = false;
         });
     }
     
-    // Изначально обновляем бейдж при загрузке страницы
-    updateNotificationBadge();
+    // Функция для пометки всех как прочитанных
+    function markAllAsRead() {
+        const url = `/notifications/mark-all-read/`;
+        const csrfToken = getCookie('csrftoken');
+        const buttonElement = document.getElementById('mark-all-read-btn');
+        
+        if (!buttonElement) return;
+        
+        // Показываем индикатор загрузки
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        buttonElement.disabled = true;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Убираем подсветку со всех
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    item.classList.remove('list-group-item-light', 'border-start', 'border-3', 'border-primary');
+                });
+                
+                // Убираем все бейджи "Новое"
+                document.querySelectorAll('.badge.bg-primary').forEach(badge => {
+                    badge.remove();
+                });
+                
+                // Убираем все кнопки "Прочитать"
+                document.querySelectorAll('.mark-read-btn').forEach(btn => {
+                    btn.remove();
+                });
+                
+                // Убираем кнопку "Прочитать все"
+                buttonElement.remove();
+                
+                // Обновляем счетчик
+                updateNotificationCount(-999);
+                
+                showToast('Все уведомления прочитаны', 'success');
+            } else {
+                showToast('Ошибка при пометке всех как прочитанных', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            showToast('Произошла ошибка', 'danger');
+        })
+        .finally(() => {
+            buttonElement.innerHTML = originalHTML;
+            buttonElement.disabled = false;
+        });
+    }
     
-    // Функция для получения CSRF токена
+    // Удалить одно уведомление
+    function deleteNotification(notificationId, buttonElement) {
+        if (!confirm('Вы уверены, что хотите удалить это уведомление?')) {
+            return;
+        }
+
+        const url = `/notifications/${notificationId}/delete/`;
+        const csrfToken = getCookie('csrftoken');
+        
+        // Показываем индикатор загрузки
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        buttonElement.disabled = true;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Удаляем элемент
+                const notificationItem = buttonElement.closest('.notification-item');
+                notificationItem.style.opacity = '0';
+                notificationItem.style.transition = 'opacity 0.3s';
+                
+                setTimeout(() => {
+                    notificationItem.remove();
+                    
+                    // Обновляем счетчик если уведомление было непрочитанным
+                    if (notificationItem.classList.contains('list-group-item-light')) {
+                        updateNotificationCount(-1);
+                    }
+                    
+                    // Если уведомлений не осталось, перезагружаем страницу
+                    if (document.querySelectorAll('.notification-item').length === 0) {
+                        location.reload();
+                    }
+                }, 300);
+                
+                showToast('Уведомление удалено', 'info');
+            } else {
+                showToast('Ошибка при удалении уведомления', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            showToast('Произошла ошибка', 'danger');
+        })
+        .finally(() => {
+            buttonElement.innerHTML = originalHTML;
+            buttonElement.disabled = false;
+        });
+    }
+    
+    // Удалить все уведомления
+    function deleteAllNotifications() {
+        const url = `/notifications/delete-all/`;
+        const csrfToken = getCookie('csrftoken');
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+    
+    // Обновить счетчик уведомлений в шапке
+    function updateNotificationCount(change) {
+        const notificationBadges = document.querySelectorAll('.notification-badge');
+        
+        notificationBadges.forEach(badge => {
+            let currentCount = parseInt(badge.textContent) || 0;
+            currentCount += change;
+            if (currentCount <= 0) {
+                badge.remove();
+            } else {
+                badge.textContent = currentCount;
+            }
+        });
+        
+        // Обновляем кнопку "Прочитать все"
+        const markAllBtn = document.getElementById('mark-all-read-btn');
+        if (markAllBtn) {
+            const count = parseInt(markAllBtn.textContent.match(/\((\d+)\)/)?.[1]) || 0;
+            const newCount = Math.max(0, count + change);
+            if (newCount <= 0) {
+                markAllBtn.remove();
+            } else {
+                markAllBtn.innerHTML = `<i class="bi bi-check-all"></i> Прочитать все (${newCount})`;
+            }
+        }
+    }
+    
+    // Вспомогательные функции
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -228,6 +397,39 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         return cookieValue;
+    }
+    
+    function showToast(message, type = 'info') {
+        // Простая реализация toast
+        const toastHTML = `
+            <div class="toast align-items-center text-bg-${type} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            toastContainer.style.zIndex = '9999';
+            document.body.appendChild(toastContainer);
+        }
+        
+        toastContainer.innerHTML += toastHTML;
+        const toastElement = toastContainer.lastElementChild;
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 3000
+        });
+        toast.show();
+        
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            this.remove();
+        });
     }
 });
 </script>

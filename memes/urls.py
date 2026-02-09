@@ -14,8 +14,11 @@ urlpatterns = [
     path('my-memes/', views.my_memes, name='my_memes'),
     path('meme/<int:pk>/report/', views.report_meme, name='report_meme'),
     path('moderation/queue/', views.moderation_queue, name='moderation_queue'),
+    
+    # Уведомления
     path('notifications/', views.notifications, name='notifications'),
     path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    path('notifications/<int:pk>/mark-read/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/<int:pk>/delete/', views.delete_notification, name='delete_notification'),
     path('notifications/delete-all/', views.delete_all_notifications, name='delete_all_notifications'),
     
@@ -45,5 +48,4 @@ urlpatterns = [
 
     # Используем re_path для поддержки кириллицы в slug
     re_path(r'^tag/(?P<slug>[\w-]+)/$', views.tag_memes, name='tag_memes'),
-    
 ]
