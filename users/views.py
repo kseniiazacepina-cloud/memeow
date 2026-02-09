@@ -7,8 +7,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Count, Sum
 from memes.models import Meme, Favorite
-
-
 from .forms import UserUpdateForm, ProfileUpdateForm, UserRegisterForm
 
 @login_required
@@ -144,3 +142,6 @@ def register(request):
         form = UserRegisterForm()
     
     return render(request, 'registration/register.html', {'form': form})
+
+def user_memes(request, user_id):
+    user = get_object_or_404(User, id=user_id)

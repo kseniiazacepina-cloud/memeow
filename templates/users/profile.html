@@ -141,7 +141,7 @@
             
             {% if memes_count > 6 %}
             <div class="text-center mt-4">
-                <a href="{% url 'user_memes' profile_user.username %}" class="btn btn-outline-primary">
+                <a href="{% url 'user_memes' profile_user.id %}" class="btn btn-outline-primary">
                     Показать все мемы
                 </a>
             </div>

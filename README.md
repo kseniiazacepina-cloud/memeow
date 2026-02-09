@@ -5,7 +5,7 @@ https://static/images/logo.png
 🚀 Быстрый старт
 1. Клонирование репозитория
 # Клонируйте репозиторий
-git clone https://github.com/ваш-username/memeow.git
+git clone https://github.com/kseniiazacepina-cloud/memeow.git
 cd memeow
 
 2. Создание виртуального окружения

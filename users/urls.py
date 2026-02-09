@@ -8,6 +8,7 @@ urlpatterns = [
     # Профиль пользователя
     path('profile/', profile, name='profile'),
     path('profile/<str:username>/', profile, name='user_profile'),
+    path('user/<int:user_id>/memes/', views.user_memes, name='user_memes'),
     
     # Настройки
     path('settings/', settings_view, name='settings'),
