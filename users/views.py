@@ -8,6 +8,18 @@ from django.urls import reverse_lazy
 from django.db.models import Count, Sum
 from memes.models import Meme, Favorite
 from .forms import UserUpdateForm, ProfileUpdateForm, UserRegisterForm
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import MemeSubscription, TelegramConnection
+from .forms import MemeSubscriptionForm, TelegramConnectionForm
+import json
+import random
+import string
+from django.utils import timezone
+from .models import MemeSubscription, TelegramConnection    
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
 
 @login_required
 def profile(request, username=None):
@@ -154,3 +166,173 @@ def register(request):
 
 def user_memes(request, user_id):
     user = get_object_or_404(User, id=user_id)
+
+@csrf_exempt
+@login_required
+def save_subscription_ajax(request):
+    """Сохранение настроек подписки через AJAX"""
+    if request.method == 'POST':
+        try:
+            # Пробуем получить JSON
+            try:
+                data = json.loads(request.body.decode('utf-8'))
+            except json.JSONDecodeError:
+                # Если не JSON, пробуем FormData
+                data = {
+                    'channel': request.POST.get('channel', 'email'),
+                    'frequency': request.POST.get('frequency', 'weekly')
+                }
+            
+            channel = data.get('channel', 'email')
+            frequency = data.get('frequency', 'weekly')
+            
+            # Получаем или создаем подписку
+            from .models import MemeSubscription
+            subscription, created = MemeSubscription.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'channel': channel,
+                    'frequency': frequency,
+                    'is_active': True if frequency != 'none' else False
+                }
+            )
+            
+            # Обновляем подписку
+            subscription.channel = channel
+            subscription.frequency = frequency
+            subscription.is_active = True if frequency != 'none' else False
+            subscription.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Настройки подписки сохранены!',
+                'data': {
+                    'channel': channel,
+                    'frequency': frequency,
+                    'is_active': subscription.is_active
+                }
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e),
+                'message': 'Произошла ошибка при сохранении'
+            }, status=500)
+    
+    return JsonResponse({
+        'success': False,
+        'error': 'Invalid request method'
+    }, status=400)
+
+@login_required
+def generate_telegram_code(request):
+    """Генерация кода для привязки Telegram"""
+    connection, created = TelegramConnection.objects.get_or_create(user=request.user)
+    
+    # Генерируем новый код
+    code = ''.join(random.choices(string.digits, k=6))
+    connection.verification_code = code
+    connection.is_verified = False
+    connection.save()
+    
+    return JsonResponse({
+        'success': True,
+        'code': code,
+        'message': f'Ваш код для привязки Telegram: {code}'
+    })
+
+
+@csrf_exempt
+@login_required
+def verify_telegram_code(request):
+    """Верификация Telegram кода"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        chat_id = data.get('chat_id')
+        username = data.get('username')
+        code = data.get('code')
+        
+        try:
+            connection = TelegramConnection.objects.get(
+                user=request.user,
+                verification_code=code
+            )
+            connection.telegram_chat_id = chat_id
+            connection.telegram_username = username
+            connection.is_verified = True
+            connection.verified_at = timezone.now()
+            connection.save()
+            
+            return JsonResponse({'success': True, 'message': 'Telegram успешно привязан!'})
+        except TelegramConnection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Неверный код'})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@login_required
+def unsubscribe_meme(request, token):
+    """Отписка от рассылки по токену"""
+    try:
+        subscription = MemeSubscription.objects.get(user__profile__unsubscribe_token=token)
+        subscription.is_active = False
+        subscription.save()
+        messages.success(request, 'Вы успешно отписались от рассылки.')
+    except MemeSubscription.DoesNotExist:
+        messages.error(request, 'Подписка не найдена.')
+    
+    return redirect('home')
+
+@csrf_exempt
+@login_required
+def save_subscription_ajax(request):
+    """Сохранение настроек подписки через AJAX"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            channel = data.get('channel', 'email')
+            frequency = data.get('frequency', 'weekly')
+            
+            # Получаем или создаем подписку
+            subscription, created = MemeSubscription.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'channel': channel,
+                    'frequency': frequency,
+                    'is_active': True
+                }
+            )
+            
+            # Обновляем подписку
+            subscription.channel = channel
+            subscription.frequency = frequency
+            subscription.is_active = True
+            subscription.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Настройки подписки сохранены!'
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@login_required
+def check_telegram_connection(request):
+    """Проверка статуса привязки Telegram"""
+    try:
+        connection = TelegramConnection.objects.get(user=request.user, is_verified=True)
+        return JsonResponse({
+            'connected': True,
+            'telegram_username': connection.telegram_username,
+            'connected_since': connection.verified_at.strftime('%d.%m.%Y')
+        })
+    except TelegramConnection.DoesNotExist:
+        return JsonResponse({'connected': False})

@@ -3,6 +3,8 @@ from django.contrib.auth import views as auth_views
 from . import views
 from .views import profile, favorites, settings_view, dashboard
 from users import views as user_views
+from django.urls import path
+from . import views
 
 urlpatterns = [
     # Профиль пользователя
@@ -51,6 +53,14 @@ urlpatterns = [
     path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+    # Подписка на мемы
+    # path('subscription/settings/', views.meme_subscription_settings, name='meme_subscription_settings'),
+    path('subscription/save/', views.save_subscription_ajax, name='save_subscription_ajax'),
+    path('generate-telegram-code/', views.generate_telegram_code, name='generate_telegram_code'),
+    path('verify-telegram-code/', views.verify_telegram_code, name='verify_telegram_code'),
+    path('check-telegram-connection/', views.check_telegram_connection, name='check_telegram_connection'),
+    path('unsubscribe/<str:token>/', views.unsubscribe_meme, name='unsubscribe_meme'),
 ]
 
 # Добавляем view для регистрации

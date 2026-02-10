@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Profile
+from .models import MemeSubscription, TelegramConnection
 
 class UserRegisterForm(UserCreationForm):
     """Форма регистрации пользователя"""
@@ -62,4 +63,32 @@ class ProfileUpdateForm(forms.ModelForm):
         }
         labels = {
             'email_subscription': 'Подписаться на email-рассылку',
+        }
+
+class MemeSubscriptionForm(forms.ModelForm):
+    """Форма подписки на рассылку мемов"""
+    class Meta:
+        model = MemeSubscription
+        fields = ['frequency', 'channel']
+        widgets = {
+            'frequency': forms.RadioSelect(attrs={'class': 'form-check-input'}),
+            'channel': forms.RadioSelect(attrs={'class': 'form-check-input'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['frequency'].choices = MemeSubscription.FREQUENCY_CHOICES
+        self.fields['channel'].choices = MemeSubscription.CHANNEL_CHOICES
+
+
+class TelegramConnectionForm(forms.ModelForm):
+    """Форма привязки Telegram"""
+    class Meta:
+        model = TelegramConnection
+        fields = ['telegram_username']
+        widgets = {
+            'telegram_username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '@username (без @)'
+            }),
         }

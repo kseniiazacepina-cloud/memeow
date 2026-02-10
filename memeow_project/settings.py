@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from django.conf import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +29,6 @@ SECRET_KEY = 'django-insecure-%$+w9rzfuixu^0k1^kqyq$kzk4z-l#=j%1+zz=l3+3s_t2vjv5
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
 
 # Application definition
 
@@ -106,6 +106,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
                 'memeow_project.context_processors.unread_notifications',
+                'memeow_project.settings.telegram_context',
             ],
         },
     },
@@ -147,3 +148,21 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+def telegram_context(request):
+    return {
+        'TELEGRAM_BOT_USERNAME': getattr(settings, 'TELEGRAM_BOT_USERNAME', 'MemeowNewsBot'),
+    }   
+
+# Telegram Bot Settings
+TELEGRAM_BOT_TOKEN = '8525395206:AAGytA7oJroCC4D6I7_r_C4DHJ3RaMvvrBs'
+TELEGRAM_BOT_USERNAME = 'memeow_subscription_bot'
+
+# Email рассылка
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('memeowsubscription@gmail.com', '')
+EMAIL_HOST_PASSWORD = os.environ.get('htzoyzdnokjvkqns', '')
+DEFAULT_FROM_EMAIL = 'Memeow <noreply@memeow.com>'

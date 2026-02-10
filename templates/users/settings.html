@@ -177,29 +177,22 @@
                     </div>
                 </div>
 
-                <!--настройки уведомлений-->
+                <!-- Настройки уведомлений -->
                 <div class="tab-pane fade" id="notification-settings">
                     <div class="card shadow">
                         <div class="card-header bg-info text-white">
                             <h5 class="mb-0"><i class="bi bi-bell"></i> Настройки уведомлений</h5>
                         </div>
                         <div class="card-body">
+                            <div class="mb-4">
+                                <h6><i class="bi bi-envelope"></i> Рассылка мемов</h6>
+                                {% include 'users/partials/subscription_form.html' %}
+                            </div>
+                            
+                            <hr>
+                            
                             <form method="post">
                                 {% csrf_token %}
-                                <div class="mb-3">
-                                    <div class="form-check form-switch">
-                                        <input type="checkbox" name="email_subscription" 
-                                               class="form-check-input" id="id_email_subscription"
-                                               {% if profile_form.email_subscription.value %}checked{% endif %}>
-                                        <label class="form-check-label" for="id_email_subscription">
-                                            Email-рассылка
-                                        </label>
-                                    </div>
-                                    <div class="form-text">
-                                        Получать еженедельные дайджесты с лучшими мемами
-                                    </div>
-                                </div>
-                                
                                 <div class="mb-3">
                                     <div class="form-check form-switch">
                                         <input type="checkbox" class="form-check-input" id="notify_likes" checked>
@@ -214,15 +207,6 @@
                                         <input type="checkbox" class="form-check-input" id="notify_comments" checked>
                                         <label class="form-check-label" for="notify_comments">
                                             Уведомления о новых комментариях
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <div class="form-check form-switch">
-                                        <input type="checkbox" class="form-check-input" id="notify_followers" checked>
-                                        <label class="form-check-label" for="notify_followers">
-                                            Уведомления о новых подписчиках
                                         </label>
                                     </div>
                                 </div>

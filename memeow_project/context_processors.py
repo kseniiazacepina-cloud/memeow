@@ -1,3 +1,4 @@
+from django.conf import settings
 from memes.models import Notification
 
 def unread_notifications(request):
@@ -13,3 +14,10 @@ def unread_notifications(request):
             # Если что-то пошло не так, возвращаем 0
             return {'unread_notifications_count': 0}
     return {'unread_notifications_count': 0}
+
+
+def telegram_context(request):
+    """Добавляет настройки Telegram в контекст шаблонов"""
+    return {
+        'TELEGRAM_BOT_USERNAME': getattr(settings, 'TELEGRAM_BOT_USERNAME', 'memeow_subscription_bot'),
+    }
