@@ -25,6 +25,15 @@ class Profile(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.get_or_create(user=instance)
+        # Создаем подписку по умолчанию
+        MemeSubscription.objects.get_or_create(
+            user=instance,
+            defaults={
+                'frequency': 'weekly',
+                'channel': 'email',
+                'is_active': True
+            }
+        )
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

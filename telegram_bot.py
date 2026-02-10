@@ -24,11 +24,8 @@ TOKEN = settings.TELEGRAM_BOT_TOKEN
 BOT_USERNAME = getattr(settings, 'TELEGRAM_BOT_USERNAME', 'memeow_subscription_bot')
 
 # ================== ПРОКСИ (если нужно) ==================
-# Раскомментируй если Telegram заблокирован:
+# если Telegram заблокирован:
 """
-# Вариант 1: Tor (установи Tor Browser)
-# apihelper.proxy = {'https': 'socks5://127.0.0.1:9150'}
-
 # Вариант 2: Публичные прокси (могут не работать):
 # apihelper.proxy = {'https': 'http://51.158.68.133:8811'}
 # apihelper.proxy = {'https': 'socks5://138.68.161.14:1080'}
