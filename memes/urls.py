@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 from . import views
 from .views import moderation_queue
+from .views_mailing import mailing_control, test_mailing, mailing_stats, api_mailing_status, api_run_mailing
 
 urlpatterns = [
     # Главная страница
@@ -59,4 +60,11 @@ urlpatterns = [
     
     # Детальная статистика по пользователю
     path('staff/activity/user/<int:user_id>/', views.user_activity_detail, name='user_activity_detail'),
+
+    # Рассылка
+    path('mailing/control/', mailing_control, name='mailing_control'),
+    path('mailing/test/', test_mailing, name='test_mailing'),
+    path('mailing/stats/', mailing_stats, name='mailing_stats'),
+    path('api/mailing/status/', api_mailing_status, name='api_mailing_status'),
+    path('api/mailing/run/<str:frequency>/', api_run_mailing, name='api_run_mailing'),
 ]

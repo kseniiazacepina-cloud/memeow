@@ -1,0 +1,28 @@
+Дайджест мемов - {{ today }}
+
+{% if frequency == 'daily' %}Ежедневная{% else %}Еженедельная{% endif %} подборка лучших мемов за {{ period_name }}
+
+{% if meme_of_the_day %}
+⭐ МЕМ ДНЯ:
+{{ meme_of_the_day.title }}
+{% if meme_of_the_day.description %}{{ meme_of_the_day.description }}{% endif %}
+👍 Лайков: {{ meme_of_the_day.likes_count }}
+👁️ Просмотров: {{ meme_of_the_day.views_count }}
+👤 Автор: {{ meme_of_the_day.author.username }}
+Ссылка: {{ site_url }}{{ meme_of_the_day.get_absolute_url }}
+
+{% endif %}
+🔥 ПОПУЛЯРНЫЕ МЕМЫ:
+{% for meme in recent_memes %}
+{{ forloop.counter }}. {{ meme.title }}
+👍 Лайков: {{ meme.likes_count }}
+👁️ Просмотров: {{ meme.views_count }}
+Ссылка: {{ site_url }}{{ meme.get_absolute_url }}
+
+{% endfor %}
+
+---
+Сайт: {{ site_url }}
+
+Вы получили это письмо, потому что подписаны на {% if frequency == 'daily' %}ежедневную{% else %}еженедельную{% endif %} рассылку мемов.
+Чтобы отписаться, перейдите по ссылке: {{ unsubscribe_url }}

@@ -97,6 +97,7 @@ TEMPLATES = [
             BASE_DIR / 'templates',  # базовые шаблоны (base.html)
             BASE_DIR / 'memes' / 'templates',  # шаблоны приложения memes
             BASE_DIR / 'users' / 'templates',  # шаблоны приложения users
+            BASE_DIR / 'templates/emails',
         ],
         'APP_DIRS': True,  # для поиска в templates/ внутри каждого приложения
         'OPTIONS': {

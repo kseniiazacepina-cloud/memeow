@@ -356,3 +356,73 @@ def check_telegram_connection(request):
         })
     except TelegramConnection.DoesNotExist:
         return JsonResponse({'connected': False})
+    
+@login_required
+def send_test_digest(request):
+    """Отправить тестовый дайджест"""
+    from memes.management.commands.send_meme_digest import Command
+    
+    try:
+        command = Command()
+        
+        # Создаем тестовый контекст
+        from memes.models import Meme
+        from datetime import timedelta
+        from django.utils import timezone
+        
+        start_date = timezone.now() - timedelta(days=1)
+        recent_memes = Meme.objects.filter(
+            is_published=True,
+            created_at__gte=start_date
+        ).order_by('-likes_count', '-created_at')[:4]
+        
+        context = {
+            'user': request.user,
+            'frequency': 'daily',
+            'period_name': 'день',
+            'today': timezone.now().date().strftime('%d.%m.%Y'),
+            'meme_of_the_day': recent_memes[0] if recent_memes else None,
+            'recent_memes': recent_memes,
+            'site_url': 'http://localhost:8000',
+            'unsubscribe_url': f'http://localhost:8000/users/unsubscribe/{request.user.profile.unsubscribe_token}/',
+        }
+        
+        # Рендерим письмо
+        from django.template.loader import render_to_string
+        html_content = render_to_string('emails/meme_digest.html', context)
+        text_content = render_to_string('emails/meme_digest.txt', context)
+        
+        messages.success(request, 'Тестовое письмо сгенерировано')
+        
+        # Показываем предварительный просмотр
+        return render(request, 'users/email_preview.html', {
+            'html_content': html_content,
+            'text_content': text_content,
+            'subject': f'Тестовый дайджест мемов - {timezone.now().date().strftime("%d.%m.%Y")}',
+            'email': request.user.email,
+        })
+        
+    except Exception as e:
+        messages.error(request, f'Ошибка: {str(e)}')
+        return redirect('profile')
+    
+@login_required
+def mailing_status(request):
+    """Статус рассылки"""
+    subscription = getattr(request.user, 'meme_subscription', None)
+    
+    if subscription:
+        status = {
+            'frequency': subscription.get_frequency_display(),
+            'is_active': subscription.is_active,
+            'last_sent': subscription.last_sent.strftime('%d.%m.%Y %H:%M') if subscription.last_sent else 'Никогда',
+            'channel': subscription.get_channel_display(),
+            'next_send': 'Завтра в 10:00' if subscription.frequency == 'daily' else 'В следующий понедельник в 10:00',
+        }
+    else:
+        status = {'error': 'Подписка не найдена'}
+    
+    return render(request, 'users/mailing_status.html', {
+        'status': status,
+        'subscription': subscription,
+    })

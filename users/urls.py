@@ -61,6 +61,11 @@ urlpatterns = [
     path('verify-telegram-code/', views.verify_telegram_code, name='verify_telegram_code'),
     path('check-telegram-connection/', views.check_telegram_connection, name='check_telegram_connection'),
     path('unsubscribe/<str:token>/', views.unsubscribe_meme, name='unsubscribe_meme'),
+
+    # Рассылка
+    path('mailing/status/', views.mailing_status, name='mailing_status'),
+    path('mailing/test/', views.send_test_digest, name='send_test_digest'),
+    path('unsubscribe/<str:token>/', views.unsubscribe_meme, name='unsubscribe_meme'),
 ]
 
 # Добавляем view для регистрации

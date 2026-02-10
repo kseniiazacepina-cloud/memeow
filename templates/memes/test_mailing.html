@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Тестовое письмо{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">✉ Тестовое письмо</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <p>Отправить тестовое письмо на вашу почту: <strong>{{ user.email }}</strong></p>
+            <p>Письмо будет содержать пример того, как выглядят рассылки от Memeow.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">
+                    Отправить тестовое письмо
+                </button>
+                <a href="{% url 'mailing_control' %}" class="btn btn-secondary">
+                    Назад к управлению
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

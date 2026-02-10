@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Управление рассылкой{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">📧 Управление рассылкой мемов</h1>
+    
+    <!-- Статус -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Статус планировщика</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Статус:</strong> 
+                        {% if scheduler_status.running %}
+                            <span class="badge bg-success">Запущен</span>
+                        {% else %}
+                            <span class="badge bg-danger">Остановлен</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Время рассылки:</strong> {{ scheduler_status.daily_time }}</p>
+                    <p><strong>Следующая ежедневная:</strong> {{ scheduler_status.next_daily }}</p>
+                    <p><strong>Следующая еженедельная:</strong> {{ scheduler_status.next_weekly }}</p>
+                </div>
+                <div class="col-md-6">
+                    <form method="post" class="mb-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="start">
+                        <button type="submit" class="btn btn-success" 
+                                {% if scheduler_status.running %}disabled{% endif %}>
+                            ▶ Запустить планировщик
+                        </button>
+                    </form>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="stop">
+                        <button type="submit" class="btn btn-danger" 
+                                {% if not scheduler_status.running %}disabled{% endif %}>
+                            ⏹ Остановить планировщик
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ручная отправка -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Ручная отправка</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="send_daily">
+                        <button type="submit" class="btn btn-primary w-100">
+                            📅 Отправить ежедневную рассылку
+                        </button>
+                        <small class="text-muted">Отправит всем подписчикам с ежедневной подпиской</small>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="send_weekly">
+                        <button type="submit" class="btn btn-primary w-100">
+                            📊 Отправить еженедельную рассылку
+                        </button>
+                        <small class="text-muted">Отправит всем подписчикам с еженедельной подпиской</small>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Настройка времени -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Настройка времени</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="set_time">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="hour" class="form-label">Час (0-23):</label>
+                        <input type="number" id="hour" name="hour" class="form-control" 
+                               min="0" max="23" value="{{ scheduler_status.daily_time|slice:'0:2' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="minute" class="form-label">Минуты (0-59):</label>
+                        <input type="number" id="minute" name="minute" class="form-control" 
+                               min="0" max="59" value="{{ scheduler_status.daily_time|slice:'3:5' }}" required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-warning w-100">
+                            ⚙ Установить время рассылки
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Статистика -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Статистика подписчиков</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                        <h3>{{ stats.daily_subscribers }}</h3>
+                        <p class="text-muted mb-0">Ежедневные подписчики</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                        <h3>{{ stats.weekly_subscribers }}</h3>
+                        <p class="text-muted mb-0">Еженедельные подписчики</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                        <h3>{{ stats.total_subscribers }}</h3>
+                        <p class="text-muted mb-0">Всего активных подписчиков</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ссылки -->
+    <div class="mt-4">
+        <a href="{% url 'test_mailing' %}" class="btn btn-outline-info me-2">
+            ✉ Отправить тестовое письмо
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+            ← На главную
+        </a>
+    </div>
+</div>
+{% endblock %}

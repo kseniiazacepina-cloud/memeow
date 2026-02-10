@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Memeow Администрация</a></h1>
+{% endblock %}
+
+{% block userlinks %}
+    {{ block.super }}
+    / <a href="{% url 'mailing_control' %}" style="color: #79aec8;">📧 Управление рассылкой</a>
+{% endblock %}

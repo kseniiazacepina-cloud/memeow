@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .meme-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .meme-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .meme-description {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .stats {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .meme-of-day {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+        .unsubscribe-link {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #4a6fa5;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .memes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .meme-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📅 Ваш {{ frequency }} дайджест мемов</h1>
+        <p>Самые популярные мемы за {{ period_name }} - {{ today }}</p>
+    </div>
+    
+    <div class="content">
+        {% if meme_of_the_day %}
+        <div class="meme-card meme-of-day">
+            <h2>⭐ Мем дня</h2>
+            <div class="meme-title">{{ meme_of_the_day.title }}</div>
+            
+            {% if meme_of_the_day.image %}
+            <!-- Изображение будет вложено в письмо -->
+            <div style="text-align: center; margin: 15px 0;">
+                <img src="cid:meme_of_day_{{ meme_of_the_day.id }}" alt="{{ meme_of_the_day.title }}" class="meme-image">
+            </div>
+            {% endif %}
+            
+            {% if meme_of_the_day.description %}
+            <div class="meme-description">{{ meme_of_the_day.description }}</div>
+            {% endif %}
+            
+            <div class="stats">
+                👍 {{ meme_of_the_day.likes_count }} лайков
+            </div>
+        </div>
+        {% endif %}
+        
+        <h2>🔥 Популярные мемы</h2>
+        <div class="memes-grid">
+            {% for meme in recent_memes %}
+            <div class="meme-card">
+                <div class="meme-title">{{ forloop.counter }}. {{ meme.title }}</div>
+                
+                {% if meme.image %}
+                <div style="margin: 10px 0;">
+                    <em>Изображение мема доступно на сайте</em>
+                </div>
+                {% endif %}
+                
+                {% if meme.description %}
+                <div class="meme-description">{{ meme.description|truncatechars:120 }}</div>
+                {% endif %}
+                
+                <div class="stats">
+                    👍 {{ meme.likes_count }} лайков
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin: 25px 0;">
+            <a href="{{ site_url }}" class="btn">📚 Смотреть все мемы</a>
+        </div>
+        
+        <div class="footer">
+            <p>Это письмо отправлено автоматически. Отписаться от рассылки можно в настройках аккаунта.</p>
+            <p>
+                <a href="{{ unsubscribe_url }}" class="unsubscribe-link">❌ Отписаться от рассылки</a>
+            </p>
+            <p>С уважением,<br>Команда Memeow 🐱</p>
+        </div>
+    </div>
+</body>
+</html>

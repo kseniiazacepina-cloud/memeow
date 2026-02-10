@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Тестовое письмо от Memeow</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #4a6fa5; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Memeow</h1>
+        <p>Тестовое письмо</p>
+    </div>
+    
+    <div class="content">
+        <h2>Привет, {{ user.username }}! 👋</h2>
+        
+        <p>Это тестовое письмо для проверки работы системы рассылки Memeow.</p>
+        
+        <p>Если вы получили это письмо, значит система рассылки работает корректно!</p>
+        
+        <h3>Последние мемы:</h3>
+        
+        {% for meme in recent_memes %}
+        <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 5px;">
+            <h4>{{ meme.title }}</h4>
+            {% if meme.description %}
+            <p>{{ meme.description|truncatechars:100 }}</p>
+            {% endif %}
+            <p><small>👍 {{ meme.likes_count }} лайков | 👁️ {{ meme.views_count }} просмотров</small></p>
+        </div>
+        {% endfor %}
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="http://localhost:8000" style="background: #4a6fa5; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Перейти на сайт
+            </a>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© {% now "Y" %} Memeow. Все права защищены.</p>
+        <p>Это тестовое письмо, отвечать на него не нужно.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Статистика рассылки{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">📊 Статистика рассылки</h1>
+    
+    <!-- Общая статистика -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Общая статистика</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                        <h3>{{ total_users }}</h3>
+                        <p class="text-muted mb-0">Всего подписчиков</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                        <h3>{{ active_users }}</h3>
+                        <p class="text-muted mb-0">Активных подписчиков</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                        <h3>{{ active_users|add:"0"|default:"0" }}</h3>
+                        <p class="text-muted mb-0">Процент активности</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Распределение по частоте -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Распределение по частоте</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Частота</th>
+                        <th>Количество подписчиков</th>
+                        <th>Процент</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in frequency_stats %}
+                    <tr>
+                        <td>
+                            {% if stat.frequency == 'daily' %}Ежедневно
+                            {% elif stat.frequency == 'weekly' %}Еженедельно
+                            {% elif stat.frequency == 'none' %}Отключено
+                            {% else %}{{ stat.frequency }}{% endif %}
+                        </td>
+                        <td>{{ stat.count }}</td>
+                        <td>
+                            {% if active_users > 0 %}
+                                {{ stat.count|floatformat:0 }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">Нет данных</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Последние рассылки -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Последние рассылки</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_mailings %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Действие</th>
+                            <th>Описание</th>
+                            <th>Пользователь</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mailing in recent_mailings %}
+                        <tr>
+                            <td>{{ mailing.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                {% if mailing.action_type == 'email_digest_sent' %}
+                                    <span class="badge bg-success">Рассылка</span>
+                                {% elif mailing.action_type == 'bulk_email_sent' %}
+                                    <span class="badge bg-primary">Массовая</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ mailing.action_type }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ mailing.description|truncatechars:50 }}</td>
+                            <td>
+                                {% if mailing.user %}
+                                    {{ mailing.user.username }}
+                                {% else %}
+                                    Система
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center text-muted">Пока нет данных о рассылках</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Ссылки -->
+    <div class="mt-4">
+        <a href="{% url 'mailing_control' %}" class="btn btn-outline-primary me-2">
+            ← Назад к управлению
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+            На главную
+        </a>
+    </div>
+</div>
+{% endblock %}
