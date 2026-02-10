@@ -14,6 +14,9 @@
     <!--Custom CSS-->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -93,8 +96,20 @@
                                 <i class="bi bi-star"></i> Избранное
                             </a></li>
                             {% if user.is_staff %}
+                            <li><a class="dropdown-item" href="{% url 'report_management' %}">
+                                <i class="bi bi-flag"></i> Управление жалобами
+                            </a></li>
                             <li><a class="dropdown-item" href="{% url 'moderation_queue' %}">
-                                <i class="bi bi-shield-check"></i> Модерация
+                                <i class="bi bi-shield-check"></i> Модерация мемов
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">
+                                <i class="bi bi-speedometer2"></i> Админ панель
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'activity_dashboard' %}">
+                                <i class="bi bi-graph-up"></i> Активность пользователей
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:memes_useractivity_changelist' %}">
+                                <i class="bi bi-clock-history"></i> Все логи активности
                             </a></li>
                             {% endif %}
                             <li><hr class="dropdown-divider"></li>

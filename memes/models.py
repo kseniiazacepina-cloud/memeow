@@ -159,7 +159,7 @@ class Report(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"Жалоба на {self.meme.title}"
+        return f"Жалоба на '{self.meme.title}' от {self.reporter.username}"
     
     def resolve(self, moderator, notes=''):
         """Пометить жалобу как рассмотренную"""
@@ -168,6 +168,15 @@ class Report(models.Model):
         self.resolved_at = timezone.now()
         self.resolution_notes = notes
         self.save()
+        
+        # Отправляем уведомление автору мема
+        Notification.objects.create(
+            user=self.meme.author,
+            notification_type='report_resolved',
+            title=f'Жалоба на мем "{self.meme.title}" рассмотрена',
+            message=f'Ваша жалоба на мем "{self.meme.title}" была рассмотрена модератором.',
+            link=f'/memes/{self.meme.id}/'
+        )
 
 class Notification(models.Model):
     """Уведомления для пользователей"""
@@ -188,6 +197,10 @@ class Notification(models.Model):
     related_report = models.ForeignKey(Report, on_delete=models.SET_NULL, null=True, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    link = models.CharField(max_length=500, blank=True, null=True)  # URL для перехода
+    related_meme = models.ForeignKey(Meme, on_delete=models.SET_NULL, 
+                                     null=True, blank=True, 
+                                     related_name='notifications')
     
     class Meta:
         ordering = ['-created_at']
@@ -200,3 +213,69 @@ class Notification(models.Model):
     def mark_as_read(self):
         self.is_read = True
         self.save()
+
+class UserActivity(models.Model):
+    """Модель для отслеживания активности пользователей"""
+    
+    ACTION_TYPES = [
+        ('login', 'Вход в систему'),
+        ('logout', 'Выход из системы'),
+        ('register', 'Регистрация'),
+        ('view_meme', 'Просмотр мема'),
+        ('like_meme', 'Лайк мема'),
+        ('unlike_meme', 'Убрал лайк'),
+        ('favorite_meme', 'Добавил в избранное'),
+        ('unfavorite_meme', 'Удалил из избранного'),
+        ('add_meme', 'Добавил мем'),
+        ('edit_meme', 'Редактировал мем'),
+        ('delete_meme', 'Удалил мем'),
+        ('report_meme', 'Пожаловался на мем'),
+        ('search', 'Поиск'),
+        ('view_profile', 'Просмотр профиля'),
+        ('moderate', 'Модерация'),
+        ('admin_action', 'Админ действие'),
+    ]
+    
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='activities',
+        null=True,  # Для анонимных действий
+        blank=True
+    )
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    action_type = models.CharField(max_length=50, choices=ACTION_TYPES)
+    description = models.TextField(blank=True)
+    
+    # Связи с другими моделями (опционально)
+    meme = models.ForeignKey(
+        'Meme', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='activities'
+    )
+    target_user = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='targeted_activities'
+    )
+    
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        username = self.user.username if self.user else 'Аноним'
+        return f"{username} - {self.get_action_type_display()} - {self.created_at.strftime('%d.%m.%Y %H:%M')}"
+    
+    class Meta:
+        verbose_name = 'Активность пользователя'
+        verbose_name_plural = 'Активность пользователей'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'created_at']),
+            models.Index(fields=['action_type', 'created_at']),
+            models.Index(fields=['ip_address', 'created_at']),
+        ]

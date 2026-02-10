@@ -1,5 +1,5 @@
 from django.utils import timezone
-from .models import Notification
+from .models import Notification, UserActivity
 
 def send_moderation_notification(meme, moderator):
     """Отправить уведомление автору о результате модерации"""
@@ -40,3 +40,41 @@ def send_report_resolution_notification(report, moderator):
             message=f'Ваша жалоба на мем "{report.meme.title}" была рассмотрена модератором.',
             related_report=report
         )
+
+def log_user_activity(user, action_type, description='', ip_address=None, 
+                      user_agent='', meme=None, target_user=None):
+    """
+    Утилита для ручного логирования активности пользователя
+    """
+    try:
+        activity = UserActivity.objects.create(
+            user=user,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            action_type=action_type,
+            description=description,
+            meme=meme,
+            target_user=target_user,
+            created_at=timezone.now()
+        )
+        return activity
+    except Exception as e:
+        print(f"Error logging activity: {e}")
+        return None
+
+# Пример использования в других местах:
+def track_like_activity(user, meme, action='like'):
+    """Отслеживание лайков/дизлайков"""
+    action_type = 'like_meme' if action == 'like' else 'unlike_meme'
+    description = f"{'Лайкнул' if action == 'like' else 'Убрал лайк'} мем: {meme.title}"
+    log_user_activity(user, action_type, description, meme=meme)
+
+def track_report_activity(user, meme):
+    """Отслеживание жалоб"""
+    description = f"Пожаловался на мем: {meme.title}"
+    log_user_activity(user, 'report_meme', description, meme=meme)
+
+def track_moderation_activity(moderator, meme, action):
+    """Отслеживание действий модерации"""
+    description = f"{action} мем: {meme.title}"
+    log_user_activity(moderator, 'moderate', description, meme=meme)
