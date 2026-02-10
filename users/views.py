@@ -157,7 +157,27 @@ def register(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Аккаунт создан для {username}! Теперь вы можете войти.')
+            
+            # Отправляем приветственное письмо
+            subject = 'Добро пожаловать на Memeow!'
+            message = render_to_string('users/emails/welcome_email.html', {
+                'user': user,
+                'username': username,
+            })
+            
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    html_message=message,
+                    fail_silently=False,
+                )
+                messages.success(request, f'Аккаунт создан для {username}! Проверьте вашу почту.')
+            except Exception as e:
+                messages.warning(request, f'Аккаунт создан, но не удалось отправить письмо: {str(e)}')
+            
             return redirect('login')
     else:
         form = UserRegisterForm()

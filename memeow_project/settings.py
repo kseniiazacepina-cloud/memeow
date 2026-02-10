@@ -143,15 +143,12 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
 }
 
-# Email settings (for development)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 def telegram_context(request):
     return {
-        'TELEGRAM_BOT_USERNAME': getattr(settings, 'TELEGRAM_BOT_USERNAME', 'MemeowNewsBot'),
+        'TELEGRAM_BOT_USERNAME': getattr(settings, 'TELEGRAM_BOT_USERNAME', 'MemeowBot'),
     }   
 
 # Telegram Bot Settings
@@ -163,6 +160,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('memeowsubscription@gmail.com', '')
-EMAIL_HOST_PASSWORD = os.environ.get('htzoyzdnokjvkqns', '')
-DEFAULT_FROM_EMAIL = 'Memeow <noreply@memeow.com>'
+EMAIL_HOST_USER = 'memeowsubscription@gmail.com'
+EMAIL_HOST_PASSWORD = 'svravmloqghentjl'
+DEFAULT_FROM_EMAIL = 'memeowsubscription@gmail.com'
