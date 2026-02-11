@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Пожаловаться на мем - Memyau{% endblock %}
+{% block title %}Пожаловаться на мем - Memeow{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <div class="mb-3 text-center">
                         <img src="{{ meme.image.url }}" alt="{{ meme.title }}" 
-                             class="img-fluid rounded" style="max-height: 200px;">
+                             class="img-fluid rounded" style="max-height: 200px; padding-left: 35%; padding-right: 35%;">
                         <p class="mt-2"><strong>{{ meme.title }}</strong></p>
                     </div>
                     
@@ -44,7 +44,7 @@
                         </div>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-danger">Отправить жалобу</button>
+                            <button type="submit" class="btn btn-report">Отправить жалобу</button>
                             <a href="{% url 'meme_detail' meme.id %}" class="btn btn-outline-secondary">Отмена</a>
                         </div>
                     </form>

@@ -94,9 +94,9 @@ class Meme(models.Model):
     def get_status_icon(self):
         """Иконка для статуса"""
         icons = {
-            'pending': '⏳',
-            'approved': '✅',
-            'rejected': '❌'
+            'pending': '⧖',
+            'approved': '✔',
+            'rejected': '✖'
         }
         return icons.get(self.moderation_status, '❓')
 

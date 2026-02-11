@@ -765,3 +765,73 @@ def user_activity_detail(request, user_id):
     }
     
     return render(request, 'memes/user_activity_detail.html', context)
+
+def popular_memes(request):
+    """Популярные мемы с фильтрацией по периоду"""
+    memes = Meme.objects.filter(is_published=True)
+    
+    # Фильтрация по периоду
+    period = request.GET.get('period', 'week')
+    today = timezone.now().date()
+    
+    if period == 'day':
+        start_date = today - timedelta(days=1)
+        memes = memes.filter(created_at__date__gte=start_date)
+    elif period == 'week':
+        start_date = today - timedelta(days=7)
+        memes = memes.filter(created_at__date__gte=start_date)
+    elif period == 'month':
+        start_date = today - timedelta(days=30)
+        memes = memes.filter(created_at__date__gte=start_date)
+    # period = 'all' - без фильтрации
+    
+    # Сортировка
+    sort = request.GET.get('sort', 'popular')
+    if sort == 'new':
+        memes = memes.order_by('-created_at')
+    elif sort == 'views':
+        memes = memes.order_by('-views_count', '-created_at')
+    else:  # popular
+        memes = memes.order_by('-likes_count', '-created_at')
+    
+    memes = memes.select_related('author').prefetch_related('tags')
+    
+    paginator = Paginator(memes, 24)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'memes': page_obj,
+        'title': 'Популярные мемы',
+        'current_period': period,
+        'current_sort': sort,
+    }
+    
+    return render(request, 'memes/meme_list.html', context)
+
+def meme_list(request):
+    """Список всех мемов"""
+    memes = Meme.objects.filter(is_published=True)
+    
+    # Сортировка
+    sort = request.GET.get('sort', 'new')
+    if sort == 'popular':
+        memes = memes.order_by('-likes_count', '-created_at')
+    elif sort == 'views':
+        memes = memes.order_by('-views_count', '-created_at')
+    else:  # new
+        memes = memes.order_by('-created_at')
+    
+    memes = memes.select_related('author').prefetch_related('tags')
+    
+    paginator = Paginator(memes, 24)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'memes': page_obj,
+        'title': 'Все мемы',
+        'current_sort': sort,
+    }
+    
+    return render(request, 'memes/meme_list.html', context)

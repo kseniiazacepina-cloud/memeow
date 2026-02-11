@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Популярные мемы — Memeow</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Bootstrap для совместимости -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Основной CSS файл -->
+    <link rel="stylesheet" href="css/popular-memes.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body class="font-sans antialiased text-dark">
+    <!-- Header Navigation -->
+    <nav class="sticky-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo-box">
+                    <i data-lucide="cat" class="text-white"></i>
+                </div>
+                <span class="logo-text">Memeow</span>
+            </div>
+            
+            <div class="nav-center">
+                <a href="/" class="nav-link">
+                    Главная <i data-lucide="home" class="w-4 h-4"></i>
+                </a>
+                <a href="/random" class="nav-link">
+                    Случайный <i data-lucide="shuffle" class="w-4 h-4"></i>
+                </a>
+                <a href="/popular" class="nav-link active">
+                    Популярные <i data-lucide="flame" class="w-4 h-4"></i>
+                </a>
+                <a href="/add" class="nav-link">
+                    Добавить <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                </a>
+            </div>
+            
+            <div class="nav-right">
+                <form class="search-form" action="/search" method="get">
+                    <div class="search-wrapper">
+                        <input class="search-input" type="search" placeholder="Поиск мемов..." name="q">
+                        <i data-lucide="search" class="search-icon"></i>
+                    </div>
+                </form>
+                
+                <div class="user-dropdown-container">
+                    <button class="user-button">
+                        <i data-lucide="user" class="w-6 h-6"></i>
+                        <span class="username">username</span>
+                        <span class="notification-badge">3</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <div class="user-dropdown-content">
+                        <a href="/profile" class="dropdown-item">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                            <span>Профиль</span>
+                        </a>
+                        <a href="/my-memes" class="dropdown-item">
+                            <i data-lucide="image" class="w-5 h-5"></i>
+                            <span>Мои мемы</span>
+                        </a>
+                        <a href="/notifications" class="dropdown-item">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span>Уведомления</span>
+                            <span class="notification-count">3</span>
+                        </a>
+                        <a href="/favorites" class="dropdown-item">
+                            <i data-lucide="star" class="w-5 h-5"></i>
+                            <span>Избранное</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/settings" class="dropdown-item">
+                            <i data-lucide="settings" class="w-5 h-5"></i>
+                            <span>Настройки</span>
+                        </a>
+                        <a href="/logout" class="dropdown-item text-red">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                            <span>Выйти</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <button class="mobile-menu-button" id="mobileMenuButton">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu hidden">
+        <div class="mobile-menu-content">
+            <form action="/search" method="get" class="mobile-search-form">
+                <div class="search-wrapper">
+                    <input class="search-input w-full" type="search" placeholder="Поиск мемов..." name="q">
+                    <i data-lucide="search" class="search-icon"></i>
+                </div>
+            </form>
+            
+            <div class="mobile-nav-links">
+                <a href="/" class="mobile-nav-link">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    <span>Главная</span>
+                </a>
+                <a href="/random" class="mobile-nav-link">
+                    <i data-lucide="shuffle" class="w-5 h-5"></i>
+                    <span>Случайный мем</span>
+                </a>
+                <a href="/popular" class="mobile-nav-link active">
+                    <i data-lucide="flame" class="w-5 h-5"></i>
+                    <span>Популярные</span>
+                </a>
+                <a href="/add" class="mobile-nav-link">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span>Добавить мем</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Header с заголовком и фильтрами -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        <i data-lucide="flame" class="page-title-icon"></i>
+                        Популярные мемы
+                    </h1>
+                    <p class="page-description">
+                        Самые горячие мемы прямо сейчас
+                    </p>
+                </div>
+                
+                <div class="period-filters">
+                    <a href="?period=day" class="period-filter active">День</a>
+                    <a href="?period=week" class="period-filter">Неделя</a>
+                    <a href="?period=month" class="period-filter">Месяц</a>
+                    <a href="?period=all" class="period-filter">Все время</a>
+                </div>
+            </div>
+            
+            <!-- Top мемы (особо популярные) -->
+            <div class="top-memes-section">
+                <div class="section-header">
+                    <div class="section-header-accent"></div>
+                    <h2 class="section-title">
+                        В ТОПе 🔥
+                    </h2>
+                </div>
+                
+                <div class="top-memes-grid">
+                    <!-- Мем #1 -->
+                    <div class="top-meme-card">
+                        <div class="top-meme-medal gold">
+                            <span class="medal-number">#1</span>
+                        </div>
+                        
+                        <div class="viewer-exe">
+                            <div class="viewer-header">
+                                <span>MEME.EXE</span>
+                                <div class="window-controls">
+                                    <span class="window-control window-control-close"></span>
+                                    <span class="window-control window-control-minimize"></span>
+                                    <span class="window-control window-control-maximize"></span>
+                                </div>
+                            </div>
+                            
+                            <a href="/meme/1" class="meme-image-container">
+                                <img src="https://images.unsplash.com/photo-1622737133809-7f7e81e7c1f9?w=500" alt="Кот программист" class="meme-image">
+                            </a>
+                            
+                            <div class="meme-info">
+                                <h3 class="meme-title">
+                                    <a href="/meme/1" class="meme-title-link">
+                                        Кот-программист находит баг
+                                    </a>
+                                </h3>
+                                
+                                <div class="meme-tags">
+                                    <a href="/tag/programming" class="tag tag-purple">#programming</a>
+                                    <a href="/tag/cat" class="tag tag-pink">#cat</a>
+                                    <a href="/tag/bug" class="tag tag-purple">#bug</a>
+                                </div>
+                                
+                                <div class="meme-meta">
+                                    <div class="meme-author">
+                                        <i data-lucide="user" class="w-4 h-4"></i>
+                                        <a href="/user/catdev" class="author-link">catdev</a>
+                                    </div>
+                                    
+                                    <div class="stats-container">
+                                        <div class="stat-item likes" data-meme-id="1">
+                                            <i data-lucide="heart" class="stat-icon fill-accent text-accent"></i>
+                                            <span>2,847</span>
+                                        </div>
+                                        <div class="stat-item views">
+                                            <i data-lucide="eye" class="stat-icon"></i>
+                                            <span>12.4K</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем #2 -->
+                    <div class="top-meme-card">
+                        <div class="top-meme-medal silver">
+                            <span class="medal-number">#2</span>
+                        </div>
+                        
+                        <div class="viewer-exe">
+                            <div class="viewer-header">
+                                <span>MEME.EXE</span>
+                                <div class="window-controls">
+                                    <span class="window-control window-control-close"></span>
+                                    <span class="window-control window-control-minimize"></span>
+                                    <span class="window-control window-control-maximize"></span>
+                                </div>
+                            </div>
+                            
+                            <a href="/meme/2" class="meme-image-container">
+                                <img src="https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=500" alt="Собака с ноутбуком" class="meme-image">
+                            </a>
+                            
+                            <div class="meme-info">
+                                <h3 class="meme-title">
+                                    <a href="/meme/2" class="meme-title-link">
+                                        Когда пытаешься работать из дома
+                                    </a>
+                                </h3>
+                                
+                                <div class="meme-tags">
+                                    <a href="/tag/dog" class="tag tag-pink">#dog</a>
+                                    <a href="/tag/work" class="tag tag-purple">#work</a>
+                                    <a href="/tag/funny" class="tag tag-pink">#funny</a>
+                                </div>
+                                
+                                <div class="meme-meta">
+                                    <div class="meme-author">
+                                        <i data-lucide="user" class="w-4 h-4"></i>
+                                        <a href="/user/puppylove" class="author-link">puppylove</a>
+                                    </div>
+                                    
+                                    <div class="stats-container">
+                                        <div class="stat-item likes" data-meme-id="2">
+                                            <i data-lucide="heart" class="stat-icon"></i>
+                                            <span>1,932</span>
+                                        </div>
+                                        <div class="stat-item views">
+                                            <i data-lucide="eye" class="stat-icon"></i>
+                                            <span>8.7K</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем #3 -->
+                    <div class="top-meme-card">
+                        <div class="top-meme-medal bronze">
+                            <span class="medal-number">#3</span>
+                        </div>
+                        
+                        <div class="viewer-exe">
+                            <div class="viewer-header">
+                                <span>MEME.EXE</span>
+                                <div class="window-controls">
+                                    <span class="window-control window-control-close"></span>
+                                    <span class="window-control window-control-minimize"></span>
+                                    <span class="window-control window-control-maximize"></span>
+                                </div>
+                            </div>
+                            
+                            <a href="/meme/3" class="meme-image-container">
+                                <img src="https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?w=500" alt="Грустный кот" class="meme-image">
+                            </a>
+                            
+                            <div class="meme-info">
+                                <h3 class="meme-title">
+                                    <a href="/meme/3" class="meme-title-link">
+                                        Понедельник утром
+                                    </a>
+                                </h3>
+                                
+                                <div class="meme-tags">
+                                    <a href="/tag/cat" class="tag tag-pink">#cat</a>
+                                    <a href="/tag/monday" class="tag tag-purple">#monday</a>
+                                    <a href="/tag/mood" class="tag tag-pink">#mood</a>
+                                </div>
+                                
+                                <div class="meme-meta">
+                                    <div class="meme-author">
+                                        <i data-lucide="user" class="w-4 h-4"></i>
+                                        <a href="/user/sadcat" class="author-link">sadcat</a>
+                                    </div>
+                                    
+                                    <div class="stats-container">
+                                        <div class="stat-item likes" data-meme-id="3">
+                                            <i data-lucide="heart" class="stat-icon"></i>
+                                            <span>1,547</span>
+                                        </div>
+                                        <div class="stat-item views">
+                                            <i data-lucide="eye" class="stat-icon"></i>
+                                            <span>6.2K</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Сетка всех популярных мемов -->
+            <div class="all-memes-section">
+                <div class="section-header">
+                    <div class="section-header-accent blue"></div>
+                    <h2 class="section-title">
+                        Все популярные
+                    </h2>
+                    <span class="memes-count">24 мемов</span>
+                </div>
+                
+                <div class="memes-grid">
+                    <!-- Мем 1 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                1,234
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                5.6K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/4" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=500" alt="Кот с тостером">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/4" class="meme-title-link">
+                                    Кот пытается понять js
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/javascript" class="tag tag-purple tag-small">#javascript</a>
+                                <a href="/tag/cat" class="tag tag-pink tag-small">#cat</a>
+                                <span class="tags-more">+2</span>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/jsdev" class="author-link-small">jsdev</a>
+                                </div>
+                                <span class="meme-date">15.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем 2 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                987
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                4.2K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/5" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500" alt="Кот в очках">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/5" class="meme-title-link">
+                                    Когда код работает без ошибок
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/programming" class="tag tag-purple tag-small">#programming</a>
+                                <a href="/tag/success" class="tag tag-pink tag-small">#success</a>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/happycoder" class="author-link-small">happycoder</a>
+                                </div>
+                                <span class="meme-date">14.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем 3 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                856
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                3.9K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/6" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1494256997604-768d1f608cac?w=500" alt="Собака и кошка">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/6" class="meme-title-link">
+                                    Frontend vs Backend
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/frontend" class="tag tag-pink tag-small">#frontend</a>
+                                <a href="/tag/backend" class="tag tag-purple tag-small">#backend</a>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/devlife" class="author-link-small">devlife</a>
+                                </div>
+                                <span class="meme-date">13.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем 4 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                745
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                3.1K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/7" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=500" alt="Кот с ноутбуком">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/7" class="meme-title-link">
+                                    Когда забыл точку с запятой
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/javascript" class="tag tag-purple tag-small">#javascript</a>
+                                <a href="/tag/error" class="tag tag-pink tag-small">#error</a>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/junior" class="author-link-small">junior</a>
+                                </div>
+                                <span class="meme-date">12.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем 5 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                654
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                2.8K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/8" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=500" alt="Собака">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/8" class="meme-title-link">
+                                    Когда пятница 13-е
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/dog" class="tag tag-pink tag-small">#dog</a>
+                                <a href="/tag/friday" class="tag tag-purple tag-small">#friday</a>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/dogfan" class="author-link-small">dogfan</a>
+                                </div>
+                                <span class="meme-date">11.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем 6 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                543
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                2.3K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/9" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1511275539165-3a3b023c6eba?w=500" alt="Кот в коробке">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/9" class="meme-title-link">
+                                    Я в ковидном карантине
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/cat" class="tag tag-pink tag-small">#cat</a>
+                                <a href="/tag/quarantine" class="tag tag-purple tag-small">#quarantine</a>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/homebody" class="author-link-small">homebody</a>
+                                </div>
+                                <span class="meme-date">10.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем 7 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                432
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                1.9K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/10" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=500" alt="Кот">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/10" class="meme-title-link">
+                                    Лицо когда увидел баги в продe
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/cat" class="tag tag-pink tag-small">#cat</a>
+                                <a href="/tag/production" class="tag tag-purple tag-small">#production</a>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/devops" class="author-link-small">devops</a>
+                                </div>
+                                <span class="meme-date">09.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Мем 8 -->
+                    <div class="meme-card">
+                        <div class="meme-card-badges">
+                            <span class="badge-likes">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 fill-accent text-accent"></i>
+                                321
+                            </span>
+                            <span class="badge-views">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-primary"></i>
+                                1.5K
+                            </span>
+                        </div>
+                        
+                        <a href="/meme/11" class="meme-card-image">
+                            <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?w=500" alt="Кот">
+                        </a>
+                        
+                        <div class="meme-card-content">
+                            <h3 class="meme-card-title">
+                                <a href="/meme/11" class="meme-title-link">
+                                    Чат GPT пишет код
+                                </a>
+                            </h3>
+                            
+                            <div class="meme-card-tags">
+                                <a href="/tag/ai" class="tag tag-purple tag-small">#ai</a>
+                                <a href="/tag/funny" class="tag tag-pink tag-small">#funny</a>
+                            </div>
+                            
+                            <div class="meme-card-footer">
+                                <div class="meme-card-author">
+                                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                    <a href="/user/aitester" class="author-link-small">aitester</a>
+                                </div>
+                                <span class="meme-date">08.02.2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Пагинация -->
+                <div class="pagination-container">
+                    <nav class="pagination-nav">
+                        <ul class="pagination-list">
+                            <li>
+                                <a href="?page=1" class="pagination-link active" aria-label="Previous">
+                                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="?page=1" class="pagination-link active">1</a>
+                            </li>
+                            <li>
+                                <a href="?page=2" class="pagination-link">2</a>
+                            </li>
+                            <li>
+                                <a href="?page=3" class="pagination-link">3</a>
+                            </li>
+                            <li>
+                                <span class="pagination-ellipsis">...</span>
+                            </li>
+                            <li>
+                                <a href="?page=6" class="pagination-link">6</a>
+                            </li>
+                            <li>
+                                <a href="?page=2" class="pagination-link" aria-label="Next">
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom Script -->
+    <script src="js/popular-memes.js"></script>
+</body>
+</html>

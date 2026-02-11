@@ -120,7 +120,7 @@
                                             {% if stats.activities_week > 0 %}
                                             {% widthratio activity.count stats.activities_week 100 as percentage %}
                                             <div class="progress-bar" role="progressbar" 
-                                                style="width: {{ percentage }}%">
+                                                style="width: { percentage }%">
                                                 {{ percentage|floatformat:1 }}%
                                             </div>
                                             {% else %}
@@ -143,7 +143,7 @@
     <!-- Последние активности -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">🕒 Последние активности</h5>
+            <h5 class="mb-0">Последние активности</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -210,7 +210,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">🔥 Популярные мемы (неделя)</h5>
+                    <h5 class="mb-0">Популярные мемы (неделя)</h5>
                 </div>
                 <div class="card-body">
                     {% if popular_memes %}
@@ -243,7 +243,7 @@
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">📊 Распределение действий (неделя)</h5>
+                    <h5 class="mb-0">Распределение действий (неделя)</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

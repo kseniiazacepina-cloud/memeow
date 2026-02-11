@@ -35,11 +35,11 @@
                 </td>
                 <td>
                     {% if meme.is_published %}
-                    <a href="{% url 'meme_detail' meme.id %}" class="btn btn-sm btn-outline-primary">
+                    <a href="{% url 'meme_detail' meme.id %}" class="btn btn-sm btn-outline-primary">👁
                         <i class="bi bi-eye"></i>
                     </a>
                     {% endif %}
-                    <a href="{% url 'edit_meme' meme.id %}" class="btn btn-sm btn-outline-warning">
+                    <a href="{% url 'edit_meme' meme.id %}" class="btn btn-sm btn-outline-warning">✎
                         <i class="bi bi-pencil"></i>
                     </a>
                 </td>

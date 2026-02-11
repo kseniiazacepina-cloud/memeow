@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container py-4">
-    <h1 class="mb-4">📧 Управление рассылкой мемов</h1>
+    <h1 class="mb-4">Управление рассылкой мемов</h1>
     
     <!-- Статус -->
     <div class="card mb-4">
@@ -60,7 +60,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="action" value="send_daily">
                         <button type="submit" class="btn btn-primary w-100">
-                            📅 Отправить ежедневную рассылку
+                            ✉ Отправить ежедневную рассылку
                         </button>
                         <small class="text-muted">Отправит всем подписчикам с ежедневной подпиской</small>
                     </form>
@@ -70,7 +70,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="action" value="send_weekly">
                         <button type="submit" class="btn btn-primary w-100">
-                            📊 Отправить еженедельную рассылку
+                            ✉ Отправить еженедельную рассылку
                         </button>
                         <small class="text-muted">Отправит всем подписчикам с еженедельной подпиской</small>
                     </form>

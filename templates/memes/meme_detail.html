@@ -26,7 +26,7 @@
                         <img src="{{ meme.image.url }}" 
                              alt="{{ meme.title }}" 
                              class="img-fluid rounded shadow"
-                             style="max-height: 600px;">
+                             style="max-height: 600px; padding-left: 20%; padding-right: 20%;">
                     </div>
                     
                     <!--описание-->
@@ -68,19 +68,19 @@
                 <div class="card-footer bg-transparent">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <button class="btn btn-outline-danger like-btn" data-meme-id="{{ meme.id }}">
+                            <button class="btn btn-like-meme" data-meme-id="{{ meme.id }}">
                                 <i class="bi {% if is_liked %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
-                                <span class="like-count">{{ meme.likes_count }}</span>
+                                ♥<span class="like-count">{{ meme.likes_count }}</span>
                             </button>
                             
-                            <button class="btn btn-outline-warning favorite-btn ms-2" data-meme-id="{{ meme.id }}">
+                            <button class="btn favorite-btn ms-2" data-meme-id="{{ meme.id }}">
                                 <i class="bi {% if is_favorite %}bi-star-fill text-warning{% else %}bi-star{% endif %}"></i>
                                 Избранное
                             </button>
                         </div>
                         
                         {% if user.is_authenticated and user != meme.author %}
-                        <a href="{% url 'report_meme' meme.id %}" class="btn btn-outline-danger btn-sm">
+                        <a href="{% url 'report_meme' meme.id %}" class="btn btn-report-meme btn-sm">
                             <i class="bi bi-flag"></i> Пожаловаться
                         </a>
                         {% endif %}
@@ -155,7 +155,7 @@
                                     <div class="card-body p-2">
                                         <p class="card-text small mb-1">{{ similar.title|truncatechars:30 }}</p>
                                         <div class="d-flex justify-content-between">
-                                            <span class="badge bg-primary">{{ similar.likes_count }}</span>
+                                            <span class="badge bg-primary">♥ {{ similar.likes_count }}</span>
                                             <span class="text-muted small">{{ similar.created_at|timesince }}</span>
                                         </div>
                                     </div>

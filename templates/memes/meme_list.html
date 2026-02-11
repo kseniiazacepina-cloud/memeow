@@ -1,29 +1,246 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мемы</title>
-</head>
-<body>
-    <h1>Список мемов</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Memeow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/meme-list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="django-content">
+    <!-- Хедер как в viewer.exe -->
+    <div class="viewer-header">
+        <span class="font-display">{{ title }}</span>
+        <div class="window-controls">
+            <span class="window-control window-control-close"></span>
+            <span class="window-control window-control-minimize"></span>
+            <span class="window-control"></span>
+        </div>
+    </div>
     
-    {% if memes %}
-        <ul>
-        {% for meme in memes %}
-            <li>
-                <h2>{{ meme.title }}</h2>
-                <p>{{ meme.description|truncatechars:100 }}</p>
-                <p>Лайки: {{ meme.likes_count }}</p>
-                <p>Просмотры: {{ meme.views_count }}</p>
-                {% if meme.image %}
-                    <img src="{{ meme.image.url }}" alt="{{ meme.title }}" width="200">
+    <div class="p-4">
+        <!-- Статистика -->
+        <div class="stats-wrapper mb-4">
+            <div class="stat-panel">
+                <div class="stat-item total">
+                    <span class="stat-label">ВСЕГО МЕМОВ:</span>
+                    <span class="stat-value">{{ memes.paginator.count }}</span>
+                </div>
+                {% if title == 'Популярные мемы' %}
+                <div class="stat-item popular">
+                    <span class="stat-label">ТОП ЗА НЕДЕЛЮ:</span>
+                    <span class="stat-value">{{ memes|length }}+</span>
+                </div>
                 {% endif %}
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>Мемов пока нет.</p>
-    {% endif %}
-</body>
-</html>
+            </div>
+        </div>
+
+        <!-- Фильтры и сортировка -->
+        <div class="filters-bar mb-4">
+            <div class="filter-group">
+                <span class="filter-label">СОРТИРОВКА:</span>
+                <div class="filter-buttons">
+                    <a href="?sort=new{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                       class="filter-btn {% if request.GET.sort == 'new' or not request.GET.sort %}active{% endif %}">
+                        НОВЫЕ
+                    </a>
+                    <a href="?sort=popular{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                       class="filter-btn {% if request.GET.sort == 'popular' %}active{% endif %}">
+                        ПОПУЛЯРНЫЕ
+                    </a>
+                    {% if title == 'Все мемы' %}
+                    <a href="?sort=views{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                       class="filter-btn {% if request.GET.sort == 'views' %}active{% endif %}">
+                        ПО ПРОСМОТРАМ
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Период для популярных -->
+            {% if title == 'Популярные мемы' %}
+            <div class="filter-group">
+                <span class="filter-label">ПЕРИОД:</span>
+                <div class="filter-buttons">
+                    <a href="?period=day{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                       class="filter-btn {% if request.GET.period == 'day' or not request.GET.period %}active{% endif %}">
+                        ДЕНЬ
+                    </a>
+                    <a href="?period=week{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                       class="filter-btn {% if request.GET.period == 'week' %}active{% endif %}">
+                        НЕДЕЛЯ
+                    </a>
+                    <a href="?period=month{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                       class="filter-btn {% if request.GET.period == 'month' %}active{% endif %}">
+                        МЕСЯЦ
+                    </a>
+                    <a href="?period=all{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                       class="filter-btn {% if request.GET.period == 'all' %}active{% endif %}">
+                        ВСЕ ВРЕМЯ
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Сетка мемов -->
+        {% if memes %}
+        <div class="meme-grid">
+            {% for meme in memes %}
+            <div class="meme-card-wrapper">
+                <div class="meme-card">
+                    <!-- Шапка карточки -->
+                    <div class="meme-card-header">
+                        <div class="meme-author">
+                            <div class="author-avatar">
+                                <span>@{{ meme.author.username|first|upper }}</span>
+                            </div>
+                            <div class="author-info">
+                                <span class="author-name">{{ meme.author.username }}</span>
+                                <span class="meme-date">{{ meme.created_at|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Изображение мема -->
+                    <a href="{% url 'meme_detail' meme.pk %}" class="meme-image-link">
+                        <div class="meme-image-container">
+                            <img src="{{ meme.image.url }}" alt="{{ meme.title }}" loading="lazy" class="meme-image">
+                            <div class="meme-overlay">
+                                <span class="view-details">ПРОСМОТРЕТЬ</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Информация о меме -->
+                    <div class="meme-info">
+                        <h3 class="meme-title">{{ meme.title|truncatechars:40 }}</h3>
+                        
+                        <!-- Теги -->
+                        {% if meme.tags.all %}
+                        <div class="meme-tags">
+                            {% for tag in meme.tags.all|slice:":3" %}
+                            <a href="{% url 'tag_memes' tag.slug %}" class="tag tag-pink">#{{ tag.name }}</a>
+                            {% endfor %}
+                            {% if meme.tags.count > 3 %}
+                            <span class="tag tag-purple">+{{ meme.tags.count|add:"-3" }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Статистика -->
+                        <div class="stats-container">
+                            <div class="stat-item likes">
+                                <i class="bi bi-heart stat-icon"></i>
+                                <span class="likes-count">{{ meme.likes_count }}</span>
+                            </div>
+                            <div class="stat-item views">
+                                <i class="bi bi-eye stat-icon"></i>
+                                <span>{{ meme.views_count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Пагинация -->
+        {% if memes.paginator.num_pages > 1 %}
+        <div class="pagination-wrapper mt-5">
+            <nav aria-label="Навигация по страницам">
+                <ul class="pagination justify-content-center">
+                    {% if memes.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.period %}&period={{ request.GET.period }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            ⟪
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ memes.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.period %}&period={{ request.GET.period }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            ←
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            {{ memes.number }} / {{ memes.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if memes.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ memes.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.period %}&period={{ request.GET.period }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            →
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ memes.paginator.num_pages }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.period %}&period={{ request.GET.period }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            ⟫
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- Пустое состояние -->
+        <div class="empty-state">
+            <div class="empty-state-icon">🎭</div>
+            <h3 class="empty-state-title">Здесь пока ничего нет</h3>
+            <p class="empty-state-text">
+                {% if title == 'Популярные мемы' %}
+                    Будь первым, кто создаст популярный мем!
+                {% else %}
+                    Мемы появятся после модерации
+                {% endif %}
+            </p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'add_meme' %}" class="btn-example mt-3">
+                ЗАГРУЗИТЬ МЕМ
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/meme-interactions.js' %}"></script>
+<script>
+function toggleLike(event, memeId) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    fetch(`/memes/${memeId}/toggle_like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const likesSpan = document.getElementById(`likes-count-${memeId}`);
+            if (likesSpan) {
+                likesSpan.textContent = data.likes_count;
+                const likeBtn = likesSpan.closest('.likes');
+                if (data.liked) {
+                    likeBtn.classList.add('liked');
+                } else {
+                    likeBtn.classList.remove('liked');
+                }
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

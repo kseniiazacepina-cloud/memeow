@@ -3,7 +3,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Избранное - Memyau{% endblock %}
+{% block title %}Избранное - Memeow{% endblock %}
 Memeow
 {% block content %}
 <div class="container mt-4">
@@ -59,13 +59,13 @@ Memeow
                     </p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="badge bg-danger">
-                            <i class="bi bi-heart"></i> {{ meme.likes_count }}
+                            <i class="bi bi-heart"></i> ♥ {{ meme.likes_count }}
                         </span>
                         <span class="badge bg-secondary">
-                            <i class="bi bi-eye"></i> {{ meme.views_count }}
+                            <i class="bi bi-eye"></i> 👁 {{ meme.views_count }}
                         </span>
-                        <button class="btn btn-sm btn-outline-warning favorite-btn" data-meme-id="{{ meme.id }}">
-                            <i class="bi bi-star-fill text-warning"></i>
+                        <button class="btn btn-sm favorite-btn" data-meme-id="{{ meme.id }}">
+                            <i class="bi bi-star-fill text-warning">Удалить</i>
                         </button>
                     </div>
                 </div>
@@ -111,7 +111,7 @@ Memeow
     <!--кнопка очистки-->
     {% if favorite_memes %}
     <div class="text-center mt-5">
-        <button class="btn btn-outline-danger" id="clear-favorites-btn" data-bs-toggle="modal" data-bs-target="#clearModal">
+        <button class="btn btn-delete-fav" id="clear-favorites-btn" data-bs-toggle="modal" data-bs-target="#clearModal">
             <i class="bi bi-trash"></i> Очистить все избранное
         </button>
     </div>

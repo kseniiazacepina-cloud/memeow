@@ -171,7 +171,7 @@ body {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border: 2px solid var(--dark);
+
   border-radius: 0;
   margin: 0.25rem;
   transition: all 0.3s ease;
@@ -180,9 +180,9 @@ body {
 }
 
 .tag-purple {
-  background: var(--purple);
+  background: #6366f1;
   color: white;
-  border-color: var(--purple);
+  border-color: #6366f1;
 }
 
 .tag-pink {
@@ -265,7 +265,42 @@ body {
   box-shadow: 4px 4px 0px 0px var(--dark) !important;
 }
 
+.btn-secondary {
+  background-color: var(--dark) !important;
+  border-color: var(--dark) !important;
+  color: white !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  padding: 0.75rem 2rem !important;
+  cursor: pointer !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+}
+
 .btn-outline-primary {
+  background-color: transparent !important;
+  border-color: var(--dark) !important;
+  color: var(--dark) !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  padding: 0.75rem 2rem !important;
+  cursor: pointer !important;
+}
+
+.btn-outline-secondary {
   background-color: transparent !important;
   border-color: var(--dark) !important;
   color: var(--dark) !important;
@@ -322,6 +357,13 @@ body {
   }
 
 .btn-outline-primary:hover {
+  background-color: var(--dark) !important;
+  color: white !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--accent) !important;
+}
+
+.btn-outline-secondary:hover {
   background-color: var(--dark) !important;
   color: white !important;
   transform: translate(-2px, -2px);
@@ -589,4 +631,511 @@ body {
   .grid-mobile {
     grid-template-columns: 1fr;
   }
+}
+
+/* ===== СТИЛИ ПРОФИЛЯ ===== */
+
+/* Центрирование аватара */
+.profile-avatar {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== КВАДРАТНЫЕ КНОПКИ ДЛЯ УВЕДОМЛЕНИЙ ===== */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  border: 2px solid var(--dark) !important;
+  background-color: white !important;
+  color: var(--dark) !important;
+  font-weight: 600;
+  font-size: 1.25rem;  /* для крупных символов ✔ ✖ */
+  line-height: 1;
+  transition: all 0.2s ease;
+  border-radius: 0 !important;  /* абсолютно квадратные */
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: none !important;
+}
+
+.btn-action:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+/* Прочитано — акцентный цвет */
+.btn-action-mark {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.btn-action-mark:hover {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+}
+
+/* Удалить — красный оттенок */
+.btn-action-delete {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+.btn-action-delete:hover {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+}
+
+/* Групповые кнопки («Прочитать все», «Удалить все») — прямоугольные, без скруглений */
+.btn-action-mark-all,
+.btn-action-delete-all {
+  border-radius: 0 !important;
+  border: 2px solid var(--dark) !important;
+  background-color: white !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 1.25rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-action-mark-all:hover,
+.btn-action-delete-all:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+/* Специально для кнопки «Удалить все» — красный бордер при наведении */
+.btn-action-delete-all:hover {
+  border-color: #dc3545 !important;
+  background-color: #dc3545 !important;
+}
+
+.btn-action-mark-all:hover {
+  border-color: var(--accent) !important;
+  background-color: var(--accent) !important;
+} 
+
+/* Всего Одобрено В рассмотрении Отклонено */
+
+.bg-primary {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+}
+
+.bg-warning {
+  background-color: #55a3f7 !important; 
+  color: white !important;
+  border-color: #55a3f7 !important;
+}
+
+.bg-danger {
+  background-color: #ef5867 !important;
+  color: white !important;
+  border-color: #ef5867 !important;
+}
+
+.bi-bell {
+ font-weight: 500;
+ font-size: medium;
+}
+
+/* Удалить из избранного */
+
+.btn-sm.favorite-btn {
+  background-color: transparent !important;
+  border-color: var(--dark) !important;
+  color: var(--dark) !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  padding: 0.1rem 1rem !important;
+  cursor: pointer !important;
+}
+
+.btn-sm.favorite-btn:hover {
+  background-color: var(--dark) !important;
+  color: white !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--accent) !important;    
+  border-radius: 0 !important;
+}
+
+/* Удалить все */
+.btn-delete-fav {
+  border-radius: 0 !important;
+  background-color: rgb(245, 80, 80) !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem!important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-delete-fav:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-delete-fav:hover {
+  border-color: #dc3545 !important;
+  background-color: #dc3545 !important;
+}
+
+/* Изменить пароль*/
+.btn-change-password {
+  border-radius: 0 !important;
+  background-color: #ff98cc !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-change-password:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-change-password:hover {
+  border-color: #ec4899 !important;
+  background-color: #ec4899 !important;
+}
+
+/* Удалить аккаунт */
+.btn-delete-account {
+  border-radius: 0 !important;
+  background-color: #fa707e !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-delete-account:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-delete-account:hover {
+  border-color: #dc3545 !important;
+  background-color: #dc3545 !important;
+}
+
+/* Сохранить подписку */
+.btn-save_p {
+  border-radius: 0 !important;
+  background-color: #ff98cc !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-save_p:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-save_p:hover {
+  border-color: #ec4899 !important;
+  background-color: #ec4899 !important;
+}
+
+/* Отменить подписку */
+.btn-del-p {
+  border-radius: 0 !important;
+  background-color: #9596f9 !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-del-p:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-del-p:hover {
+  border-color: #6366f1 !important;
+  background-color: #6366f1 !important;
+}
+
+/* Сохранить уведомления */
+.btn-save-notif {
+  border-radius: 0 !important;
+  background-color: #98e5ff !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-save-notif:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-save-notif:hover {
+  border-color: #48a8ec !important;
+  background-color: #48a8ec !important;
+}
+
+/* Сохранить приватность */
+.btn-save-private {
+  border-radius: 0 !important;
+  background-color: #9596f9 !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-save-private:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-save-private:hover {
+  border-color: #6366f1 !important;
+  background-color: #6366f1 !important;
+}
+
+.btn-like-meme {
+  border-radius: 0 !important;
+  background-color: #ff98cc !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-like-meme:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-like-meme:hover {
+  border-color: #ec4899 !important;
+  background-color: #ec4899 !important; 
+}
+
+/* Добавить в избраное */
+.favorite-btn {
+  border-radius: 0 !important;
+  background-color: #9596f9 !important;
+  color: var(--dark) !important;
+  padding: 0.7rem 0.7rem 0.7rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.favorite-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.favorite-btn:hover {
+  border-color: #6366f1 !important;
+  background-color: #6366f1 !important;
+}
+
+/* Пожаловаться */
+.btn-report-meme {
+  border-radius: 0 !important;
+  background-color: #fa707e !important;
+  color: var(--dark) !important;
+  padding: 0.1rem 0.5rem 0.1rem 0.1rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-report-meme:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-report-meme:hover {
+  border-color: #dc3545 !important;
+  background-color: #dc3545 !important;
+}
+
+/* Отправить жалобу */
+.btn-report {
+  border-radius: 0 !important;
+  border: 2px solid var(--dark) !important;
+  background-color: #fa707e !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 12rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-report:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-report:hover {
+  border-color: #dc3545 !important;
+  background-color: #dc3545 !important;
+}
+
+.btn-moder {
+  background-color: var(--dark) !important;
+  border-color: var(--dark) !important;
+  color: white !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  padding: 0.75rem 2rem !important;
+  cursor: pointer !important;
+}
+
+.btn-moder:hover {
+  background-color: #8c27e4 !important;
+  border-color: #8c27e4 !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+}
+
+/* Зарегистрироваться */favorite-btn
+.btn-reg {
+  border-radius: 0 !important;
+  background-color: #9596f9 !important;
+  color: var(--dark) !important;
+  padding: 0.5rem 0.5rem 0.5rem 11rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-reg:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  color: white !important;
+  border-color: var(--dark) !important;
+}
+
+.btn-reg:hover {
+  border-color: #6366f1 !important;
+  background-color: #6366f1 !important;
 }

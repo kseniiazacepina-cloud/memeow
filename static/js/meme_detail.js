@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Обработка лайков
-    document.querySelectorAll('.like-btn').forEach(button => {
+    document.querySelectorAll('.btn-like-meme').forEach(button => {
         button.addEventListener('click', function() {
             const memeId = this.getAttribute('data-meme-id');
             toggleLike(memeId, this);

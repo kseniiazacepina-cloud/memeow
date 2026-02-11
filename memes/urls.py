@@ -44,6 +44,7 @@ urlpatterns = [
     
     # Популярные мемы
     path('popular/', views.popular_memes, name='popular_memes'),
+    path('memes/', views.meme_list, name='memes_list'),
     
     # AJAX endpoints
     path('meme/<int:pk>/like/', views.toggle_like, name='toggle_like'),

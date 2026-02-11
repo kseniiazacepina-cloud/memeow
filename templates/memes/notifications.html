@@ -9,13 +9,13 @@
         <h2><i class="bi bi-bell"></i> Уведомления</h2>
         <div class="d-flex align-items-center gap-2">
             {% if notifications and unread_count > 0 %}
-            <button class="btn btn-sm btn-primary" id="mark-all-read-btn">
-                <i class="bi bi-check-all"></i> Прочитать все ({{ unread_count }})
+            <button class="btn-action-mark-all" id="mark-all-read-btn">
+                ✔ Прочитать все ({{ unread_count }})
             </button>
             {% endif %}
             {% if notifications %}
-            <button class="btn btn-sm btn-outline-danger" id="delete-all-btn">
-                <i class="bi bi-trash"></i> Удалить все
+            <button class="btn-action-delete-all" id="delete-all-btn">
+                ✖ Удалить все
             </button>
             {% endif %}
         </div>
@@ -66,16 +66,16 @@
                     <small class="text-muted">{{ notification.created_at|timesince }} назад</small>
                     <div class="btn-group btn-group-sm mt-2">
                         {% if not notification.is_read %}
-                        <button class="btn btn-sm btn-success mark-read-btn" 
+                        <button class="btn-action btn-action-mark mark-read-btn" 
                                 data-notification-id="{{ notification.id }}"
                                 title="Пометить как прочитанное">
-                            <i class="bi bi-check"></i>
+                            ✔
                         </button>
                         {% endif %}
-                        <button class="btn btn-sm btn-outline-danger delete-btn" 
+                        <button class="btn-action btn-action-delete delete-btn" 
                                 data-notification-id="{{ notification.id }}"
                                 title="Удалить">
-                            <i class="bi bi-trash"></i>
+                            ✖
                         </button>
                     </div>
                 </div>

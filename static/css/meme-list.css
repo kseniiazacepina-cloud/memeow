@@ -1,0 +1,543 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap');
+
+:root {
+  --primary: #6366f1;
+  --accent: #f96cc5;
+  --dark: #0f172a;
+  --light: #f8fafc;
+  --purple: #6366f1;
+  --pink: #f96cc5;
+  --gray: #64748b;
+}
+
+/* ===== СТАТИСТИКА (шапка страницы) ===== */
+.stats-wrapper {
+  background: white;
+  border: 3px solid var(--dark);
+  box-shadow: 8px 8px 0 0 var(--dark);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--light);
+  border: 2px solid var(--dark);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 var(--dark);
+}
+
+.stat-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dark);
+}
+
+.stat-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.stat-item.total .stat-value {
+  color: var(--primary);
+}
+
+/* ===== ФИЛЬТРЫ ===== */
+.filters-bar {
+  background: white;
+  border: 3px solid var(--dark);
+  box-shadow: 8px 8px 0 0 var(--dark);
+  padding: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dark);
+  background: var(--light);
+  padding: 0.25rem 0.75rem;
+  border: 2px solid var(--dark);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: transparent;
+  border: 2px solid var(--dark);
+  color: var(--dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.filter-btn:hover {
+  background: var(--dark);
+  color: white;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 var(--dark);
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.filter-btn.active:hover {
+  background: var(--dark);
+  border-color: var(--dark);
+}
+
+/* ===== СЕТКА КАРТОЧЕК ===== */
+.meme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.meme-card-wrapper {
+  height: 100%;
+  display: flex;
+}
+
+.meme-card {
+  background: white;
+  border: 3px solid var(--dark);
+  box-shadow: 8px 8px 0 0 var(--dark);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.meme-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 12px 12px 0 0 var(--dark);
+}
+
+/* Шапка карточки */
+.meme-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--light);
+  border-bottom: 2px solid var(--dark);
+}
+
+.meme-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author-avatar {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--purple);
+  border: 2px solid var(--dark);
+  color: white;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--dark);
+}
+
+.meme-date {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* Изображение – строго квадратное и центрированное */
+.meme-image-link {
+  display: block;
+  text-decoration: none;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* современный способ, но для совместимости оставлен padding-bottom */
+  background: var(--light);
+  border-bottom: 2px solid var(--dark);
+  overflow: hidden;
+}
+
+/* Запасной метод через padding-bottom (работает везде) */
+.meme-image-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* 1:1 Aspect Ratio */
+  overflow: hidden;
+  background: var(--light);
+}
+
+.meme-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* заполняет контейнер, обрезая лишнее */
+  object-position: center; /* центрирует изображение */
+  transition: transform 0.5s ease;
+}
+
+.meme-card:hover .meme-image {
+  transform: scale(1.05);
+}
+
+/* Оверлей при наведении */
+.meme-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.meme-image-container:hover .meme-overlay {
+  opacity: 1;
+}
+
+.view-details {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid var(--dark);
+  color: var(--dark);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.meme-overlay:hover .view-details {
+  transform: translateY(0);
+}
+
+/* Информация под картинкой */
+.meme-info {
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.meme-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Теги */
+.meme-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.tag-pink {
+  background: var(--pink);
+  color: white;
+}
+
+.tag-purple {
+  background: var(--purple);
+  color: white;
+}
+
+.tag:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 var(--dark);
+  text-decoration: none;
+  color: white;
+}
+
+/* ===== СТАТИСТИКА ЛАЙКОВ И ПРОСМОТРОВ ===== */
+.stats-container {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--light);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Лайки */
+.stat-item.likes {
+  color: var(--accent);
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.stat-item.likes:hover {
+  transform: scale(1.05);
+  color: #ff4d6d;
+}
+
+.stat-item.likes.liked {
+  color: #ff4d6d;
+  text-shadow: 0 0 8px rgba(255, 77, 109, 0.5);
+}
+
+.stat-item.likes .stat-icon {
+  font-size: 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.stat-item.likes:hover .stat-icon {
+  transform: scale(1.2);
+}
+
+/* Просмотры */
+.stat-item.views {
+  color: var(--primary);
+}
+
+.stat-item.views .stat-icon {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+/* Счётчики жирным шрифтом */
+.likes-count,
+.stat-item.views span:last-child {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ===== ПУСТОЕ СОСТОЯНИЕ ===== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border: 3px solid var(--dark);
+  box-shadow: 8px 8px 0 0 var(--dark);
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.empty-state-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-text {
+  color: var(--gray);
+  margin-bottom: 1.5rem;
+}
+
+/* ===== ПАГИНАЦИЯ ===== */
+.pagination-wrapper {
+  margin-top: 2.5rem;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pagination .page-item {
+  list-style: none;
+}
+
+.pagination .page-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.75rem;
+  background: white;
+  border: 2px solid var(--dark);
+  color: var(--dark);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+  background: var(--dark);
+  color: white;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 var(--dark);
+}
+
+.pagination .active .page-link {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 1024px) {
+  .meme-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-wrapper,
+  .filters-bar {
+    padding: 1rem;
+  }
+
+  .stat-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stat-item {
+    justify-content: space-between;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-buttons {
+    width: 100%;
+  }
+
+  .filter-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .meme-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .meme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .meme-card-header {
+    flex-wrap: wrap;
+  }
+
+  .pagination .page-link {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Анимация для пустого состояния */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
