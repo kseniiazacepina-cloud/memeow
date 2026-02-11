@@ -1,5 +1,3 @@
-<!--базовый шаблон-->
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,171 +5,634 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Memeow{% endblock %}</title>
     
-    <!--Bootstrap 5 CSS-->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Bootstrap для совместимости -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!--Bootstrap Icons-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!--Custom CSS-->
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-
     
     {% block extra_css %}{% endblock %}
+    
+    <script>
+        tailwind.config = {
+            important: true,
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        accent: '#ec4899',
+                        dark: '#0f172a',
+                        light: '#f8fafc',
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "url('https://www.transparenttextures.com/patterns/graphy-light.png')",
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'spin-slow': 'spin 20s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f8fafc;
+            overflow-x: hidden;
+            cursor: url('https://cur.cursors-4u.net/ani/ani-1/ani1.cur'), auto;
+            background-image: url('https://www.transparenttextures.com/patterns/graphy-light.png');
+        }
+        
+        /* Стили для ретро-дизайна */
+        .window-shadow {
+            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .window-shadow:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 12px 12px 0px 0px rgba(15, 23, 42, 1) !important;
+        }
+        
+        .retro-border {
+            border: 3px solid #0f172a !important;
+        }
+        
+        .retro-border-thin {
+            border: 2px solid #0f172a !important;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        ::selection {
+            background: #ec4899;
+            color: white;
+        }
+        
+        /* Стили для Bootstrap компонентов чтобы они соответствовали дизайну */
+        .card {
+            border: 3px solid #0f172a !important;
+            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1) !important;
+            transition: all 0.3s ease;
+            background: white !important;
+        }
+        
+        .card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 12px 12px 0px 0px rgba(15, 23, 42, 1) !important;
+        }
+        
+        .btn-primary {
+            background-color: #0f172a !important;
+            border-color: #0f172a !important;
+            color: white !important;
+            border: 2px solid #0f172a !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #ec4899 !important;
+            border-color: #ec4899 !important;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px 0px #0f172a !important;
+        }
+        
+        .btn-outline-primary {
+            background-color: transparent !important;
+            border-color: #0f172a !important;
+            color: #0f172a !important;
+            border: 2px solid #0f172a !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #0f172a !important;
+            color: white !important;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px 0px #ec4899 !important;
+        }
+        
+        .form-control {
+            border: 2px solid #0f172a !important;
+            background: white !important;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #ec4899 !important;
+            box-shadow: 4px 4px 0px 0px #ec4899 !important;
+            transform: translate(-2px, -2px);
+            outline: none;
+        }
+        
+        .alert {
+            border: 3px solid #0f172a !important;
+            box-shadow: 4px 4px 0px 0px rgba(15, 23, 42, 1) !important;
+            background: white !important;
+        }
+        
+        .table {
+            border: 3px solid #0f172a !important;
+            background: white !important;
+        }
+        
+        .table th {
+            background-color: #0f172a !important;
+            color: white !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 3px solid #0f172a !important;
+        }
+        
+        .pagination .page-link {
+            border: 2px solid #0f172a !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination .page-link:hover {
+            background-color: #ec4899 !important;
+            color: white !important;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px 0px #0f172a !important;
+        }
+        
+        .pagination .active .page-link {
+            background-color: #0f172a !important;
+            border-color: #0f172a !important;
+            color: white !important;
+        }
+        
+        /* Стили для Django сообщений */
+        .messages .alert-success {
+            border-left: 6px solid #10b981 !important;
+        }
+        
+        .messages .alert-danger {
+            border-left: 6px solid #ef4444 !important;
+        }
+        
+        .messages .alert-info {
+            border-left: 6px solid #6366f1 !important;
+        }
+        
+        .messages .alert-warning {
+            border-left: 6px solid #f59e0b !important;
+        }
+        
+        /* Контейнер для контента Django */
+        .django-content {
+            background: white;
+            border: 3px solid #0f172a;
+            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Декоративные элементы */
+        .floating-cat {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+            max-width: 300px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-cat-1 {
+            top: 10%;
+            right: 5%;
+        }
+        
+        .floating-cat-2 {
+            bottom: 10%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+    </style>
 </head>
-<body>
-        <!--навигация-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'home' %}">
-                    <i class="bi bi-emoji-laughing"></i> Memeow
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
+<body class="font-sans antialiased text-dark">
+
+    <!-- Декоративные плавающие котики -->
+    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" 
+         alt="Meme Cat" class="floating-cat floating-cat-1 rounded-3xl">
+    <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=300&q=80" 
+         alt="Cat Meme" class="floating-cat floating-cat-2 rounded-3xl">
+
+    <!-- Header Navigation -->
+    <nav class="sticky top-0 z-50 bg-white border-b-4 border-dark flex justify-between items-center px-6 md:px-10 py-4 h-20">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                <i data-lucide="cat" class="text-white"></i>
+            </div>
+            <span class="font-display text-2xl tracking-tighter uppercase">Memeow</span>
+        </div>
+        
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex gap-6 font-bold uppercase text-sm tracking-widest">
+            <a href="{% url 'home' %}" class="hover:text-accent transition-colors flex items-center gap-1 {% if request.resolver_match.url_name == 'home' %}text-accent{% endif %}">
+                Главная <i data-lucide="home" class="w-4 h-4"></i>
+            </a>
+            <a href="{% url 'random_meme' %}" class="hover:text-accent transition-colors flex items-center gap-1 {% if request.resolver_match.url_name == 'random_meme' %}text-accent{% endif %}">
+                Случайный <i data-lucide="shuffle" class="w-4 h-4"></i>
+            </a>
+            <a href="{% url 'popular_memes' %}" class="hover:text-accent transition-colors flex items-center gap-1 {% if request.resolver_match.url_name == 'popular_memes' %}text-accent{% endif %}">
+                Популярные <i data-lucide="flame" class="w-4 h-4"></i>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'add_meme' %}" class="hover:text-accent transition-colors flex items-center gap-1 {% if request.resolver_match.url_name == 'add_meme' %}text-accent{% endif %}">
+                Добавить <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            </a>
+            {% endif %}
+        </div>
+        
+        <!-- Search and User Controls -->
+        <div class="flex items-center gap-4">
+            <!-- Search Form -->
+            <form class="hidden md:block" action="{% url 'search' %}" method="get">
+                <div class="relative">
+                    <input class="bg-white retro-border-thin pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent" 
+                           type="search" placeholder="Поиск мемов..." name="q">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                </div>
+            </form>
+            
+            <!-- User Dropdown -->
+            {% if user.is_authenticated %}
+            <div class="relative group">
+                <button class="flex items-center gap-2 font-bold hover:text-accent transition-colors">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                    <span class="hidden md:inline">{{ user.username }}</span>
+                    {% if unread_notifications_count > 0 %}
+                    <span class="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {{ unread_notifications_count }}
+                    </span>
+                    {% endif %}
+                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
                 </button>
                 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">
-                                <i class="bi bi-house"></i> Главная
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'random_meme' %}">
-                                <i class="bi bi-shuffle"></i> Случайный мем
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'popular_memes' %}">
-                                <i class="bi bi-fire"></i> Популярные
-                            </a>
-                        </li>
-                        {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'add_meme' %}">
-                                <i class="bi bi-plus-circle"></i> Добавить мем
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
-
-                    <!--поиск-->
-                <form class="d-flex me-3" action="{% url 'search' %}" method="get">
-                    <input class="form-control form-control-sm" type="search" 
-                           placeholder="Поиск мемов..." name="q" aria-label="Search">
-                    <button class="btn btn-outline-light btn-sm ms-2" type="submit">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </form>
-                
-                <!--кнопки-->
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ user.username }}
+                <!-- Dropdown Menu -->
+                <div class="absolute right-0 mt-2 w-64 bg-white retro-border window-shadow opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                    <div class="p-2">
+                        <a href="{% url 'profile' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                            <span>Профиль</span>
+                        </a>
+                        <a href="{% url 'my_memes' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                            <i data-lucide="image" class="w-5 h-5"></i>
+                            <span>Мои мемы</span>
+                        </a>
+                        <a href="{% url 'notifications' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span>Уведомления</span>
                             {% if unread_notifications_count > 0 %}
-                            <span class="badge bg-danger notification-badge">{{ unread_notifications_count }}</span>
+                            <span class="ml-auto bg-accent text-white text-xs rounded-full px-2 py-1">
+                                {{ unread_notifications_count }}
+                            </span>
                             {% endif %}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}">
-                                <i class="bi bi-person"></i> Мой профиль
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'my_memes' %}">
-                                <i class="bi bi-images"></i> Мои мемы
-                            </a></li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'notifications' %}">
-                                    <i class="bi bi-bell"></i> Уведомления
-                                    {% if unread_notifications_count > 0 %}
-                                    <span class="badge bg-danger float-end notification-badge">{{ unread_notifications_count }}</span>
-                                    {% endif %}
-                                </a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'favorites' %}">
-                                <i class="bi bi-star"></i> Избранное
-                            </a></li>
-                            {% if user.is_staff %}
-                            <li><a class="dropdown-item" href="{% url 'report_management' %}">
-                                <i class="bi bi-flag"></i> Управление жалобами
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'moderation_queue' %}">
-                                <i class="bi bi-shield-check"></i> Модерация мемов
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">
-                                <i class="bi bi-speedometer2"></i> Админ панель
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'activity_dashboard' %}">
-                                <i class="bi bi-graph-up"></i> Активность пользователей
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin:memes_useractivity_changelist' %}">
-                                <i class="bi bi-clock-history"></i> Все логи активности
-                            </a></li>
-                            {% endif %}
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'settings' %}">
-                                <i class="bi bi-gear"></i> Настройки
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'login' %}">
-                                <i class="bi bi-box-arrow-right"></i> Выйти
-                            </a></li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light btn-sm me-2" href="{% url 'login' %}">
-                            <i class="bi bi-box-arrow-in-right"></i> Войти
+                        <a href="{% url 'favorites' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                            <i data-lucide="star" class="w-5 h-5"></i>
+                            <span>Избранное</span>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-light btn-sm" href="{% url 'register' %}">
-                            <i class="bi bi-person-plus"></i> Регистрация
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                        
+                        {% if user.is_staff %}
+                        <div class="border-t border-gray-200 my-2 pt-2">
+                            <div class="px-3 py-2 text-xs font-bold uppercase text-gray-500">Администрирование</div>
+                            <a href="{% url 'report_management' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                                <i data-lucide="flag" class="w-5 h-5"></i>
+                                <span>Жалобы</span>
+                            </a>
+                            <a href="{% url 'moderation_queue' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                                <span>Модерация</span>
+                            </a>
+                            <a href="{% url 'admin:index' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                                <span>Админка</span>
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="border-t border-gray-200 my-2 pt-2">
+                            <a href="{% url 'settings' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                                <span>Настройки</span>
+                            </a>
+                            <a href="{% url 'logout' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded text-red-600">
+                                <i data-lucide="log-out" class="w-5 h-5"></i>
+                                <span>Выйти</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
+            {% else %}
+            <div class="flex gap-2">
+                <a href="{% url 'login' %}" class="bg-dark text-white px-4 py-2 text-sm font-bold uppercase hover:bg-accent transition-all transform hover:-translate-y-1 retro-border">
+                    Войти
+                </a>
+                <a href="{% url 'register' %}" class="bg-accent text-white px-4 py-2 text-sm font-bold uppercase hover:bg-primary transition-all transform hover:-translate-y-1 retro-border">
+                    Регистрация
+                </a>
+            </div>
+            {% endif %}
+            
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden" id="mobileMenuButton">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
         </div>
     </nav>
 
-
-    <!--основное содержимое-->
-    <main class="container py-4">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!--футер-->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5><i class="bi bi-emoji-laughing"></i> Memyau</h5>
-                    <p>Лучшая платформа для мемов!</p>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden bg-white border-b-4 border-dark hidden">
+        <div class="px-6 py-4">
+            <form action="{% url 'search' %}" method="get" class="mb-4">
+                <div class="relative">
+                    <input class="w-full bg-white retro-border-thin pl-10 pr-4 py-2 text-sm" 
+                           type="search" placeholder="Поиск мемов..." name="q">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
                 </div>
-                <div class="col-md-4">
-                    <h5>Статистика</h5>
-                    <p class="mb-1">Мемов: {{ total_memes|default:"106" }}</p>
-                    <p class="mb-1">Пользователей: {{ total_users|default:"10 000" }}</p>
-                    <p class="mb-1">Тегов: {{ total_tags|default:"140" }}</p>
+            </form>
+            
+            <div class="space-y-2">
+                <a href="{% url 'home' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'home' %}bg-gray-100{% endif %}">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    <span>Главная</span>
+                </a>
+                <a href="{% url 'random_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'random_meme' %}bg-gray-100{% endif %}">
+                    <i data-lucide="shuffle" class="w-5 h-5"></i>
+                    <span>Случайный мем</span>
+                </a>
+                <a href="{% url 'popular_memes' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'popular_memes' %}bg-gray-100{% endif %}">
+                    <i data-lucide="flame" class="w-5 h-5"></i>
+                    <span>Популярные</span>
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'add_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'add_meme' %}bg-gray-100{% endif %}">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span>Добавить мем</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="min-h-screen py-8 px-4 md:px-8 lg:px-20">
+        <div class="relative z-10">
+            <!-- Messages -->
+            {% if messages %}
+            <div class="max-w-6xl mx-auto mb-8">
+                {% for message in messages %}
+                <div class="bg-white retro-border window-shadow p-4 mb-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            {% if message.tags == 'success' %}
+                            <i data-lucide="check-circle" class="w-6 h-6 text-green-500"></i>
+                            {% elif message.tags == 'error' %}
+                            <i data-lucide="x-circle" class="w-6 h-6 text-red-500"></i>
+                            {% elif message.tags == 'warning' %}
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-yellow-500"></i>
+                            {% else %}
+                            <i data-lucide="info" class="w-6 h-6 text-primary"></i>
+                            {% endif %}
+                            <span class="font-medium">{{ message }}</span>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Page Content -->
+            <div class="max-w-7xl mx-auto">
+                <!-- Обертка для Django контента -->
+                <div class="django-content window-shadow">
+                    {% block content %}{% endblock %}
                 </div>
             </div>
-            <hr class="bg-light">
-            <div class="text-center">
-                <p class="mb-0">Memeow. Самый лучший сайт с мемами.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-12 px-6 md:px-20 border-t-4 border-accent relative">
+        <!-- Spinning circle -->
+        <div class="absolute top-0 right-20 -translate-y-1/2 w-40 h-40 bg-accent rounded-full flex items-center justify-center border-4 border-dark animate-spin-slow hidden md:flex">
+            <span class="text-xs font-bold uppercase text-center tracking-tighter">Stay Weird • Stay Weird •</span>
+        </div>
+        
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand Section -->
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                            <i data-lucide="cat" class="text-white"></i>
+                        </div>
+                        <span class="font-display text-2xl tracking-tighter uppercase">Memeow</span>
+                    </div>
+                    <p class="text-gray-300 mb-6">
+                        Лаборатория цифровой культуры и меметики. Место, где рождаются интернет-легенды.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all rounded">
+                            <i data-lucide="twitter"></i>
+                        </a>
+                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all rounded">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all rounded">
+                            <i data-lucide="github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="font-display text-xl mb-4 uppercase">Навигация</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'home' %}" class="text-gray-300 hover:text-white transition-colors">Главная</a></li>
+                        <li><a href="{% url 'popular_memes' %}" class="text-gray-300 hover:text-white transition-colors">Популярные мемы</a></li>
+                        <li><a href="{% url 'random_meme' %}" class="text-gray-300 hover:text-white transition-colors">Случайный мем</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'add_meme' %}" class="text-gray-300 hover:text-white transition-colors">Добавить мем</a></li>
+                        {% endif %}
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">О проекте</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Community -->
+                <div>
+                    <h3 class="font-display text-xl mb-4 uppercase">Сообщество</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Правила</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Руководства</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Блог</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Форум</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Контакты</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Statistics -->
+                <div>
+                    <h3 class="font-display text-xl mb-4 uppercase">Статистика</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="text-gray-300 text-sm mb-1">Мемов</div>
+                            <div class="text-2xl font-bold">{{ total_memes|default:"10,856" }}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-300 text-sm mb-1">Пользователей</div>
+                            <div class="text-2xl font-bold">{{ total_users|default:"42,139" }}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-300 text-sm mb-1">Тегов</div>
+                            <div class="text-2xl font-bold">{{ total_tags|default:"1,247" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 mt-8 pt-8 text-center">
+                <p class="text-gray-400 text-sm">
+                    © 2024 Memeow. Все права защищены. Мемы — наше всё.
+                </p>
+                <div class="mt-4 flex justify-center gap-6 text-sm">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Политика конфиденциальности</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Условия использования</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Правовая информация</a>
+                </div>
             </div>
         </div>
     </footer>
 
-    <!--Bootstrap JS Bundle with Popper-->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!--jQuery-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!--Custom JS-->
-    <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+        
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                const icon = mobileMenuButton.querySelector('i');
+                if (mobileMenu.classList.contains('hidden')) {
+                    lucide.createIcon('menu', icon);
+                } else {
+                    lucide.createIcon('x', icon);
+                }
+            });
+        }
+        
+        // Auto-remove messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.bg-white.retro-border.window-shadow').forEach(message => {
+                message.style.opacity = '0';
+                message.style.transform = 'translateY(-10px)';
+                setTimeout(() => message.remove(), 300);
+            });
+        }, 5000);
+        
+        // Parallax effect for floating images
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const cats = document.querySelectorAll('.floating-cat');
+            
+            cats.forEach((cat, index) => {
+                const speed = index === 0 ? 0.05 : 0.03;
+                const direction = index === 0 ? 1 : -1;
+                cat.style.transform = `translateY(${scrolled * speed * direction}px) rotate(${index === 0 ? '12deg' : '-6deg'})`;
+            });
+        });
+        
+        // Apply styles to Bootstrap components
+        document.addEventListener('DOMContentLoaded', () => {
+            // Style all Bootstrap cards
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.add('window-shadow');
+            });
+            
+            // Style all Bootstrap buttons
+            document.querySelectorAll('.btn').forEach(btn => {
+                if (btn.classList.contains('btn-primary')) {
+                    btn.classList.add('retro-border');
+                }
+            });
+            
+            // Style all forms
+            document.querySelectorAll('form').forEach(form => {
+                form.classList.add('mb-4');
+            });
+            
+            // Add animation to cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all window-shadow elements
+            document.querySelectorAll('.window-shadow').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+        
+        // Console log for fun
+        console.log("🐱 Memeow дизайн загружен!");
+        console.log("🎨 Сохранен оригинальный дизайн с фиксами для Django");
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>
