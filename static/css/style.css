@@ -1,184 +1,592 @@
 
-/*основные стили*/
+/* style.css - Основные стили для Memeow */
+/* Подключаем Google Fonts через @import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap');
+
+/* Tailwind конфигурация через CSS переменные */
 :root {
-    --primary-color: #4e73df;
-    --secondary-color: #6c757d;
-    --success-color: #1cc88a;
-    --danger-color: #e74a3b;
-    --warning-color: #f6c23e;
-    --info-color: #36b9cc;
-    --light-color: #f8f9fc;
-    --dark-color: #5a5c69;
+  --primary: #6366f1;
+  --accent: #ec4899; /* Изменен с на #f96cc5 */
+  --dark: #0f172a;
+  --light: #f8fafc;
+  --purple: #6366f1;
+  --pink: #f96cc5; /* Изменен с #ec4899 на #f96cc5 */
+  --bs-warning-rgb: #6366f1;
 }
 
+/* Основные стили тела */
 body {
-    background-color: #f8f9fc;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding-top: 56px; /*для фиксированной навигации*/
+  background-color: var(--light);
+  overflow-x: hidden;
+  cursor: url('https://cur.cursors-4u.net/ani/ani-1/ani1.cur'), auto;
+  background-image: url('https://www.transparenttextures.com/patterns/graphy-light.png');
+  font-family: 'Inter', sans-serif;
+  color: var(--dark);
 }
 
-/*карточки*/
+.badge.bg-info {
+  background-color: #6366f1 !important;
+  color: white !important;
+  border: 2px solid #6366f1 !important;
+}
+
+/* Стили для ретро-дизайна */
+.window-shadow {
+  box-shadow: 8px 8px 0px 0px var(--dark) !important;
+  transition: all 0.3s ease;
+}
+
+.window-shadow:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 12px 12px 0px 0px var(--dark) !important;
+}
+
+/* Основной блок не должен двигаться */
+.main-container, .stats-item {
+  box-shadow: 8px 8px 0px 0px var(--dark) !important;
+}
+
+.retro-border {
+  border: 3px solid var(--dark) !important;
+}
+
+.retro-border-thin {
+  border: 2px solid var(--dark) !important;
+}
+
+/* Стиль viewer.exe из примера */
+.viewer-exe {
+  border: 3px solid var(--dark);
+  background: white;
+  border-radius: 0 !important;
+}
+
+.viewer-header {
+  background: var(--dark);
+  color: white;
+  padding: 0.5rem 1rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid var(--dark);
+}
+
+.window-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.window-control {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--dark);
+}
+
+.window-control-close {
+  background: #ef4444;
+}
+
+.window-control-minimize {
+  background: #d30edd;
+}
+
+/* Квадратные блоки */
+.square-box {
+  border-radius: 0 !important;
+}
+
+/* Стили для кнопок как в примере */
+.btn-example {
+  background: var(--dark) !important;
+  color: white !important;
+  border: 2px solid var(--dark) !important;
+  padding: 0.75rem 2rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  font-size: 0.875rem !important;
+  border-radius: 0 !important;
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-example:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  color: white !important;
+  text-decoration: none;
+}
+
+/* Стиль для лайков и просмотров - минималистичный */
+.stats-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: default;
+}
+
+.stat-item.likes {
+  color: var(--accent); /* #f96cc5 */
+  cursor: pointer;
+}
+
+.stat-item.likes:hover .stat-icon {
+  transform: scale(1.1);
+}
+
+.stat-item.views {
+    color: var(--primary);
+  }
+
+.stat-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+/* Стили для тегов */
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--dark);
+  border-radius: 0;
+  margin: 0.25rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tag-purple {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
+
+.tag-pink {
+  background: var(--pink);
+  color: white;
+  border-color: var(--pink);
+}
+
+.tag:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark);
+  text-decoration: none;
+  color: white;
+}
+
+/* Стили для мема дня - центрирование */
+.meme-of-day-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.meme-of-day {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.meme-of-day img {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Стили для заголовков блоков */
+.block-title {
+  background: var(--dark);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 3px solid var(--dark);
+  margin: 0;
+}
+
+/* Стили для Bootstrap компонентов чтобы они соответствовали дизайну */
 .card {
-    border: none;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-    transition: all 0.3s;
+  border: 3px solid var(--dark) !important;
+  box-shadow: 8px 8px 0px 0px var(--dark) !important;
+  background: white !important;
+  border-radius: 0 !important;
+  transition: all 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
-}
-
-.card-header {
-    border-bottom: 1px solid #e3e6f0;
-    background-color: #fff;
-}
-
-/*навигация*/
-.navbar {
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-}
-
-.navbar-brand {
-    font-weight: 700;
-    font-size: 1.5rem;
-}
-
-/*кнопки*/
-.btn {
-    border-radius: 0.375rem;
-    font-weight: 500;
+  transform: translate(-2px, -2px);
+  box-shadow: 12px 12px 0px 0px var(--dark) !important;
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+  background-color: var(--dark) !important;
+  border-color: var(--dark) !important;
+  color: white !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  padding: 0.75rem 2rem !important;
+  cursor: pointer !important;
 }
 
 .btn-primary:hover {
-    background-color: #3a5bdc;
-    border-color: #3a5bdc;
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
 }
 
-/*теги*/
-.badge {
-    font-weight: 500;
-    padding: 0.35em 0.65em;
-    border-radius: 0.375rem;
+.btn-outline-primary {
+  background-color: transparent !important;
+  border-color: var(--dark) !important;
+  color: var(--dark) !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  padding: 0.75rem 2rem !important;
+  cursor: pointer !important;
 }
 
-/*изображения мемов*/
-.meme-image {
-    max-height: 500px;
-    object-fit: contain;
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
+.btn-outline-success {
+  background-color: transparent !important;
+  border-color: var(--dark) !important;
+  color: var(--dark) !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  padding: 0.75rem 2rem !important;
+  cursor: pointer !important;
 }
 
-.meme-thumbnail {
-    height: 200px;
-    object-fit: cover;
-    transition: transform 0.3s;
+.btn-outline-warning {
+    background-color: transparent !important;
+    border-color: var(--dark) !important;
+    color: var(--dark) !important;
+    border: 2px solid var(--dark) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    border-radius: 0 !important;
+    padding: 0.75rem 2rem !important;
+    cursor: pointer !important;
+  }
+
+.btn-sm.btn-success {
+    background-color: transparent !important;
+    border-color: var(--dark) !important;
+    color: var(--dark) !important;
+    border: 2px solid var(--dark) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    border-radius: 0 !important;
+    padding: 0.75rem 2rem !important;
+    cursor: pointer !important;
+  }
+
+.btn-outline-primary:hover {
+  background-color: var(--dark) !important;
+  color: white !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--accent) !important;
 }
 
-.meme-thumbnail:hover {
-    transform: scale(1.03);
+.btn-outline-success:hover {
+    background-color: var(--dark) !important;
+    color: white !important;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px 0px var(--accent) !important;
+  }
+
+.btn-outline-warning:hover {
+    background-color: var(--dark) !important;
+    color: white !important;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px 0px var(--accent) !important;
+  }
+
+.btn-sm.btn-success:hover {
+    background-color: var(--dark) !important;
+    color: white !important;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px 0px var(--accent) !important;
+  }
+
+.form-control {
+  border: 2px solid var(--dark) !important;
+  background: white !important;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
 }
 
-/*профиль*/
-.profile-avatar {
-    border: 3px solid #fff;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-}
-
-/*анимации*/
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/*пагинация*/
-.pagination .page-link {
-    color: var(--primary-color);
-    border: 1px solid #ddd;
-}
-
-.pagination .page-item.active .page-link {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-/*адаптивность*/
-@media (max-width: 768px) {
-    .navbar-nav .btn {
-        margin: 0.25rem 0;
-    }
-    
-    .card-body {
-        padding: 1rem;
-    }
-    
-    .display-5 {
-        font-size: 1.5rem;
-    }
-}
-
-/*специальные классы*/
-.cursor-pointer {
-    cursor: pointer;
-}
-
-.text-justify {
-    text-align: justify;
-}
-
-.overflow-ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/*загрузка*/
-.spinner-container {
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/*уведомления*/
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1050;
-}
-
-/*формы*/
 .form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+  border-color: var(--accent) !important;
+  box-shadow: 4px 4px 0px 0px var(--accent) !important;
+  transform: translate(-2px, -2px);
+  outline: none;
 }
 
-/*табы*/
-.nav-tabs .nav-link {
-    color: var(--secondary-color);
-    border: none;
-    padding: 0.75rem 1.5rem;
+.alert {
+  border: 3px solid var(--dark) !important;
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background: white !important;
+  border-radius: 0 !important;
 }
 
-.nav-tabs .nav-link.active {
-    color: var(--primary-color);
-    border-bottom: 3px solid var(--primary-color);
-    font-weight: 600;
+.table {
+  border: 3px solid var(--dark) !important;
+  background: white !important;
+  border-radius: 0 !important;
 }
 
-.nav-tabs .nav-link:hover {
-    color: var(--primary-color);
-    border-bottom: 3px solid rgba(78, 115, 223, 0.5);
+.table th {
+  background-color: var(--dark) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 3px solid var(--dark) !important;
+}
+
+.pagination .page-link {
+  border: 2px solid var(--dark) !important;
+  color: var(--dark) !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+}
+
+.pagination .page-link:hover {
+  background-color: var(--accent) !important;
+  color: white !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+}
+
+.pagination .active .page-link {
+  background-color: var(--dark) !important;
+  border-color: var(--dark) !important;
+  color: white !important;
+}
+
+/* Контейнер для контента Django */
+.django-content {
+  background: white;
+  border: 3px solid var(--dark);
+  box-shadow: 8px 8px 0px 0px var(--dark);
+  padding: 0;
+  margin-bottom: 2rem;
+  border-radius: 0;
+}
+
+/* Центрирование контента */
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Сетка для блоков */
+.grid-blocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Исправление для меню пользователя */
+.user-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.user-dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  min-width: 250px;
+  border: 3px solid var(--dark);
+  box-shadow: 8px 8px 0px 0px var(--dark);
+  z-index: 1000;
+}
+
+.user-dropdown-container:hover .user-dropdown-content {
+  display: block;
+}
+
+.user-dropdown-content a {
+  display: block;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: var(--dark);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.user-dropdown-content a:hover {
+  background-color: #f3f4f6;
+}
+
+/* Анимации */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 20s linear infinite;
+}
+
+/* Утилитарные классы */
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-dark {
+  color: var(--dark);
+}
+
+.bg-dark {
+  background-color: var(--dark);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.border-dark {
+  border-color: var(--dark);
+}
+
+.border-accent {
+  border-color: var(--accent);
+}
+
+.border-primary {
+  border-color: var(--primary);
+}
+
+.hover\:text-accent:hover {
+  color: var(--accent);
+}
+
+/* Хедер навигации */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: white;
+  border-bottom: 4px solid var(--dark);
+}
+
+/* Мобильное меню */
+.mobile-menu {
+  background: white;
+  border-bottom: 4px solid var(--dark);
+}
+
+/* Футер */
+.footer {
+  background: var(--dark);
+  color: white;
+  border-top: 4px solid var(--accent);
+}
+
+/* Переопределение Bootstrap классов для лайков */
+.bg-success {
+  background-color: #f96cc5 !important;
+  color: white !important;
+  border: 2px solid #f96cc5 !important;
+}
+
+.badge.bg-success {
+  background-color: #f96cc5 !important;
+  color: white !important;
+  border: 2px solid #f96cc5 !important;
+}
+
+/* Специфичные стили для бейджей с лайками в карточках */
+.card-footer .badge.bg-success,
+.meme-card .badge.bg-success {
+  background-color: #f96cc5 !important;
+  color: white !important;
+  border: 2px solid #f96cc5 !important;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  
+  .show-mobile {
+    display: block !important;
+  }
+  
+  .grid-mobile {
+    grid-template-columns: 1fr;
+  }
 }

@@ -3,7 +3,6 @@
     
     <!-- Канал получения -->
     <div class="mb-4">
-        <h6><i class="bi bi-broadcast"></i> Куда отправлять мемы?</h6>
         <div class="form-check mb-2">
             <input class="form-check-input" type="radio" name="channel" id="channelEmail" value="email" 
                    {% if user.meme_subscription.channel == 'email' or not user.meme_subscription %}checked{% endif %}>
@@ -11,61 +10,8 @@
                 <i class="bi bi-envelope"></i> На email: <strong>{{ user.email }}</strong>
             </label>
         </div>
-        
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="channel" id="channelTelegram" value="telegram"
-                   {% if user.meme_subscription.channel == 'telegram' %}checked{% endif %}>
-            <label class="form-check-label" for="channelTelegram">
-                <i class="bi bi-telegram"></i> В Telegram
-            </label>
-        </div>
-        
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="channel" id="channelBoth" value="both"
-                   {% if user.meme_subscription.channel == 'both' %}checked{% endif %}>
-            <label class="form-check-label" for="channelBoth">
-                <i class="bi bi-envelope"></i> + <i class="bi bi-telegram"></i> На оба канала
-            </label>
-        </div>
-        
-        <!-- Блок привязки Telegram -->
-        <div id="telegramConnectBlock" class="mt-3 p-3 border rounded {% if user.meme_subscription.channel not in 'telegram,both' %}d-none{% endif %}">
-            {% if user.telegram_connection and user.telegram_connection.is_verified %}
-                <div id="telegramConnected">
-                    <p class="text-success">
-                        <i class="bi bi-check-circle"></i> Telegram привязан: 
-                        <strong>@{{ user.telegram_connection.telegram_username }}</strong>
-                    </p>
-                    <small class="text-muted">
-                        Привязан {{ user.telegram_connection.verified_at|date:"d.m.Y" }}
-                    </small>
-                </div>
-            {% else %}
-                <div id="telegramNotConnected">
-                    <p class="text-muted">
-                        <i class="bi bi-telegram"></i> Привяжите Telegram аккаунт для получения мемов
-                    </p>
-                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="connectTelegram()">
-                        <i class="bi bi-link"></i> Привязать Telegram
-                    </button>
-                    <div id="telegramCodeBlock" class="mt-2 d-none">
-                        <div class="alert alert-info">
-                            <small class="d-block mb-1">
-                                <strong>Код для бота:</strong>
-                                <span id="verificationCode" class="badge bg-dark fs-6">______</span>
-                            </small>
-                            <small class="d-block">
-                                1. Перейдите в Telegram бота: <strong>@{{ TELEGRAM_BOT_USERNAME }}</strong><br>
-                                2. Отправьте ему этот код<br>
-                                3. После привязки обновите страницу
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
+
     </div>
-    
     <!-- Частота -->
     <div class="mb-4">
         <h6><i class="bi bi-calendar"></i> Как часто отправлять?</h6>

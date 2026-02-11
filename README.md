@@ -32,8 +32,6 @@ python manage.py createsuperuser
 # Загрузите мемы из папки static/images/memes/
 python upload_memes.py
 
-python telegram_bot.py
-
 6. Запуск сервера разработки
 python manage.py runserver
 Теперь откройте браузер и перейдите по адресу:

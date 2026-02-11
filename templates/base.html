@@ -12,10 +12,11 @@
     <!-- Bootstrap для совместимости -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
-    
+    <!-- Основной CSS файл -->
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Favicon -->
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     
@@ -55,384 +56,11 @@
             }
         }
     </script>
-    
-    <style>
-        body {
-            background-color: #f8fafc;
-            overflow-x: hidden;
-            cursor: url('https://cur.cursors-4u.net/ani/ani-1/ani1.cur'), auto;
-            background-image: url('https://www.transparenttextures.com/patterns/graphy-light.png');
-        }
-        
-        /* Стили для ретро-дизайна */
-        .window-shadow {
-            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1) !important;
-            transition: all 0.3s ease;
-        }
-        
-        .window-shadow:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 12px 12px 0px 0px rgba(15, 23, 42, 1) !important;
-        }
-        
-        /* Основной блок не должен двигаться */
-        .main-container, .stats-item {
-            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1) !important;
-        }
-        
-        .retro-border {
-            border: 3px solid #0f172a !important;
-        }
-        
-        .retro-border-thin {
-            border: 2px solid #0f172a !important;
-        }
-        
-        /* Стиль viewer.exe из примера */
-        .viewer-exe {
-            border: 3px solid #0f172a;
-            background: white;
-            border-radius: 0 !important;
-        }
-        
-        .viewer-header {
-            background: #0f172a;
-            color: white;
-            padding: 0.5rem 1rem;
-            font-family: monospace;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid #0f172a;
-        }
-        
-        .window-controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .window-control {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid #0f172a;
-        }
-        
-        .window-control-close {
-            background: #ef4444;
-        }
-        
-        .window-control-minimize {
-            background: #f59e0b;
-        }
-        
-        /* Квадратные блоки */
-        .square-box {
-            border-radius: 0 !important;
-        }
-        
-        /* Стили для кнопок как в примере */
-        .btn-example {
-            background: #0f172a !important;
-            color: white !important;
-            border: 2px solid #0f172a !important;
-            padding: 0.75rem 2rem !important;
-            font-weight: 600 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
-            font-size: 0.875rem !important;
-            border-radius: 0 !important;
-            cursor: pointer;
-        }
-        
-        .btn-example:hover {
-            background: #ec4899 !important;
-            border-color: #ec4899 !important;
-            transform: translate(-2px, -2px);
-            box-shadow: 4px 4px 0px 0px #0f172a !important;
-        }
-        
-        /* Стиль для лайков и просмотров как в примере - минималистичный */
-        .stats-container {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: default;
-        }
-        
-        .stat-item.likes {
-            color: #ec4899;
-            cursor: pointer;
-        }
-        
-        .stat-item.likes:hover .stat-icon {
-            transform: scale(1.1);
-        }
-        
-        .stat-item.views {
-            color: #6366f1;
-        }
-        
-        .stat-icon {
-            width: 20px;
-            height: 20px;
-            transition: transform 0.2s ease;
-        }
-        
-        /* Стили для тегов */
-        .tag {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 2px solid #0f172a;
-            border-radius: 0;
-            margin: 0.25rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .tag-purple {
-            background: #6366f1;
-            color: white;
-            border-color: #6366f1;
-        }
-        
-        .tag-pink {
-            background: #ec4899;
-            color: white;
-            border-color: #ec4899;
-        }
-        
-        .tag:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 4px 4px 0px 0px #0f172a;
-        }
-        
-        /* Стили для мема дня - центрирование */
-        .meme-of-day-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .meme-of-day {
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .meme-of-day img {
-            display: block;
-            margin: 0 auto;
-        }
-        
-        /* Стили для заголовков блоков */
-        .block-title {
-            background: #0f172a;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 3px solid #0f172a;
-            margin: 0;
-        }
-        
-        /* Стили для Bootstrap компонентов чтобы они соответствовали дизайну */
-        .card {
-            border: 3px solid #0f172a !important;
-            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1) !important;
-            background: white !important;
-            border-radius: 0 !important;
-            transition: all 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 12px 12px 0px 0px rgba(15, 23, 42, 1) !important;
-        }
-        
-        .btn-primary {
-            background-color: #0f172a !important;
-            border-color: #0f172a !important;
-            color: white !important;
-            border: 2px solid #0f172a !important;
-            font-weight: 600 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
-            border-radius: 0 !important;
-            padding: 0.75rem 2rem !important;
-            cursor: pointer !important;
-        }
-        
-        .btn-primary:hover {
-            background-color: #ec4899 !important;
-            border-color: #ec4899 !important;
-            transform: translate(-2px, -2px);
-            box-shadow: 4px 4px 0px 0px #0f172a !important;
-        }
-        
-        .btn-outline-primary {
-            background-color: transparent !important;
-            border-color: #0f172a !important;
-            color: #0f172a !important;
-            border: 2px solid #0f172a !important;
-            font-weight: 600 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
-            border-radius: 0 !important;
-            padding: 0.75rem 2rem !important;
-            cursor: pointer !important;
-        }
-        
-        .btn-outline-primary:hover {
-            background-color: #0f172a !important;
-            color: white !important;
-            transform: translate(-2px, -2px);
-            box-shadow: 4px 4px 0px 0px #ec4899 !important;
-        }
-        
-        .form-control {
-            border: 2px solid #0f172a !important;
-            background: white !important;
-            transition: all 0.3s ease;
-            border-radius: 0 !important;
-        }
-        
-        .form-control:focus {
-            border-color: #ec4899 !important;
-            box-shadow: 4px 4px 0px 0px #ec4899 !important;
-            transform: translate(-2px, -2px);
-            outline: none;
-        }
-        
-        .alert {
-            border: 3px solid #0f172a !important;
-            box-shadow: 4px 4px 0px 0px rgba(15, 23, 42, 1) !important;
-            background: white !important;
-            border-radius: 0 !important;
-        }
-        
-        .table {
-            border: 3px solid #0f172a !important;
-            background: white !important;
-            border-radius: 0 !important;
-        }
-        
-        .table th {
-            background-color: #0f172a !important;
-            color: white !important;
-            font-weight: 600 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 3px solid #0f172a !important;
-        }
-        
-        .pagination .page-link {
-            border: 2px solid #0f172a !important;
-            color: #0f172a !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease;
-            border-radius: 0 !important;
-        }
-        
-        .pagination .page-link:hover {
-            background-color: #ec4899 !important;
-            color: white !important;
-            transform: translate(-2px, -2px);
-            box-shadow: 4px 4px 0px 0px #0f172a !important;
-        }
-        
-        .pagination .active .page-link {
-            background-color: #0f172a !important;
-            border-color: #0f172a !important;
-            color: white !important;
-        }
-        
-        /* Контейнер для контента Django */
-        .django-content {
-            background: white;
-            border: 3px solid #0f172a;
-            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1);
-            padding: 0;
-            margin-bottom: 2rem;
-            border-radius: 0;
-        }
-        
-        /* Центрирование контента */
-        .center-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        /* Сетка для блоков */
-        .grid-blocks {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        
-        /* Исправление для меню пользователя */
-        .user-dropdown-container {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .user-dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 250px;
-            border: 3px solid #0f172a;
-            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1);
-            z-index: 1000;
-        }
-        
-        .user-dropdown-container:hover .user-dropdown-content {
-            display: block;
-        }
-        
-        .user-dropdown-content a {
-            display: block;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: #0f172a;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .user-dropdown-content a:hover {
-            background-color: #f3f4f6;
-        }
-    </style>
 </head>
 <body class="font-sans antialiased text-dark">
 
     <!-- Header Navigation -->
-    <nav class="sticky top-0 z-50 bg-white border-b-4 border-dark flex justify-between items-center px-6 md:px-10 py-4 h-20">
+    <nav class="sticky top-0 z-50 bg-white border-b-4 border-dark flex justify-between items-center px-6 md:px-10 py-4 h-20 sticky-nav">
         <div class="flex items-center gap-2">
             <div class="w-10 h-10 bg-accent flex items-center justify-center square-box">
                 <i data-lucide="cat" class="text-white"></i>
@@ -531,7 +159,7 @@
                             <span>Настройки</span>
                         </a>
                         <a href="{% url 'logout' %}" class="flex items-center gap-3 py-2 px-3 text-red-600">
-                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                            <i data-lucide="login" class="w-5 h-5"></i>
                             <span>Выйти</span>
                         </a>
                     </div>
@@ -539,10 +167,10 @@
             </div>
             {% else %}
             <div class="flex gap-2">
-                <a href="{% url 'login' %}" class="bg-dark text-white px-4 py-2 text-sm font-bold uppercase hover:bg-accent transition-all hover:-translate-y-1 border-2 border-dark square-box btn-example">
+                <a href="{% url 'login' %}" class="btn-example">
                     Войти
                 </a>
-                <a href="{% url 'register' %}" class="bg-accent text-white px-4 py-2 text-sm font-bold uppercase hover:bg-primary transition-all hover:-translate-y-1 border-2 border-dark square-box btn-example">
+                <a href="{% url 'register' %}" class="btn-example bg-accent hover:bg-primary">
                     Регистрация
                 </a>
             </div>
@@ -556,7 +184,7 @@
     </nav>
 
     <!-- Mobile Menu -->
-    <div id="mobileMenu" class="md:hidden bg-white border-b-4 border-dark hidden square-box">
+    <div id="mobileMenu" class="md:hidden bg-white border-b-4 border-dark hidden square-box mobile-menu">
         <div class="px-6 py-4">
             <form action="{% url 'search' %}" method="get" class="mb-4">
                 <div class="relative">
@@ -630,10 +258,10 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-12 px-6 md:px-20 border-t-4 border-accent relative square-box">
+    <footer class="bg-dark text-white py-12 px-6 md:px-20 border-t-4 border-accent relative square-box footer">
         <!-- Spinning circle -->
         <div class="absolute top-0 right-20 -translate-y-1/2 w-40 h-40 bg-accent rounded-full flex items-center justify-center border-4 border-dark animate-spin-slow hidden md:flex">
-            <span class="text-xs font-bold uppercase text-center tracking-tighter">Stay Weird • Stay Weird •</span>
+            <span class="text-xs font-bold uppercase text-center tracking-tighter">• Stay Weird •</span>
         </div>
         
         <div class="max-w-7xl mx-auto">
@@ -647,7 +275,7 @@
                         <span class="font-display text-2xl tracking-tighter uppercase">Memeow</span>
                     </div>
                     <p class="text-gray-300 mb-6">
-                        Лаборатория цифровой культуры и меметики. Место, где рождаются интернет-легенды.
+                        Самый лучший сайт с мемами!
                     </p>
                     <div class="flex gap-3">
                         <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all square-box">
@@ -676,18 +304,6 @@
                     </ul>
                 </div>
                 
-                <!-- Community -->
-                <div>
-                    <h3 class="font-display text-xl mb-4 uppercase">Сообщество</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Правила</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Руководства</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Блог</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Форум</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Контакты</a></li>
-                    </ul>
-                </div>
-                
                 <!-- Statistics -->
                 <div>
                     <h3 class="font-display text-xl mb-4 uppercase">Статистика</h3>
@@ -710,7 +326,7 @@
             
             <div class="border-t border-white/10 mt-8 pt-8 text-center">
                 <p class="text-gray-400 text-sm">
-                    © 2024 Memeow. Все права защищены. Мемы — наше всё.
+                    © 2026 Memeow. Все права защищены. Мемы — наше всё.
                 </p>
                 <div class="mt-4 flex justify-center gap-6 text-sm">
                     <a href="#" class="text-gray-400 hover:text-white transition-colors">Политика конфиденциальности</a>
@@ -768,13 +384,7 @@
         });
         
         // Auto-remove messages after 5 seconds
-        setTimeout(() => {
-            document.querySelectorAll('.bg-white.border-2.border-dark').forEach(message => {
-                message.style.opacity = '0';
-                message.style.transform = 'translateY(-10px)';
-                setTimeout(() => message.remove(), 300);
-            });
-        }, 5000);
+
         
         // Apply styles to content
         document.addEventListener('DOMContentLoaded', () => {
@@ -907,10 +517,6 @@
             // Обновляем иконки после изменений
             setTimeout(() => lucide.createIcons(), 100);
         });
-        
-        // Console log for fun
-        console.log("🐱 Memeow дизайн загружен!");
-        console.log("🎨 Все проблемы исправлены: теги, поиск, меню, кнопки, заголовки, центрирование");
     </script>
     
     {% block extra_js %}{% endblock %}

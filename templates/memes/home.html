@@ -19,31 +19,31 @@
         {% endif %}
     </div>
 
-    <!--мем дня-->
-    <div class="card mb-4">
-        <div class="card-header bg-warning">
-            <h3 class="mb-0">🎉 Мем дня</h3>
-        </div>
-        <div class="card-body text-center">
-            {% if meme_of_the_day %}
-                <div class="meme-card">
-                    <img src="{{ meme_of_the_day.image.url }}" 
-                         class="img-fluid rounded" 
-                         alt="{{ meme_of_the_day.title }}"
-                         style="max-height: 500px;">
-                    <h4 class="mt-3">{{ meme_of_the_day.title }}</h4>
-                    <p>{{ meme_of_the_day.description|truncatechars:150 }}</p>
-                    <div class="d-flex justify-content-center gap-2">
-                        <span class="badge bg-info">👁 {{ meme_of_the_day.views_count }}</span>
-                        <span class="badge bg-success">👍 {{ meme_of_the_day.likes_count }}</span>
-                        <a href="{% url 'meme_detail' meme_of_the_day.id %}" class="btn btn-sm btn-primary">Подробнее</a>
-                    </div>
-                </div>
-            {% else %}
-                <p class="text-muted">Мем дня пока не выбран</p>
-            {% endif %}
-        </div>
+<!--мем дня-->
+<div class="card mb-4">
+    <div class="card-header bg-warning text-center">
+        <h3 class="mb-0">Мем дня</h3>
     </div>
+    <div class="card-body text-center meme-of-day-container">
+        {% if meme_of_the_day %}
+            <div class="meme-card w-100 d-flex flex-column align-items-center">
+                <img src="{{ meme_of_the_day.image.url }}" 
+                     class="img-fluid square-box" 
+                     alt="{{ meme_of_the_day.title }}"
+                     style="max-height: 500px; max-width: 100%; display: block; margin: 0 auto;">
+                <h4 class="mt-3 text-center">{{ meme_of_the_day.title }}</h4>
+                <p class="text-center">{{ meme_of_the_day.description|truncatechars:150 }}</p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <span class="badge bg-info">👁 {{ meme_of_the_day.views_count }}</span>
+                    <span class="badge bg-success">♥ {{ meme_of_the_day.likes_count }}</span>
+                    <a href="{% url 'meme_detail' meme_of_the_day.id %}" class="btn btn-sm btn-primary">Подробнее</a>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-muted">Мем дня пока не выбран</p>
+        {% endif %}
+    </div>
+</div>
 
     <!--лента мемов с фильтрацией-->
     <div class="row">
@@ -86,7 +86,7 @@
                                 <small class="d-block">{{ meme.title|truncatechars:30 }}</small>
                             </a>
                             <small class="text-muted">
-                                👍 {{ meme.likes_count }} | 👁 {{ meme.views_count }}
+                                ♥ {{ meme.likes_count }} | 👁 {{ meme.views_count }}
                             </small>
                         </div>
                     {% empty %}
@@ -138,7 +138,7 @@
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <span class="badge bg-info">👁 {{ meme.views_count }}</span>
-                                        <span class="badge bg-success ms-1">👍 {{ meme.likes_count }}</span>
+                                        <span class="badge bg-success ms-1">♥ {{ meme.likes_count }}</span>
                                     </div>
                                     <div>
                                         {% for tag in meme.tags.all|slice:":2" %}
