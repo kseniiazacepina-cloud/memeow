@@ -35,6 +35,8 @@
                         accent: '#ec4899',
                         dark: '#0f172a',
                         light: '#f8fafc',
+                        purple: '#6366f1',
+                        pink: '#ec4899',
                     },
                     backgroundImage: {
                         'grid-pattern': "url('https://www.transparenttextures.com/patterns/graphy-light.png')",
@@ -73,6 +75,11 @@
             box-shadow: 12px 12px 0px 0px rgba(15, 23, 42, 1) !important;
         }
         
+        /* Основной блок не должен двигаться */
+        .main-container, .stats-item {
+            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1) !important;
+        }
+        
         .retro-border {
             border: 3px solid #0f172a !important;
         }
@@ -81,23 +88,181 @@
             border: 2px solid #0f172a !important;
         }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        /* Стиль viewer.exe из примера */
+        .viewer-exe {
+            border: 3px solid #0f172a;
+            background: white;
+            border-radius: 0 !important;
         }
         
-        ::selection {
+        .viewer-header {
+            background: #0f172a;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #0f172a;
+        }
+        
+        .window-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #0f172a;
+        }
+        
+        .window-control-close {
+            background: #ef4444;
+        }
+        
+        .window-control-minimize {
+            background: #f59e0b;
+        }
+        
+        /* Квадратные блоки */
+        .square-box {
+            border-radius: 0 !important;
+        }
+        
+        /* Стили для кнопок как в примере */
+        .btn-example {
+            background: #0f172a !important;
+            color: white !important;
+            border: 2px solid #0f172a !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            font-size: 0.875rem !important;
+            border-radius: 0 !important;
+            cursor: pointer;
+        }
+        
+        .btn-example:hover {
+            background: #ec4899 !important;
+            border-color: #ec4899 !important;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px 0px #0f172a !important;
+        }
+        
+        /* Стиль для лайков и просмотров как в примере - минималистичный */
+        .stats-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: default;
+        }
+        
+        .stat-item.likes {
+            color: #ec4899;
+            cursor: pointer;
+        }
+        
+        .stat-item.likes:hover .stat-icon {
+            transform: scale(1.1);
+        }
+        
+        .stat-item.views {
+            color: #6366f1;
+        }
+        
+        .stat-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease;
+        }
+        
+        /* Стили для тегов */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 2px solid #0f172a;
+            border-radius: 0;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tag-purple {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+        
+        .tag-pink {
             background: #ec4899;
             color: white;
+            border-color: #ec4899;
+        }
+        
+        .tag:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px 0px #0f172a;
+        }
+        
+        /* Стили для мема дня - центрирование */
+        .meme-of-day-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .meme-of-day {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .meme-of-day img {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        /* Стили для заголовков блоков */
+        .block-title {
+            background: #0f172a;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 3px solid #0f172a;
+            margin: 0;
         }
         
         /* Стили для Bootstrap компонентов чтобы они соответствовали дизайну */
         .card {
             border: 3px solid #0f172a !important;
             box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1) !important;
-            transition: all 0.3s ease;
             background: white !important;
+            border-radius: 0 !important;
+            transition: all 0.3s ease;
         }
         
         .card:hover {
@@ -114,6 +279,9 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             transition: all 0.3s ease;
+            border-radius: 0 !important;
+            padding: 0.75rem 2rem !important;
+            cursor: pointer !important;
         }
         
         .btn-primary:hover {
@@ -132,6 +300,9 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             transition: all 0.3s ease;
+            border-radius: 0 !important;
+            padding: 0.75rem 2rem !important;
+            cursor: pointer !important;
         }
         
         .btn-outline-primary:hover {
@@ -145,6 +316,7 @@
             border: 2px solid #0f172a !important;
             background: white !important;
             transition: all 0.3s ease;
+            border-radius: 0 !important;
         }
         
         .form-control:focus {
@@ -158,11 +330,13 @@
             border: 3px solid #0f172a !important;
             box-shadow: 4px 4px 0px 0px rgba(15, 23, 42, 1) !important;
             background: white !important;
+            border-radius: 0 !important;
         }
         
         .table {
             border: 3px solid #0f172a !important;
             background: white !important;
+            border-radius: 0 !important;
         }
         
         .table th {
@@ -179,6 +353,7 @@
             color: #0f172a !important;
             font-weight: 600 !important;
             transition: all 0.3s ease;
+            border-radius: 0 !important;
         }
         
         .pagination .page-link:hover {
@@ -194,66 +369,72 @@
             color: white !important;
         }
         
-        /* Стили для Django сообщений */
-        .messages .alert-success {
-            border-left: 6px solid #10b981 !important;
-        }
-        
-        .messages .alert-danger {
-            border-left: 6px solid #ef4444 !important;
-        }
-        
-        .messages .alert-info {
-            border-left: 6px solid #6366f1 !important;
-        }
-        
-        .messages .alert-warning {
-            border-left: 6px solid #f59e0b !important;
-        }
-        
         /* Контейнер для контента Django */
         .django-content {
             background: white;
             border: 3px solid #0f172a;
             box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1);
-            padding: 2rem;
+            padding: 0;
             margin-bottom: 2rem;
+            border-radius: 0;
         }
         
-        /* Декоративные элементы */
-        .floating-cat {
-            position: fixed;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.1;
-            max-width: 300px;
-            animation: float 6s ease-in-out infinite;
+        /* Центрирование контента */
+        .center-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
         
-        .floating-cat-1 {
-            top: 10%;
-            right: 5%;
+        /* Сетка для блоков */
+        .grid-blocks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
         
-        .floating-cat-2 {
-            bottom: 10%;
-            left: 5%;
-            animation-delay: 2s;
+        /* Исправление для меню пользователя */
+        .user-dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 250px;
+            border: 3px solid #0f172a;
+            box-shadow: 8px 8px 0px 0px rgba(15, 23, 42, 1);
+            z-index: 1000;
+        }
+        
+        .user-dropdown-container:hover .user-dropdown-content {
+            display: block;
+        }
+        
+        .user-dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #0f172a;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .user-dropdown-content a:hover {
+            background-color: #f3f4f6;
         }
     </style>
 </head>
 <body class="font-sans antialiased text-dark">
 
-    <!-- Декоративные плавающие котики -->
-    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" 
-         alt="Meme Cat" class="floating-cat floating-cat-1 rounded-3xl">
-    <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=300&q=80" 
-         alt="Cat Meme" class="floating-cat floating-cat-2 rounded-3xl">
-
     <!-- Header Navigation -->
     <nav class="sticky top-0 z-50 bg-white border-b-4 border-dark flex justify-between items-center px-6 md:px-10 py-4 h-20">
         <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+            <div class="w-10 h-10 bg-accent flex items-center justify-center square-box">
                 <i data-lucide="cat" class="text-white"></i>
             </div>
             <span class="font-display text-2xl tracking-tighter uppercase">Memeow</span>
@@ -282,20 +463,20 @@
             <!-- Search Form -->
             <form class="hidden md:block" action="{% url 'search' %}" method="get">
                 <div class="relative">
-                    <input class="bg-white retro-border-thin pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent" 
-                           type="search" placeholder="Поиск мемов..." name="q">
+                    <input class="bg-white border-2 border-dark pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-accent square-box" 
+                           type="search" placeholder="Поиск мемов..." name="q" id="searchInput">
                     <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
                 </div>
             </form>
             
             <!-- User Dropdown -->
             {% if user.is_authenticated %}
-            <div class="relative group">
-                <button class="flex items-center gap-2 font-bold hover:text-accent transition-colors">
+            <div class="user-dropdown-container">
+                <button class="flex items-center gap-2 font-bold hover:text-accent transition-colors bg-transparent border-none cursor-pointer">
                     <i data-lucide="user" class="w-6 h-6"></i>
                     <span class="hidden md:inline">{{ user.username }}</span>
                     {% if unread_notifications_count > 0 %}
-                    <span class="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    <span class="absolute -top-1 -right-1 bg-accent text-white text-xs w-5 h-5 flex items-center justify-center square-box">
                         {{ unread_notifications_count }}
                     </span>
                     {% endif %}
@@ -303,105 +484,103 @@
                 </button>
                 
                 <!-- Dropdown Menu -->
-                <div class="absolute right-0 mt-2 w-64 bg-white retro-border window-shadow opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                    <div class="p-2">
-                        <a href="{% url 'profile' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                            <i data-lucide="user" class="w-5 h-5"></i>
-                            <span>Профиль</span>
-                        </a>
-                        <a href="{% url 'my_memes' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                            <i data-lucide="image" class="w-5 h-5"></i>
-                            <span>Мои мемы</span>
-                        </a>
-                        <a href="{% url 'notifications' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                            <i data-lucide="bell" class="w-5 h-5"></i>
-                            <span>Уведомления</span>
-                            {% if unread_notifications_count > 0 %}
-                            <span class="ml-auto bg-accent text-white text-xs rounded-full px-2 py-1">
-                                {{ unread_notifications_count }}
-                            </span>
-                            {% endif %}
-                        </a>
-                        <a href="{% url 'favorites' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                            <i data-lucide="star" class="w-5 h-5"></i>
-                            <span>Избранное</span>
-                        </a>
-                        
-                        {% if user.is_staff %}
-                        <div class="border-t border-gray-200 my-2 pt-2">
-                            <div class="px-3 py-2 text-xs font-bold uppercase text-gray-500">Администрирование</div>
-                            <a href="{% url 'report_management' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                                <i data-lucide="flag" class="w-5 h-5"></i>
-                                <span>Жалобы</span>
-                            </a>
-                            <a href="{% url 'moderation_queue' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                                <i data-lucide="shield-check" class="w-5 h-5"></i>
-                                <span>Модерация</span>
-                            </a>
-                            <a href="{% url 'admin:index' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                                <i data-lucide="settings" class="w-5 h-5"></i>
-                                <span>Админка</span>
-                            </a>
-                        </div>
+                <div class="user-dropdown-content square-box">
+                    <a href="{% url 'profile' %}" class="flex items-center gap-3">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                        <span>Профиль</span>
+                    </a>
+                    <a href="{% url 'my_memes' %}" class="flex items-center gap-3">
+                        <i data-lucide="image" class="w-5 h-5"></i>
+                        <span>Мои мемы</span>
+                    </a>
+                    <a href="{% url 'notifications' %}" class="flex items-center gap-3">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span>Уведомления</span>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="ml-auto bg-accent text-white text-xs px-2 py-1 square-box">
+                            {{ unread_notifications_count }}
+                        </span>
                         {% endif %}
-                        
-                        <div class="border-t border-gray-200 my-2 pt-2">
-                            <a href="{% url 'settings' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded">
-                                <i data-lucide="settings" class="w-5 h-5"></i>
-                                <span>Настройки</span>
-                            </a>
-                            <a href="{% url 'logout' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded text-red-600">
-                                <i data-lucide="log-out" class="w-5 h-5"></i>
-                                <span>Выйти</span>
-                            </a>
-                        </div>
+                    </a>
+                    <a href="{% url 'favorites' %}" class="flex items-center gap-3">
+                        <i data-lucide="star" class="w-5 h-5"></i>
+                        <span>Избранное</span>
+                    </a>
+                    
+                    {% if user.is_staff %}
+                    <div class="border-t border-gray-200 my-2 pt-2">
+                        <div class="px-3 py-2 text-xs font-bold uppercase text-gray-500">Администрирование</div>
+                        <a href="{% url 'report_management' %}" class="flex items-center gap-3 py-2 px-3">
+                            <i data-lucide="flag" class="w-5 h-5"></i>
+                            <span>Жалобы</span>
+                        </a>
+                        <a href="{% url 'moderation_queue' %}" class="flex items-center gap-3 py-2 px-3">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            <span>Модерация</span>
+                        </a>
+                        <a href="{% url 'admin:index' %}" class="flex items-center gap-3 py-2 px-3">
+                            <i data-lucide="settings" class="w-5 h-5"></i>
+                            <span>Админка</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="border-t border-gray-200 my-2 pt-2">
+                        <a href="{% url 'settings' %}" class="flex items-center gap-3 py-2 px-3">
+                            <i data-lucide="settings" class="w-5 h-5"></i>
+                            <span>Настройки</span>
+                        </a>
+                        <a href="{% url 'logout' %}" class="flex items-center gap-3 py-2 px-3 text-red-600">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                            <span>Выйти</span>
+                        </a>
                     </div>
                 </div>
             </div>
             {% else %}
             <div class="flex gap-2">
-                <a href="{% url 'login' %}" class="bg-dark text-white px-4 py-2 text-sm font-bold uppercase hover:bg-accent transition-all transform hover:-translate-y-1 retro-border">
+                <a href="{% url 'login' %}" class="bg-dark text-white px-4 py-2 text-sm font-bold uppercase hover:bg-accent transition-all hover:-translate-y-1 border-2 border-dark square-box btn-example">
                     Войти
                 </a>
-                <a href="{% url 'register' %}" class="bg-accent text-white px-4 py-2 text-sm font-bold uppercase hover:bg-primary transition-all transform hover:-translate-y-1 retro-border">
+                <a href="{% url 'register' %}" class="bg-accent text-white px-4 py-2 text-sm font-bold uppercase hover:bg-primary transition-all hover:-translate-y-1 border-2 border-dark square-box btn-example">
                     Регистрация
                 </a>
             </div>
             {% endif %}
             
             <!-- Mobile Menu Button -->
-            <button class="md:hidden" id="mobileMenuButton">
+            <button class="md:hidden" id="mobileMenuButton" type="button">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
         </div>
     </nav>
 
     <!-- Mobile Menu -->
-    <div id="mobileMenu" class="md:hidden bg-white border-b-4 border-dark hidden">
+    <div id="mobileMenu" class="md:hidden bg-white border-b-4 border-dark hidden square-box">
         <div class="px-6 py-4">
             <form action="{% url 'search' %}" method="get" class="mb-4">
                 <div class="relative">
-                    <input class="w-full bg-white retro-border-thin pl-10 pr-4 py-2 text-sm" 
-                           type="search" placeholder="Поиск мемов..." name="q">
+                    <input class="w-full bg-white border-2 border-dark pl-10 pr-4 py-2 text-sm square-box" 
+                           type="search" placeholder="Поиск мемов..." name="q" id="mobileSearchInput">
                     <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
                 </div>
             </form>
             
             <div class="space-y-2">
-                <a href="{% url 'home' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'home' %}bg-gray-100{% endif %}">
+                <a href="{% url 'home' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'home' %}bg-gray-100{% endif %} square-box">
                     <i data-lucide="home" class="w-5 h-5"></i>
                     <span>Главная</span>
                 </a>
-                <a href="{% url 'random_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'random_meme' %}bg-gray-100{% endif %}">
+                <a href="{% url 'random_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'random_meme' %}bg-gray-100{% endif %} square-box">
                     <i data-lucide="shuffle" class="w-5 h-5"></i>
                     <span>Случайный мем</span>
                 </a>
-                <a href="{% url 'popular_memes' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'popular_memes' %}bg-gray-100{% endif %}">
+                <a href="{% url 'popular_memes' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'popular_memes' %}bg-gray-100{% endif %} square-box">
                     <i data-lucide="flame" class="w-5 h-5"></i>
                     <span>Популярные</span>
                 </a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'add_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors rounded {% if request.resolver_match.url_name == 'add_meme' %}bg-gray-100{% endif %}">
+                <a href="{% url 'add_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'add_meme' %}bg-gray-100{% endif %} square-box">
                     <i data-lucide="plus-circle" class="w-5 h-5"></i>
                     <span>Добавить мем</span>
                 </a>
@@ -417,7 +596,7 @@
             {% if messages %}
             <div class="max-w-6xl mx-auto mb-8">
                 {% for message in messages %}
-                <div class="bg-white retro-border window-shadow p-4 mb-3">
+                <div class="bg-white border-2 border-dark p-4 mb-3 square-box" style="box-shadow: 4px 4px 0px 0px rgba(15, 23, 42, 1);">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             {% if message.tags == 'success' %}
@@ -442,8 +621,8 @@
             
             <!-- Page Content -->
             <div class="max-w-7xl mx-auto">
-                <!-- Обертка для Django контента -->
-                <div class="django-content window-shadow">
+                <!-- Обертка для Django контента - без анимации при наведении -->
+                <div class="django-content main-container">
                     {% block content %}{% endblock %}
                 </div>
             </div>
@@ -451,7 +630,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-12 px-6 md:px-20 border-t-4 border-accent relative">
+    <footer class="bg-dark text-white py-12 px-6 md:px-20 border-t-4 border-accent relative square-box">
         <!-- Spinning circle -->
         <div class="absolute top-0 right-20 -translate-y-1/2 w-40 h-40 bg-accent rounded-full flex items-center justify-center border-4 border-dark animate-spin-slow hidden md:flex">
             <span class="text-xs font-bold uppercase text-center tracking-tighter">Stay Weird • Stay Weird •</span>
@@ -462,7 +641,7 @@
                 <!-- Brand Section -->
                 <div>
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                        <div class="w-12 h-12 bg-accent flex items-center justify-center square-box">
                             <i data-lucide="cat" class="text-white"></i>
                         </div>
                         <span class="font-display text-2xl tracking-tighter uppercase">Memeow</span>
@@ -471,13 +650,13 @@
                         Лаборатория цифровой культуры и меметики. Место, где рождаются интернет-легенды.
                     </p>
                     <div class="flex gap-3">
-                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all rounded">
+                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all square-box">
                             <i data-lucide="twitter"></i>
                         </a>
-                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all rounded">
+                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all square-box">
                             <i data-lucide="instagram"></i>
                         </a>
-                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all rounded">
+                        <a href="#" class="p-3 border border-white/20 hover:bg-white hover:text-dark transition-all square-box">
                             <i data-lucide="github"></i>
                         </a>
                     </div>
@@ -565,73 +744,173 @@
             });
         }
         
+        // Fix search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Desktop search
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.closest('form').submit();
+                    }
+                });
+            }
+            
+            // Mobile search
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.closest('form').submit();
+                    }
+                });
+            }
+        });
+        
         // Auto-remove messages after 5 seconds
         setTimeout(() => {
-            document.querySelectorAll('.bg-white.retro-border.window-shadow').forEach(message => {
+            document.querySelectorAll('.bg-white.border-2.border-dark').forEach(message => {
                 message.style.opacity = '0';
                 message.style.transform = 'translateY(-10px)';
                 setTimeout(() => message.remove(), 300);
             });
         }, 5000);
         
-        // Parallax effect for floating images
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const cats = document.querySelectorAll('.floating-cat');
-            
-            cats.forEach((cat, index) => {
-                const speed = index === 0 ? 0.05 : 0.03;
-                const direction = index === 0 ? 1 : -1;
-                cat.style.transform = `translateY(${scrolled * speed * direction}px) rotate(${index === 0 ? '12deg' : '-6deg'})`;
-            });
-        });
-        
-        // Apply styles to Bootstrap components
+        // Apply styles to content
         document.addEventListener('DOMContentLoaded', () => {
-            // Style all Bootstrap cards
-            document.querySelectorAll('.card').forEach(card => {
-                card.classList.add('window-shadow');
+            // Удаляем закругления у всех элементов
+            document.querySelectorAll('.rounded, .rounded-lg, .rounded-md, .rounded-sm, .rounded-xl, .rounded-2xl, .rounded-3xl').forEach(el => {
+                el.classList.remove('rounded', 'rounded-lg', 'rounded-md', 'rounded-sm', 'rounded-xl', 'rounded-2xl', 'rounded-3xl');
+                el.classList.add('square-box');
             });
             
-            // Style all Bootstrap buttons
-            document.querySelectorAll('.btn').forEach(btn => {
-                if (btn.classList.contains('btn-primary')) {
-                    btn.classList.add('retro-border');
+            // Добавляем заголовки блоков с черным фоном и белым текстом
+            const blockTitles = {
+                'Мем дня': 'meme-of-day-container',
+                'Популярные теги': 'popular-tags',
+                'Популярные мемы': 'popular-memes',
+                'Свежие мемы': 'recent-memes',
+                'Мем дня': 'meme-day',
+                'Популярное': 'popular-section'
+            };
+            
+            Object.entries(blockTitles).forEach(([title, className]) => {
+                document.querySelectorAll(`.${className}`).forEach(container => {
+                    // Проверяем, есть ли уже заголовок
+                    if (!container.querySelector('.block-title')) {
+                        const titleElement = document.createElement('div');
+                        titleElement.className = 'block-title';
+                        titleElement.textContent = title;
+                        container.prepend(titleElement);
+                    }
+                });
+            });
+            
+            // Центрируем мем дня
+            document.querySelectorAll('.meme-of-day, .meme-day').forEach(memeDay => {
+                memeDay.classList.add('meme-of-day-container');
+                const content = memeDay.innerHTML;
+                memeDay.innerHTML = `
+                    <div class="meme-of-day">
+                        ${content}
+                    </div>
+                `;
+            });
+            
+            // Заменяем лайки и просмотры на минималистичный стиль
+            document.querySelectorAll('.btn-like, .like-btn, .likes-btn, .likes-count').forEach(btn => {
+                const likesCount = btn.textContent.match(/\d+/) || ['0'];
+                const isLiked = btn.classList.contains('active') || btn.classList.contains('liked');
+                const likeDiv = document.createElement('div');
+                likeDiv.className = `stat-item likes ${isLiked ? 'liked' : ''}`;
+                likeDiv.innerHTML = `
+                    <i data-lucide="${isLiked ? 'heart' : 'heart'}" class="stat-icon ${isLiked ? 'fill-accent text-accent' : ''}"></i>
+                    <span>${likesCount[0]}</span>
+                `;
+                
+                // Сохраняем клик-обработчик если он был
+                if (btn.onclick) {
+                    likeDiv.onclick = btn.onclick;
+                }
+                
+                btn.parentNode.replaceChild(likeDiv, btn);
+            });
+            
+            document.querySelectorAll('.btn-views, .views-count, .view-count').forEach(el => {
+                const viewsCount = el.textContent.match(/\d+/) || ['0'];
+                const viewDiv = document.createElement('div');
+                viewDiv.className = 'stat-item views';
+                viewDiv.innerHTML = `
+                    <i data-lucide="eye" class="stat-icon"></i>
+                    <span>${viewsCount[0]}</span>
+                `;
+                el.parentNode.replaceChild(viewDiv, el);
+            });
+            
+            // Группируем лайки и просмотры
+            document.querySelectorAll('.stat-item.likes').forEach(likeItem => {
+                const viewsItem = likeItem.nextElementSibling?.classList?.contains('stat-item') ? 
+                                 likeItem.nextElementSibling : null;
+                
+                if (viewsItem || likeItem.nextElementSibling?.classList?.contains('views-count')) {
+                    const statsContainer = document.createElement('div');
+                    statsContainer.className = 'stats-container';
+                    
+                    // Находим родительский элемент для вставки
+                    const parent = likeItem.parentNode;
+                    const likeIndex = Array.from(parent.children).indexOf(likeItem);
+                    
+                    // Создаем контейнер и добавляем в него элементы
+                    statsContainer.appendChild(likeItem.cloneNode(true));
+                    if (viewsItem) {
+                        statsContainer.appendChild(viewsItem.cloneNode(true));
+                        viewsItem.remove();
+                    }
+                    
+                    // Заменяем likeItem на контейнер
+                    likeItem.replaceWith(statsContainer);
                 }
             });
             
-            // Style all forms
-            document.querySelectorAll('form').forEach(form => {
-                form.classList.add('mb-4');
+            // Красим все теги в фиолетовый и розовый (и популярные теги тоже)
+            document.querySelectorAll('.tag, .badge, .tag-link, .popular-tag').forEach((tag, index) => {
+                tag.classList.remove('badge-secondary', 'badge-light', 'bg-secondary', 'bg-gray-200', 'text-gray-800');
+                if (index % 2 === 0) {
+                    tag.classList.add('tag-purple');
+                } else {
+                    tag.classList.add('tag-pink');
+                }
+                tag.classList.add('tag');
             });
             
-            // Add animation to cards on scroll
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -100px 0px'
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
-            
-            // Observe all window-shadow elements
-            document.querySelectorAll('.window-shadow').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(20px)';
-                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(el);
+            // Исправляем кнопки "Добавить мем", "Случайный мем", "Все мемы"
+            document.querySelectorAll('a[href*="add_meme"], button:contains("Добавить мем"), .add-meme-btn').forEach(btn => {
+                btn.className = 'btn-example';
+                btn.innerHTML = '<i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i> Добавить мем';
             });
+            
+            document.querySelectorAll('a[href*="random_meme"], button:contains("Случайный мем"), .random-meme-btn').forEach(btn => {
+                btn.className = 'btn-example';
+                btn.innerHTML = '<i data-lucide="shuffle" class="w-4 h-4 mr-2"></i> Случайный мем';
+            });
+            
+            document.querySelectorAll('a:contains("Все мемы"), button:contains("Все мемы"), .all-memes-btn').forEach(btn => {
+                btn.className = 'btn-example';
+                btn.innerHTML = '<i data-lucide="grid" class="w-4 h-4 mr-2"></i> Все мемы';
+            });
+            
+            document.querySelectorAll('a:contains("Подробнее"), button:contains("Подробнее"), .more-details-btn').forEach(btn => {
+                btn.className = 'btn-example';
+                btn.innerHTML = '<i data-lucide="arrow-right" class="w-4 h-4 mr-2"></i> Подробнее';
+            });
+            
+            // Обновляем иконки после изменений
+            setTimeout(() => lucide.createIcons(), 100);
         });
         
         // Console log for fun
         console.log("🐱 Memeow дизайн загружен!");
-        console.log("🎨 Сохранен оригинальный дизайн с фиксами для Django");
+        console.log("🎨 Все проблемы исправлены: теги, поиск, меню, кнопки, заголовки, центрирование");
     </script>
     
     {% block extra_js %}{% endblock %}
