@@ -28,11 +28,7 @@ python manage.py migrate
 python manage.py createsuperuser
 # Следуйте инструкциям для создания админа
 
-5. Загрузка тестовых данных (опционально)
-# Загрузите мемы из папки static/images/memes/
-python upload_memes.py
-
-6. Запуск сервера разработки
+5. Запуск сервера разработки
 python manage.py runserver
 Теперь откройте браузер и перейдите по адресу:
 
