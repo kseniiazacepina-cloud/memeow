@@ -22,6 +22,7 @@ from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularSwaggerView
 from django.contrib.auth import views as auth_views
 from users import views as user_views
+from users.views import logout_view
 
 urlpatterns = [
     # Админ-панель
@@ -33,6 +34,7 @@ urlpatterns = [
     
     # Веб-интерфейс
     path('', include('memes.urls')),  # Основные страницы мемов
+    path('accounts/logout/', logout_view, name='logout'), 
     path('users/', include('users.urls')),  # Профили пользователей
     path('accounts/', include('django.contrib.auth.urls')),  # Стандартная аутентификация
     path('accounts/profile/', user_views.profile, name='profile'),

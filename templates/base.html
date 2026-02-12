@@ -59,14 +59,14 @@
 </head>
 <body class="font-sans antialiased text-dark">
 
-        <!-- Header Navigation -->
-        <nav class="sticky top-0 z-50 bg-accent border-b-4 border-dark flex justify-between items-center px-6 md:px-10 py-4 h-20 sticky-nav">
-            <div class="flex items-center gap-2">
-                <div class="w-10 h-10 flex items-center justify-center">
-                    <i data-lucide="cat" class="text-white w-8 h-8"></i>
-                </div>
-                <span class="font-display text-2xl tracking-tighter uppercase text-white">Memeow</span>
+    <!-- Header Navigation -->
+    <nav class="sticky top-0 z-50 bg-accent border-b-4 border-dark flex justify-between items-center px-6 md:px-10 py-4 h-20 sticky-nav">
+        <a href="{% url 'home' %}" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <div class="w-10 h-10 flex items-center justify-center">
+                <i data-lucide="cat" class="text-white w-8 h-8"></i>
             </div>
+            <span class="font-display text-2xl tracking-tighter uppercase text-white">Memeow</span>
+        </a>
             
             <!-- Desktop Navigation -->
             <div class="hidden md:flex gap-6 font-bold uppercase text-sm tracking-widest">
@@ -158,8 +158,8 @@
                                 <i data-lucide="settings" class="w-5 h-5"></i>
                                 <span>Настройки</span>
                             </a>
-                            <a href="{% url 'login' %}" class="flex items-center gap-3 py-2 px-3 text-red-600">
-                                <i data-lucide="login" class="w-5 h-5"></i>
+                            <a href="{% url 'logout' %}" class="flex items-center gap-3 py-2 px-3 text-red-600">
+                                <i data-lucide="logout" class="w-5 h-5"></i>
                                 <span>Выйти</span>
                             </a>
                         </div>
