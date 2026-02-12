@@ -38,20 +38,9 @@ class UserActivityMiddleware:
             # Определяем тип действия по пути
             action_type = self.get_action_type(path, request.method)
             
+            # ВАЖНО: логируем только если есть action_type
             if action_type:
                 description = f"{request.method} {path}"
-                
-                # Для конкретных действий добавляем детали
-                if '/meme/' in path and request.method == 'GET':
-                    meme_id = path.split('/meme/')[1].split('/')[0]
-                    from .models import Meme
-                    try:
-                        meme = Meme.objects.get(id=meme_id)
-                        description = f"Просмотр мема: {meme.title}"
-                    except:
-                        meme = None
-                elif '/like/' in path or '/favorite/' in path:
-                    description = f"Взаимодействие с мемом: {path}"
                 
                 # Создаем запись активности
                 UserActivity.objects.create(
@@ -63,7 +52,6 @@ class UserActivityMiddleware:
                 )
         
         except Exception as e:
-            # Не прерываем выполнение при ошибке логирования
             print(f"Error logging activity: {e}")
     
     def get_action_type(self, path, method):
