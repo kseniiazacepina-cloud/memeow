@@ -98,13 +98,15 @@
                         {% endif %}
                         
                         <!-- Кнопки -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-warning">
-                                <i class="bi bi-check-circle"></i> Сохранить изменения
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+                            <button type="submit" class="btn btn-save-meme px-5">
+                                <i class="bi bi-check-circle"></i> Сохранить
                             </button>
-                            <a href="{% url 'meme_detail' meme.id %}" class="btn btn-outline-secondary">Отмена</a>
+                            <a href="{% url 'meme_detail' meme.id %}" class="btn btn-outline-secondary px-4">
+                                Отмена
+                            </a>
                             {% if user == meme.author or user.is_staff %}
-                            <a href="{% url 'delete_meme' meme.id %}" class="btn btn-outline-danger ms-2">
+                            <a href="{% url 'delete_meme' meme.id %}" class="btn btn-delete-meme px-4">
                                 <i class="bi bi-trash"></i> Удалить
                             </a>
                             {% endif %}

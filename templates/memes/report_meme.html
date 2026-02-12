@@ -43,9 +43,13 @@
                             Ваша жалоба будет рассмотрена модератором. Автор мема будет уведомлен о жалобе.
                         </div>
                         
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-report">Отправить жалобу</button>
-                            <a href="{% url 'meme_detail' meme.id %}" class="btn btn-outline-secondary">Отмена</a>
+                        <div class="d-flex justify-content-center gap-3 mt-3">
+                            <button type="submit" class="btn btn-report px-5">
+                                <i class="bi bi-flag"></i> Отправить жалобу
+                            </button>
+                            <a href="{% url 'meme_detail' meme.id %}" class="btn btn-outline-secondary px-4">
+                                Отмена
+                            </a>
                         </div>
                     </form>
                 </div>

@@ -1325,3 +1325,335 @@ body {
   }
 }
 
+/*Боковая панель*/
+
+/* ПК версия */
+@media (min-width: 992px) {
+  /* Убираем лишние отступы */
+  .d-none.d-lg-block .row {
+      margin-left: 0;
+      margin-right: 0;
+  }
+  
+  /* Левая колонка */
+  .d-none.d-lg-block .col-5 {
+      padding-left: 0;
+      padding-right: 10px;
+      width: 40%;
+  }
+  
+  /* Правая колонка */
+  .d-none.d-lg-block .col-7 {
+      padding-left: 10px;
+      padding-right: 0;
+      width: 60%;
+  }
+  
+  /* Карточки */
+  .d-none.d-lg-block .card {
+      border: 3px solid var(--dark) !important;
+      box-shadow: 8px 8px 0px 0px var(--dark) !important;
+  }
+  
+  /* Заголовки */
+  .d-none.d-lg-block .card-header {
+      padding: 0.6rem 1rem;
+      border-bottom: 3px solid var(--dark) !important;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+  }
+  
+  /* Кнопки быстрых действий */
+  .d-none.d-lg-block .btn-sm {
+      padding: 0.4rem 0.5rem !important;
+      font-size: 0.75rem;
+      border: 2px solid var(--dark) !important;
+      border-radius: 0 !important;
+      font-weight: 600;
+      text-transform: uppercase;
+  }
+  
+  /* Цвета кнопок при наведении */
+  .d-none.d-lg-block .btn-outline-primary:hover {
+      background-color: #9596f9 !important;
+      border-color: #9596f9 !important;
+      color: white !important;
+  }
+  
+  .d-none.d-lg-block .btn-outline-success:hover {
+      background-color: #98e5ff !important;
+      border-color: #98e5ff !important;
+      color: var(--dark) !important;
+  }
+  
+  .d-none.d-lg-block .btn-outline-warning:hover {
+      background-color: #ff81f2 !important;
+      border-color: #ff81f2 !important;
+      color: var(--dark) !important;
+  }
+  
+  /* Похожие мемы - картинки */
+  .d-none.d-lg-block .card-img-top {
+      height: 90px !important;
+      border-bottom: 2px solid var(--dark);
+  }
+}
+
+/* Исправление контейнера - чтобы не уезжало влево */
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Десктопные кнопки - цветные при наведении */
+@media (min-width: 768px) {
+  .desktop-buttons .btn {
+      border: 2px solid var(--dark) !important;
+      border-radius: 0 !important;
+      padding: 0.5rem 1.25rem !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      background-color: transparent !important;
+      color: var(--dark) !important;
+  }
+  
+  .desktop-buttons .btn-like-meme:hover {
+      background-color: #ff98cc !important;
+      border-color: #ff98cc !important;
+      color: var(--dark) !important;
+  }
+  
+  .desktop-buttons .favorite-btn:hover {
+      background-color: #9596f9 !important;
+      border-color: #9596f9 !important;
+      color: white !important;
+  }
+  
+  .desktop-buttons .btn-report-meme:hover {
+      background-color: #fa707e !important;
+      border-color: #fa707e !important;
+      color: white !important;
+  }
+  
+  .desktop-buttons .btn-outline-success:hover {
+      background-color: #98e5ff !important;
+      border-color: #98e5ff !important;
+      color: var(--dark) !important;
+  }
+  
+  .desktop-buttons .btn-outline-primary:hover {
+      background-color: #9596f9 !important;
+      border-color: #9596f9 !important;
+      color: white !important;
+  }
+}
+
+/* Изображение мема */
+@media (min-width: 768px) {
+  .text-center img {
+      padding-left: 10% !important;
+      padding-right: 10% !important;
+      max-height: 500px;
+  }
+}
+
+@media (max-width: 767px) {
+  .text-center img {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      max-height: 350px;
+  }
+}
+
+/* Жалоба */
+.btn-report {
+  border-radius: 0 !important;
+  border: 2px solid var(--dark) !important;
+  background-color: #fa707e !important;
+  color: var(--dark) !important;
+  padding: 0.6rem 2rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.btn-report:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.btn-outline-secondary {
+  border-radius: 0 !important;
+  border: 2px solid var(--dark) !important;
+  background-color: transparent !important;
+  color: var(--dark) !important;
+  padding: 0.6rem 2rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.btn-outline-secondary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  border-color: var(--dark) !important;
+  color: white !important;
+}
+
+/* Центрирование контейнера с кнопками */
+.d-flex.justify-content-center {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 576px) {
+  .d-flex.justify-content-center {
+      flex-direction: column;
+      width: 100%;
+      gap: 1rem !important;
+  }
+  
+  .btn-report,
+  .btn-outline-secondary {
+      width: 100%;
+      padding: 0.75rem 1rem !important;
+      font-size: 0.9rem;
+  }
+}
+
+/* Изображение мема на странице жалобы */
+.card-body .text-center img {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .card-body .text-center img {
+      padding-left: 15% !important;
+      padding-right: 15% !important;
+  }
+}
+
+/* Редактирование мема кнопки */
+.btn-save-meme {
+  border-radius: 0 !important;
+  border: 2px solid #6366f1 !important;
+  background-color: #6366f1 !important;
+  color: white !important;
+  padding: 0.6rem 2rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.btn-save-meme:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: #4f52e0 !important;
+  border-color: #4f52e0 !important;
+  color: white !important;
+}
+
+.btn-delete-meme {
+  border-radius: 0 !important;
+  border: 2px solid #dc3545 !important;
+  background-color: #dc3545 !important;
+  color: white !important;
+  padding: 0.6rem 2rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.btn-delete-meme:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: #c82333 !important;
+  border-color: #c82333 !important;
+  color: white !important;
+}
+
+/* Центрирование кнопок на странице редактирования */
+.d-flex.justify-content-center {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+  .d-flex.justify-content-center {
+      flex-direction: column;
+      width: 100%;
+      gap: 1rem !important;
+  }
+  
+  .btn-save-meme,
+  .btn-delete-meme,
+  .btn-outline-secondary {
+      width: 100%;
+      padding: 0.75rem 1rem !important;
+      font-size: 0.9rem;
+  }
+}
+
+.btn-outline-secondary {
+  border-radius: 0 !important;
+  border: 2px solid var(--dark) !important;
+  background-color: transparent !important;
+  color: var(--dark) !important;
+  padding: 0.6rem 2rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.btn-outline-secondary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  background-color: var(--dark) !important;
+  border-color: var(--dark) !important;
+  color: white !important;
+}

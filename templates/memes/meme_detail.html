@@ -72,7 +72,7 @@
                             <div class="d-flex gap-2">
                                 <button class="btn btn-like-meme" data-meme-id="{{ meme.id }}">
                                     <i class="bi {% if is_liked %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
-                                    ♥<span class="like-count">{{ meme.likes_count }}</span>
+                                    <span class="like-count">{{ meme.likes_count }}</span>
                                 </button>
                                 
                                 <button class="btn favorite-btn" data-meme-id="{{ meme.id }}">
@@ -176,89 +176,179 @@
             </div>
         </div>
         
-        <!--боковая панель-->
-        <div class="col-lg-4">
-            <!--похожие мемы-->
-            {% if similar_memes %}
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Похожие мемы</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row row-cols-2 g-3">
-                        {% for similar in similar_memes %}
-                        <div class="col">
-                            <a href="{% url 'meme_detail' similar.id %}" class="text-decoration-none">
-                                <div class="card h-100">
-                                    <img src="{{ similar.image.url }}" 
-                                         alt="{{ similar.title }}" 
-                                         class="card-img-top"
-                                         style="height: 120px; object-fit: cover;">
-                                    <div class="card-body p-2">
-                                        <p class="card-text small mb-1">{{ similar.title|truncatechars:30 }}</p>
-                                        <div class="d-flex justify-content-between">
-                                            <span class="badge bg-primary">♥ {{ similar.likes_count }}</span>
-                                            <span class="text-muted small">{{ similar.created_at|timesince }}</span>
+                <!--боковая панель-->
+                <div class="col-lg">
+                    <!-- ПК версия (только на больших экранах) -->
+                    <div class="d-none d-lg-block">
+                        <div class="row">
+                            <!-- Левая колонка: Статистика + Быстрые действия -->
+                            <div class="col-5 pe-2">
+                                <!-- Статистика -->
+                                <div class="card shadow-sm mb-4">
+                                    <div class="card-header bg-secondary text-white">
+                                        <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Статистика</h5>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between px-0">
+                                                <span>Просмотры</span>
+                                                <span class="badge bg-primary rounded-pill">{{ meme.views_count }}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between px-0">
+                                                <span>Лайки</span>
+                                                <span class="badge bg-danger rounded-pill">{{ meme.likes_count }}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between px-0">
+                                                <span>Возраст</span>
+                                                <span>{{ meme.created_at|timesince }}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between px-0">
+                                                <span>Теги</span>
+                                                <span class="badge bg-success rounded-pill">{{ meme.tags.count }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Быстрые действия -->
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Быстрые действия</h5>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'random_meme' %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-shuffle"></i> Случайный
+                                            </a>
+                                            <a href="{% url 'add_meme' %}" class="btn btn-outline-success btn-sm">
+                                                <i class="bi bi-plus-circle"></i> Добавить
+                                            </a>
+                                            <a href="{% url 'popular_memes' %}" class="btn btn-outline-warning btn-sm">
+                                                <i class="bi bi-fire"></i> Популярные
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
+                            
+                            <!-- Правая колонка: Похожие мемы -->
+                            <div class="col-7 ps-2">
+                                {% if similar_memes %}
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="mb-0"><i class="bi bi-lightning"></i> Похожие мемы</h5>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="row row-cols-2 g-2">
+                                            {% for similar in similar_memes %}
+                                            <div class="col">
+                                                <a href="{% url 'meme_detail' similar.id %}" class="text-decoration-none">
+                                                    <div class="card h-100">
+                                                        <img src="{{ similar.image.url }}" 
+                                                             alt="{{ similar.title }}" 
+                                                             class="card-img-top"
+                                                             style="height: 90px; object-fit: cover;">
+                                                        <div class="card-body p-2">
+                                                            <p class="card-text small mb-1">{{ similar.title|truncatechars:20 }}</p>
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="badge bg-primary">♥ {{ similar.likes_count }}</span>
+                                                                <span class="text-muted small">{{ similar.created_at|timesince }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
                         </div>
-                        {% endfor %}
+                    </div>
+                    
+                    <!-- Мобильная версия (только на маленьких экранах) -->
+                    <div class="d-block d-lg-none">
+                        <!-- Похожие мемы -->
+                        {% if similar_memes %}
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="bi bi-lightning"></i> Похожие мемы</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row row-cols-2 g-3">
+                                    {% for similar in similar_memes %}
+                                    <div class="col">
+                                        <a href="{% url 'meme_detail' similar.id %}" class="text-decoration-none">
+                                            <div class="card h-100">
+                                                <img src="{{ similar.image.url }}" 
+                                                     alt="{{ similar.title }}" 
+                                                     class="card-img-top"
+                                                     style="height: 120px; object-fit: cover;">
+                                                <div class="card-body p-2">
+                                                    <p class="card-text small mb-1">{{ similar.title|truncatechars:30 }}</p>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span class="badge bg-primary">♥ {{ similar.likes_count }}</span>
+                                                        <span class="text-muted small">{{ similar.created_at|timesince }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Статистика -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Статистика</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>Просмотры</span>
+                                        <span class="badge bg-primary rounded-pill">{{ meme.views_count }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>Лайки</span>
+                                        <span class="badge bg-danger rounded-pill">{{ meme.likes_count }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>Возраст</span>
+                                        <span>{{ meme.created_at|timesince }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>Теги</span>
+                                        <span class="badge bg-success rounded-pill">{{ meme.tags.count }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Быстрые действия -->
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Быстрые действия</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'random_meme' %}" class="btn btn-outline-primary">
+                                        <i class="bi bi-shuffle"></i> Случайный мем
+                                    </a>
+                                    <a href="{% url 'add_meme' %}" class="btn btn-outline-success">
+                                        <i class="bi bi-plus-circle"></i> Добавить мем
+                                    </a>
+                                    <a href="{% url 'popular_memes' %}" class="btn btn-outline-warning">
+                                        <i class="bi bi-fire"></i> Популярные
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            {% endif %}
-            
-            <!--статистика-->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Статистика</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Просмотры</span>
-                            <span class="badge bg-primary rounded-pill">{{ meme.views_count }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Лайки</span>
-                            <span class="badge bg-danger rounded-pill">{{ meme.likes_count }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Возраст</span>
-                            <span>{{ meme.created_at|timesince }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Теги</span>
-                            <span class="badge bg-success rounded-pill">{{ meme.tags.count }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!--быстрые действия-->
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Быстрые действия</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'random_meme' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-shuffle"></i> Случайный мем
-                        </a>
-                        <a href="{% url 'add_meme' %}" class="btn btn-outline-success">
-                            <i class="bi bi-plus-circle"></i> Добавить мем
-                        </a>
-                        <a href="{% url 'popular_memes' %}" class="btn btn-outline-warning">
-                            <i class="bi bi-fire"></i> Популярные
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="{% static 'js/meme_detail.js' %}"></script>
 {% endblock %}
