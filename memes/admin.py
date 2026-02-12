@@ -54,8 +54,7 @@ class MemeAdmin(admin.ModelAdmin):
     def image_preview(self, obj):
         if obj.image:
             return format_html(
-                f'<img src="{
-                    obj.image.url}" width="100" height="100" style="object-fit: cover;" />')
+                f'<img src="{meme.image.url}" style="max-width: 100px; max-height: 100px;">')
         return "Нет изображения"
     image_preview.short_description = 'Превью'
 
