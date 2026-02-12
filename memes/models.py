@@ -109,7 +109,6 @@ class Like(models.Model):
         unique_together = ['user', 'meme']
         verbose_name = 'Лайк'
         verbose_name_plural = 'Лайки'
-        ordering = ['-created_at']  # Добавьте эту строку!
     
     def __str__(self):
         return f"{self.user.username} лайкнул {self.meme.title}"
