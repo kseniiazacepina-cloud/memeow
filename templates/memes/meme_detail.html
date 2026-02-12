@@ -64,41 +64,83 @@
                     </div>
                 </div>
                 
-                <!--кнопки действий-->
+                <!-- кнопки действий -->
                 <div class="card-footer bg-transparent">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <button class="btn btn-like-meme" data-meme-id="{{ meme.id }}">
-                                <i class="bi {% if is_liked %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
-                                ♥<span class="like-count">{{ meme.likes_count }}</span>
-                            </button>
+                    <!-- пк -->
+                    <div class="desktop-buttons d-none d-md-block">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-like-meme" data-meme-id="{{ meme.id }}">
+                                    <i class="bi {% if is_liked %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
+                                    ♥<span class="like-count">{{ meme.likes_count }}</span>
+                                </button>
+                                
+                                <button class="btn favorite-btn" data-meme-id="{{ meme.id }}">
+                                    <i class="bi {% if is_favorite %}bi-star-fill text-warning{% else %}bi-star{% endif %}"></i>
+                                    Избранное
+                                </button>
+                                
+                                {% if user.is_authenticated and user != meme.author %}
+                                <a href="{% url 'report_meme' meme.id %}" class="btn btn-report-meme">
+                                    <i class="bi bi-flag"></i> Пожаловаться
+                                </a>
+                                {% endif %}
+                            </div>
                             
-                            <button class="btn favorite-btn ms-2" data-meme-id="{{ meme.id }}">
-                                <i class="bi {% if is_favorite %}bi-star-fill text-warning{% else %}bi-star{% endif %}"></i>
-                                Избранное
-                            </button>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'download_meme' meme.id %}" class="btn btn-outline-success">
+                                    <i class="bi bi-download"></i> Скачать
+                                </a>
+                                
+                                {% if user == meme.author or user.is_staff %}
+                                <a href="{% url 'edit_meme' meme.id %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Редактировать
+                                </a>
+                                {% endif %}
+                            </div>
                         </div>
-                        
-                        {% if user.is_authenticated and user != meme.author %}
-                        <a href="{% url 'report_meme' meme.id %}" class="btn btn-report-meme btn-sm">
-                            <i class="bi bi-flag"></i> Пожаловаться
-                        </a>
-                        {% endif %}
-
-                        <div>
-                            <a href="{% url 'download_meme' meme.id %}" class="btn btn-outline-success">
-                                <i class="bi bi-download"></i> Скачать
-                            </a>
+                    </div>
+                    
+                    <!-- мобилки -->
+                    <div class="mobile-buttons d-block d-md-none">
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex gap-2 w-100">
+                                <button class="btn btn-like-meme flex-fill" data-meme-id="{{ meme.id }}">
+                                    <i class="bi {% if is_liked %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
+                                    ♥<span class="like-count">{{ meme.likes_count }}</span>
+                                </button>
+                                
+                                <button class="btn favorite-btn flex-fill" data-meme-id="{{ meme.id }}">
+                                    <i class="bi {% if is_favorite %}bi-star-fill text-warning{% else %}bi-star{% endif %}"></i>
+                                    <span class="favorite-text">Избранное</span>
+                                </button>
+                            </div>
                             
-                            {% if user == meme.author or user.is_staff %}
-                            <a href="{% url 'edit_meme' meme.id %}" class="btn btn-outline-primary ms-2">
-                                <i class="bi bi-pencil"></i> Редактировать
-                            </a>
+                            {% if user.is_authenticated and user != meme.author %}
+                            <div class="w-100">
+                                <a href="{% url 'report_meme' meme.id %}" class="btn btn-report-meme w-100">
+                                    <i class="bi bi-flag"></i>
+                                    <span class="report-text">Пожаловаться</span>
+                                </a>
+                            </div>
                             {% endif %}
+                            
+                            <div class="d-flex gap-2 w-100">
+                                <a href="{% url 'download_meme' meme.id %}" class="btn btn-outline-success flex-fill">
+                                    <i class="bi bi-download"></i>
+                                    <span class="download-text">Скачать</span>
+                                </a>
+                                
+                                {% if user == meme.author or user.is_staff %}
+                                <a href="{% url 'edit_meme' meme.id %}" class="btn btn-outline-primary flex-fill">
+                                    <i class="bi bi-pencil"></i>
+                                    <span class="edit-text">Редактировать</span>
+                                </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             
             <!--автор-->
             <div class="card shadow-sm mb-4">

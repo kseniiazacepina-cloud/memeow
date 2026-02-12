@@ -1219,3 +1219,109 @@ body {
       display: flex !important;
   }
 }
+
+/* Кнопки мема */
+
+.favorite-btn {
+  background-color: var(--dark) !important;
+  border-color: var(--dark) !important;
+  color: white !important;
+  border: 2px solid var(--dark) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+  padding: 0.5rem 1.25rem !important;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+
+}
+
+/* Моб */
+@media (max-width: 767px) {
+  .mobile-buttons .btn {
+      padding: 0.6rem 0.5rem !important;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      border-radius: 0 !important;
+  }
+  
+  .mobile-buttons .btn-like-meme {
+      background-color: #ff98cc !important;
+      color: var(--dark) !important;
+      border: 2px solid var(--dark) !important;
+  }
+  
+  .mobile-buttons .favorite-btn {
+      background-color: #9596f9 !important;
+      color: var(--dark) !important;
+      border: 2px solid var(--dark) !important;
+  }
+  
+  .mobile-buttons .btn-report-meme {
+      background-color: #fa707e !important;
+      color: var(--dark) !important;
+      border: 2px solid var(--dark) !important;
+      margin-left: 0 !important;
+  }
+  
+  .mobile-buttons .btn-outline-success {
+      background-color: #98e5ff !important;
+      color: var(--dark) !important;
+      border: 2px solid var(--dark) !important;
+  }
+  
+  .mobile-buttons .btn-outline-primary {
+      background-color: #9596f9 !important;
+      color: var(--dark) !important;
+      border: 2px solid var(--dark) !important;
+  }
+  
+  .mobile-buttons .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0px 0px var(--dark) !important;
+  }
+  
+  .mobile-buttons .btn-like-meme:hover,
+  .mobile-buttons .favorite-btn:hover,
+  .mobile-buttons .btn-outline-primary:hover {
+      background-color: var(--accent) !important;
+      border-color: var(--accent) !important;
+      color: white !important;
+  }
+  
+  .mobile-buttons .btn-report-meme:hover,
+  .mobile-buttons .btn-outline-success:hover {
+      background-color: var(--dark) !important;
+      border-color: var(--dark) !important;
+      color: white !important;
+  }
+}
+
+/* Фикс для Bootstrap классов на десктопе */
+@media (min-width: 768px) {
+  .d-none.d-md-block {
+      display: block !important;
+  }
+  .d-block.d-md-none {
+      display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .d-none.d-md-block {
+      display: none !important;
+  }
+  .d-block.d-md-none {
+      display: block !important;
+  }
+}
+
