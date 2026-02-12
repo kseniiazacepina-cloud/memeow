@@ -194,28 +194,39 @@
                 </div>
             </form>
             
-            <div class="space-y-2">
-                <a href="{% url 'home' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'home' %}bg-gray-100{% endif %} square-box">
-                    <i data-lucide="home" class="w-5 h-5"></i>
-                    <span>Главная</span>
+            <!-- Мобильные кнопки входа/регистрации -->        
+        <div class="space-y-2">
+            <a href="{% url 'home' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'home' %}bg-gray-100{% endif %} square-box">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span>Главная</span>
+            </a>
+            <a href="{% url 'random_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'random_meme' %}bg-gray-100{% endif %} square-box">
+                <i data-lucide="shuffle" class="w-5 h-5"></i>
+                <span>Случайный мем</span>
+            </a>
+            <a href="{% url 'memes_list' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'memes_list' %}bg-gray-100{% endif %} square-box">
+                <i data-lucide="flame" class="w-5 h-5"></i>
+                <span>Популярные</span>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'add_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'add_meme' %}bg-gray-100{% endif %} square-box">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                <span>Добавить мем</span>
+            </a>
+            {% endif %}
+            {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="mobile-auth-btn mobile-login-btn">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    Войти
                 </a>
-                <a href="{% url 'random_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'random_meme' %}bg-gray-100{% endif %} square-box">
-                    <i data-lucide="shuffle" class="w-5 h-5"></i>
-                    <span>Случайный мем</span>
+                <a href="{% url 'register' %}" class="mobile-auth-btn mobile-register-btn">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    Регистрация
                 </a>
-                <a href="{% url 'memes_list' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'memes_list' %}bg-gray-100{% endif %} square-box">
-                    <i data-lucide="flame" class="w-5 h-5"></i>
-                    <span>Популярные</span>
-                </a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'add_meme' %}" class="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors {% if request.resolver_match.url_name == 'add_meme' %}bg-gray-100{% endif %} square-box">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                    <span>Добавить мем</span>
-                </a>
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
     </div>
+</div>
 
     <!-- Main Content -->
     <main class="min-h-screen py-8 px-4 md:px-8 lg:px-20">
