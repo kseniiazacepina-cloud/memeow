@@ -40,13 +40,13 @@ class Command(BaseCommand):
                     failed_count += 1
                     continue
                 
-                # Проверяем, можно ли отправлять сейчас (упрощенная версия)
+                # Проверяем, можно ли отправлять сейчас
                 if subscription.last_sent:
                     hours_passed = (timezone.now() - subscription.last_sent).total_seconds() / 3600
                     if frequency == 'daily' and hours_passed < 20:
                         self.stdout.write(f'Skipping {subscription.user.email} - too soon after last send')
                         continue
-                    elif frequency == 'weekly' and hours_passed < 6*24:  # 6 дней
+                    elif frequency == 'weekly' and hours_passed < 6*24:
                         self.stdout.write(f'Skipping {subscription.user.email} - too soon after last send')
                         continue
                 
@@ -56,10 +56,10 @@ class Command(BaseCommand):
                     subscription.last_sent = timezone.now()
                     subscription.save(update_fields=['last_sent'])
                     sent_count += 1
-                    self.stdout.write(f'✓ Sent to {subscription.user.email}')
+                    self.stdout.write(self.style.SUCCESS(f'✓ Sent to {subscription.user.email}'))
                 else:
                     failed_count += 1
-                    self.stdout.write(f'✗ Failed to send to {subscription.user.email}')
+                    self.stdout.write(self.style.ERROR(f'✗ Failed to send to {subscription.user.email}'))
                     
             except Exception as e:
                 failed_count += 1
@@ -71,7 +71,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f'Successfully sent {sent_count} {frequency} digests, failed: {failed_count}'
         ))
-        return sent_count, failed_count
+        
+        # НЕ ВОЗВРАЩАЕМ НИЧЕГО - просто завершаем функцию
     
     def send_digest_to_user(self, user, frequency):
         """Отправка дайджеста пользователю"""
@@ -93,8 +94,6 @@ class Command(BaseCommand):
             created_at__gte=start_date
         ).order_by('-likes_count', '-created_at')[:6]
         
-        self.stdout.write(f'Found {len(recent_memes)} memes for {user.email}')
-        
         # Если недостаточно мемов за период, добавляем случайные популярные
         if len(recent_memes) < 3:
             extra_memes = Meme.objects.filter(
@@ -102,7 +101,6 @@ class Command(BaseCommand):
             ).exclude(id__in=[m.id for m in recent_memes]) \
              .order_by('-likes_count')[:6-len(recent_memes)]
             recent_memes = list(recent_memes) + list(extra_memes)
-            self.stdout.write(f'Added {len(extra_memes)} extra memes')
         
         if not recent_memes:
             self.stdout.write(f'No memes found for {user.email}')
@@ -112,7 +110,6 @@ class Command(BaseCommand):
         meme_of_the_day = None
         if recent_memes:
             meme_of_the_day = random.choice(list(recent_memes))
-            self.stdout.write(f'Meme of the day: {meme_of_the_day.title}')
         
         # Формируем тему письма
         today = timezone.now().date()
@@ -121,7 +118,7 @@ class Command(BaseCommand):
         else:
             subject = f'📊 Еженедельный дайджест мемов - {today.strftime("%d.%m.%Y")}'
         
-        # Получаем токен отписки (если есть)
+        # Получаем токен отписки
         unsubscribe_token = ''
         try:
             if hasattr(user, 'profile') and user.profile:
@@ -136,14 +133,14 @@ class Command(BaseCommand):
             'period_name': period_name,
             'today': today.strftime('%d.%m.%Y'),
             'meme_of_the_day': meme_of_the_day,
-            'recent_memes': recent_memes[:4],  # Максимум 4 мема
+            'recent_memes': recent_memes[:4],
             'site_url': getattr(settings, 'SITE_URL', 'http://localhost:8000'),
             'unsubscribe_url': f'http://localhost:8000/users/unsubscribe/{unsubscribe_token}/' if unsubscribe_token else 'http://localhost:8000/users/settings/',
             'subject': subject,
         }
         
         try:
-            # Текстовое содержимое (упрощенное)
+            # Текстовое содержимое
             text_content = f"""
 Привет, {user.username}!
 
@@ -176,33 +173,14 @@ class Command(BaseCommand):
             
             email.attach_alternative(html_content, "text/html")
             
-            # Добавляем изображения как вложения (если есть изображение мема дня)
-            if meme_of_the_day and meme_of_the_day.image:
-                try:
-                    image_path = meme_of_the_day.image.path
-                    with open(image_path, 'rb') as img_file:
-                        email.attach(
-                            filename=f'meme_of_day_{meme_of_the_day.id}.jpg',
-                            content=img_file.read(),
-                            mimetype='image/jpeg'
-                        )
-                    self.stdout.write(f'✓ Image attached for meme {meme_of_the_day.id}')
-                except Exception as e:
-                    self.stdout.write(f'✗ Could not attach image for meme {meme_of_the_day.id}: {e}')
-            
             # Отправляем
-            self.stdout.write(f'Attempting to send email to {user.email}')
             result = email.send()
             
             if result == 1:
-                self.stdout.write(f'✓ Email sent successfully to {user.email}')
                 return True
             else:
-                self.stdout.write(f'✗ Email send failed for {user.email}, result: {result}')
                 return False
                 
         except Exception as e:
             self.stdout.write(f'✗ Email sending error for {user.email}: {str(e)}')
-            import traceback
-            self.stdout.write(traceback.format_exc())
             return False
