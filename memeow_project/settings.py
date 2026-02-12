@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -165,3 +166,40 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'memeowsubscription@gmail.com'
 EMAIL_HOST_PASSWORD = 'svravmloqghentjl'
 DEFAULT_FROM_EMAIL = 'memeowsubscription@gmail.com'
+
+if 'test' in sys.argv:
+    # Используем быструю базу данных в памяти
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'memeow',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+    
+    # Отключаем кэширование для тестов
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+    
+    # Отключаем отправку реальных email
+    EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+    
+    # Ускоряем хеширование паролей
+    PASSWORD_HASHERS = [
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    ]
+    
+    # Отключаем DEBUG для тестов
+    DEBUG = False
+    
+    # Уменьшаем размеры изображений для тестов
+    from PIL import ImageFile
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    
+    print("\033[93m=== Запуск в тестовом режиме ===\033[0m")
