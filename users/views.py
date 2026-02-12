@@ -20,6 +20,7 @@ from .models import MemeSubscription, TelegramConnection
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.contrib.auth import logout
 
 @login_required
 def profile(request, username=None):
@@ -186,6 +187,11 @@ def register(request):
 
 def user_memes(request, user_id):
     user = get_object_or_404(User, id=user_id)
+
+# Выход
+def logout_view(request):
+    logout(request)
+    return redirect('home') 
 
 @csrf_exempt
 @login_required
