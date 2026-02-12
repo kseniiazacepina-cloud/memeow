@@ -54,7 +54,9 @@ class MemeAdmin(admin.ModelAdmin):
     def image_preview(self, obj):
         if obj.image:
             return format_html(
-                f'<img src="{meme.image.url}" style="max-width: 100px; max-height: 100px;">')
+                '<img src="{}" style="max-width: 100px; max-height: 100px;">',
+                obj.image.url
+            )
         return "Нет изображения"
     image_preview.short_description = 'Превью'
 
@@ -62,7 +64,9 @@ class MemeAdmin(admin.ModelAdmin):
         color = obj.get_status_color()
         icon = obj.get_status_icon()
         return format_html(
-            f'<span class="badge bg-{color}">{icon} {obj.get_moderation_status_display()}</span>'
+            '<span class="badge bg-{}">{}</span>',
+            color,
+            f'{icon} {obj.get_moderation_status_display()}'
         )
     get_status.short_description = 'Статус'
 
@@ -224,12 +228,14 @@ class UserActivityAdmin(admin.ModelAdmin):
         }
         color = colors.get(obj.action_type, 'secondary')
         return format_html(
-            f'<span class="badge bg-{color}">{obj.get_action_type_display()}</span>'
+            '<span class="badge bg-{}">{}</span>',
+            color,
+            obj.get_action_type_display()
         )
     action_type_display.short_description = 'Действие'
 
     def get_description(self, obj):
-        return format_html(f'<small>{obj.description[:80]}</small>')
+        return format_html('<small>{}</small>', obj.description[:80] if obj.description else '')
     get_description.short_description = 'Описание'
 
     def created_at_formatted(self, obj):
@@ -237,20 +243,20 @@ class UserActivityAdmin(admin.ModelAdmin):
     created_at_formatted.short_description = 'Дата и время'
 
     def user_agent_full(self, obj):
-        return format_html(f'<pre>{obj.user_agent}</pre>')
+        return format_html('<pre>{}</pre>', obj.user_agent)
     user_agent_full.short_description = 'User Agent'
 
     def get_meme_link(self, obj):
         if obj.meme:
             url = reverse('admin:memes_meme_change', args=[obj.meme.id])
-            return format_html(f'<a href="{url}">{obj.meme.title}</a>')
+            return format_html('<a href="{}">{}</a>', url, obj.meme.title)
         return '-'
     get_meme_link.short_description = 'Мем'
 
     def get_user_link(self, obj):
         if obj.user:
             url = reverse('admin:auth_user_change', args=[obj.user.id])
-            return format_html(f'<a href="{url}">{obj.user.username}</a>')
+            return format_html('<a href="{}">{}</a>', url, obj.user.username)
         return '-'
     get_user_link.short_description = 'Пользователь'
 
@@ -258,27 +264,18 @@ class UserActivityAdmin(admin.ModelAdmin):
         if obj.target_user:
             url = reverse('admin:auth_user_change', args=[obj.target_user.id])
             return format_html(
-                f'<a href="{url}">{
-                    obj.target_user.username}</a>')
+                '<a href="{}">{}</a>', url, obj.target_user.username)
         return '-'
     get_target_user_link.short_description = 'Целевой пользователь'
 
     def quick_actions(self, obj):
         links = []
         if obj.meme:
-            links.append(
-                f'<a href="{
-                    reverse(
-                        "admin:memes_meme_change",
-                        args=[
-                            obj.meme.id])}" class="btn btn-sm btn-info">Мем</a>')
+            url = reverse("admin:memes_meme_change", args=[obj.meme.id])
+            links.append(f'<a href="{url}" class="btn btn-sm btn-info">Мем</a>')
         if obj.user:
-            links.append(
-                f'<a href="{
-                    reverse(
-                        "admin:auth_user_change",
-                        args=[
-                            obj.user.id])}" class="btn btn-sm btn-warning">Юзер</a>')
+            url = reverse("admin:auth_user_change", args=[obj.user.id])
+            links.append(f'<a href="{url}" class="btn btn-sm btn-warning">Юзер</a>')
         return format_html(' '.join(links)) if links else '-'
     quick_actions.short_description = 'Быстрые действия'
 
@@ -292,9 +289,9 @@ class UserActivityAdmin(admin.ModelAdmin):
         from django.http import HttpResponse
         from datetime import datetime
 
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="user_activity_{
-            datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+        response['Content-Disposition'] = f'attachment; filename="user_activity_{timestamp}.csv"'
 
         writer = csv.writer(response, delimiter=';')
         writer.writerow(['Пользователь', 'Действие', 'Описание',
@@ -308,7 +305,7 @@ class UserActivityAdmin(admin.ModelAdmin):
                 activity.ip_address,
                 activity.created_at.strftime("%d.%m.%Y %H:%M:%S"),
                 activity.meme.title if activity.meme else '',
-                activity.user_agent[:100]
+                activity.user_agent[:100] if activity.user_agent else ''
             ])
 
         return response
